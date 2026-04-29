@@ -1,5 +1,4 @@
 import type {
-  SettingsNotificationSection,
   SettingsScreenConfig,
   SettingsSection,
 } from "@/interfaces/main/settings";
@@ -105,43 +104,8 @@ const passwordSection = {
   },
 } as const;
 
-export const notificationPreferencesSection: SettingsNotificationSection = {
-  id: "notification-preferences",
-  kind: "notifications",
-  icon: "notification",
-  title: "Notification Preferences",
-  description: "management your notification preferences",
-  preferences: [
-    {
-      id: "new-orders",
-      title: "New Orders",
-      description: "Get notified when a new order is placed",
-      enabled: true,
-    },
-    {
-      id: "low-stock-alerts",
-      title: "Low Stock Alerts",
-      description: "Receive alerts when products are running low",
-      enabled: true,
-    },
-    {
-      id: "customer-messages",
-      title: "Customer Messages",
-      description: "Notifications for customer inquiries",
-      enabled: false,
-    },
-    {
-      id: "weekly-reports",
-      title: "Weekly Reports",
-      description: "Get weekly performance summaries",
-      enabled: true,
-    },
-  ],
-};
-
 export const settingsSections: SettingsSection[] = [
   storeInformationSection,
   accountInformationSection,
   passwordSection,
-  notificationPreferencesSection,
 ];

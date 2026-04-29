@@ -5,7 +5,6 @@ export interface FindUsHereWorkspaceConfig {
   title: string;
   description: string;
   primaryActionLabel: string;
-  secondaryActionLabel: string;
 }
 
 export interface FindUsHereSummaryMetric {
@@ -38,9 +37,7 @@ export interface FindUsHereHeaderProps {
   title: string;
   description: string;
   primaryActionLabel: string;
-  secondaryActionLabel: string;
   onPrimaryActionClick?: () => void;
-  onSecondaryActionClick?: () => void;
 }
 
 export interface FindUsHereSummaryGridProps {
@@ -78,6 +75,14 @@ export interface FindUsHereMarketApiItem {
   updated_at: string;
 }
 
+export interface FindUsHereSingleMarketApiItem
+  extends FindUsHereMarketApiItem {
+  is_day_correct: boolean;
+  correct_day: string;
+  is_upcoming: boolean;
+  is_past: boolean;
+}
+
 export interface FindUsHereMarketDayApiItem {
   day: string;
   total_markets: number;
@@ -87,6 +92,11 @@ export interface FindUsHereMarketDayApiItem {
 export interface FindUsHereMarketsResponse {
   status: string;
   data: FindUsHereMarketDayApiItem[];
+}
+
+export interface FindUsHereSingleMarketResponse {
+  status: string;
+  data: FindUsHereSingleMarketApiItem;
 }
 
 export interface FindUsHereDaySectionProps {

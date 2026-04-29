@@ -3,6 +3,7 @@ import type {
   ReviewListResponse,
   ReviewStatusStatsResponse,
   ReviewsStatsResponse,
+  SingleReviewResponse,
 } from "@/interfaces";
 import { baseAPI } from "..";
 import { PAGE_SIZE } from "@/constants";
@@ -26,3 +27,6 @@ export const reviewListAPI = async (
     "GET",
     `/review/list?sort=${sort}&status=${status}&page=${page}&per_page=${PAGE_SIZE}`,
   );
+
+export const singleReviewAPI = async (slug: string) =>
+  await baseAPI<SingleReviewResponse>("GET", `/review/${slug}/view`);

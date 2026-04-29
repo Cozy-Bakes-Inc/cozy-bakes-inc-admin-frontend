@@ -14,10 +14,8 @@ const bakeryCoverImages = [
   "https://www.figma.com/api/mcp/asset/c7b642b4-5ad0-4795-8b9e-8fb1aa409970",
 ];
 
-export const DEFAULT_CATEGORY_SLUG = "bakery";
-
 export const bakeryCategoryDetails: BakeryCategoryDetails = {
-  slug: DEFAULT_CATEGORY_SLUG,
+  slug: "bakery",
   title: "Categories Management",
   description: "Organize your products into Categories",
   heroTitle: "Bakery",
@@ -99,7 +97,3 @@ export const bakerySubCategories: BakerySubCategoryRecord[] = [
 ];
 
 export const categoryPagination = [1, 2, 3, 4, 5, 6, 7, 8];
-
-export function getBakerySubCategoryBySlug(slug: string) {
-  return bakerySubCategories.find((item) => item.slug === slug);
-}

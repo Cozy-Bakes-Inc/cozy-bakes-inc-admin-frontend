@@ -31,17 +31,15 @@ export function CategoryTable({ items }: CategoryTableProps) {
 
           <tbody>
             {items.map((item) => {
-              const categoryHref = `/categories/${item.slug}`;
-
               return (
                 <tr key={item.id} className="bg-[rgba(250,248,243,0.08)]">
                   <td className="border-b border-border/15 px-4 py-4 align-middle text-base font-medium uppercase text-dark md:px-5">
-                    <Link href={categoryHref} className="hover:text-primary">
+                    <Link href="/categories" className="hover:text-primary">
                       {item.id}
                     </Link>
                   </td>
                   <td className="border-b border-border/15 px-4 py-4 align-middle md:px-5">
-                    <Link href={categoryHref} className="block w-fit">
+                    <Link href="/categories" className="block w-fit">
                       <Image
                         src={item.coverImage}
                         alt={`${item.name} cover`}
@@ -53,7 +51,7 @@ export function CategoryTable({ items }: CategoryTableProps) {
                     </Link>
                   </td>
                   <td className="border-b border-border/15 px-4 py-4 align-middle text-base font-semibold text-dark md:px-5">
-                    <Link href={categoryHref} className="hover:text-primary">
+                    <Link href="/categories" className="hover:text-primary">
                       {item.name}
                     </Link>
                   </td>
@@ -76,7 +74,7 @@ export function CategoryTable({ items }: CategoryTableProps) {
                         label={`View ${item.name}`}
                         tone="primary"
                         icon={<Eye className="size-4" strokeWidth={2.1} />}
-                        href={categoryHref}
+                        href="/categories"
                       />
                     </div>
                   </td>

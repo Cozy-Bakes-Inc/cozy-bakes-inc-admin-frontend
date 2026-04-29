@@ -35,29 +35,17 @@ export function SidebarHeader({
           </div>
         </div>
 
-        <div className="flex items-center gap-[11px]">
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            className="inline-flex size-10 items-center justify-center rounded-full border border-primary/70 bg-bg-creamy/60 text-primary"
-            aria-label="Notifications"
-          >
-            <HeaderBellIcon />
-          </Button>
-
-          <div className="flex items-center gap-1.5 rounded-full border border-primary/70 bg-bg-creamy/60 px-1 py-1 sm:pr-2 sm:pl-1">
-            <div className="flex size-8 items-center justify-center rounded-full bg-primary text-sm font-bold text-white shadow-[0_2px_8px_rgba(209,150,40,0.25)]">
-              {sidebarProfile.initials}
-            </div>
-            <div className="hidden min-w-0 sm:block">
-              <p className="truncate text-sm font-semibold leading-4 text-chocolate">
-                {sidebarProfile.name}
-              </p>
-              <p className="truncate text-xs leading-4 text-muted-text">
-                {sidebarProfile.role}
-              </p>
-            </div>
+        <div className="flex items-center gap-1.5 rounded-full border border-primary/70 bg-bg-creamy/60 px-1 py-1 sm:pr-2 sm:pl-1">
+          <div className="flex size-8 items-center justify-center rounded-full bg-primary text-sm font-bold text-white shadow-[0_2px_8px_rgba(209,150,40,0.25)]">
+            {sidebarProfile.initials}
+          </div>
+          <div className="hidden min-w-0 sm:block">
+            <p className="truncate text-sm font-semibold leading-4 text-chocolate">
+              {sidebarProfile.name}
+            </p>
+            <p className="truncate text-xs leading-4 text-muted-text">
+              {sidebarProfile.role}
+            </p>
           </div>
         </div>
       </div>

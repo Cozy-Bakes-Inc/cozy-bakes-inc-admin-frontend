@@ -1,11 +1,8 @@
-import { Megaphone } from "lucide-react";
 import type { CustomersHeaderProps } from "@/interfaces/main/customers";
-import { Button } from "@/components/ui/button";
 
 export function CustomersHeader({
   title,
   description,
-  actionLabel,
 }: CustomersHeaderProps) {
   return (
     <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
@@ -15,15 +12,6 @@ export function CustomersHeader({
         </h1>
         <p className="mt-1 text-sm font-medium text-gray">{description}</p>
       </div>
-
-      <Button
-        type="button"
-        variant="ghost"
-        className="inline-flex h-10 items-center gap-2 self-start rounded-full bg-primary px-5 text-sm font-semibold text-white transition-colors hover:bg-primary/90"
-      >
-        <Megaphone className="size-4" strokeWidth={2.1} />
-        {actionLabel}
-      </Button>
     </div>
   );
 }

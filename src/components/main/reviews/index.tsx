@@ -20,6 +20,7 @@ import { ReviewsFilterTabs } from "./reviews-filter-tabs";
 import { ReviewsHeader } from "./reviews-header";
 import { ReviewsModerationPanel } from "./reviews-moderation-panel";
 import { ReviewsDeleteModal } from "./reviews-delete-modal";
+import ViewReviewModal from "./view-review-modal";
 import { ReviewsShell } from "./reviews-shell";
 import { ReviewsSummaryGrid } from "./reviews-summary-grid";
 import { ReviewsTable } from "./reviews-table";
@@ -33,6 +34,8 @@ function Reviews() {
   const [searchValue, setSearchValue] = useState("");
   const [sortValue, setSortValue] = useState<ReviewListApiSortOption>("newest");
   const [reviewToDelete, setReviewToDelete] = useState<ReviewRow | null>(null);
+  const [reviewSlugToView, setReviewSlugToView] = useState<string | null>(null);
+  const [isViewReviewOpen, setIsViewReviewOpen] = useState(false);
   const [isDeletingReview, setIsDeletingReview] = useState(false);
   const statusFilter: ReviewListApiStatus | undefined =
     activeFilter === "all"
@@ -46,7 +49,7 @@ function Reviews() {
     () => data?.pages?.flatMap((page) => page?.data?.data ?? []) ?? [],
     [data],
   );
-  console.log("API Rows:", apiRows);
+
   const mappedRows = useMemo(
     () =>
       apiRows.map((row) => {
@@ -60,7 +63,7 @@ function Reviews() {
 
         return {
           id: String(row.id),
-          slug: row.slug ?? String(row.id),
+          slug: row.slug,
           name: row.customer_name,
           email: row.customer_email,
           rating: Number.isFinite(parsedRating) ? parsedRating : 0,
@@ -97,6 +100,16 @@ function Reviews() {
 
   const handleDeleteRequest = useCallback((row: ReviewRow) => {
     setReviewToDelete(row);
+  }, []);
+
+  const handleViewDetails = useCallback((row: ReviewRow) => {
+    setReviewSlugToView(row.slug);
+    setIsViewReviewOpen(true);
+  }, []);
+
+  const closeViewModal = useCallback(() => {
+    setIsViewReviewOpen(false);
+    setReviewSlugToView(null);
   }, []);
 
   const closeDeleteModal = useCallback(() => {
@@ -158,6 +171,7 @@ function Reviews() {
             rows={visibleRows}
             isLoading={isLoading}
             onDeleteRequest={handleDeleteRequest}
+            onViewDetails={handleViewDetails}
           />
         </div>
       </ReviewsShell>
@@ -167,6 +181,12 @@ function Reviews() {
         isLoading={isDeletingReview}
         onClose={closeDeleteModal}
         onConfirm={confirmDeleteReview}
+      />
+
+      <ViewReviewModal
+        open={isViewReviewOpen}
+        onClose={closeViewModal}
+        reviewSlug={reviewSlugToView ?? ""}
       />
     </>
   );

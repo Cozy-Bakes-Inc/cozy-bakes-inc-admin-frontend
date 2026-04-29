@@ -2,7 +2,9 @@
 
 import Image from "next/image";
 import { useEffect, useMemo, useRef } from "react";
-import { ImageUp } from "lucide-react";
+import { ImageUp, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import InputErrorMessage from "@/components/ui/input-error-message";
 import { cn } from "@/lib";
 
 interface AddMarketLocationUploadProps {
@@ -37,72 +39,73 @@ export function AddMarketLocationUpload({
   }
 
   return (
-    <div className="flex flex-col gap-2">
-      <label className="text-[16px] font-medium leading-6 text-dark">
+    <div>
+      <label className="mb-2 block text-[16px] font-medium leading-6 text-dark">
         Cover Image
       </label>
 
-      <button
-        type="button"
-        disabled={disabled}
-        onClick={() => inputRef.current?.click()}
-        onDragOver={(event) => {
-          event.preventDefault();
-        }}
-        onDrop={(event) => {
-          if (disabled) {
-            return;
-          }
-          event.preventDefault();
-          const nextFile = event.dataTransfer.files?.[0] ?? null;
-          handleFileSelection(nextFile);
-        }}
-        className={cn(
-          "flex min-h-[150px] w-full flex-col items-center justify-center rounded-[24px] border border-dashed border-primary bg-[rgba(250,248,243,0.7)] px-6 py-8 text-center transition-colors hover:bg-[rgba(250,248,243,0.9)]",
-          file ? "border-primary/70" : "border-primary/85",
-          disabled ? "cursor-not-allowed opacity-60" : "",
-          error ? "border-destructive bg-destructive/5" : "",
-        )}
-      >
-        {previewUrl ? (
-          <div className="flex w-full flex-col items-center gap-4">
-            <div className="relative h-52 w-full overflow-hidden rounded-[18px] border border-primary/15 bg-white shadow-[0_12px_30px_rgba(61,44,30,0.08)]">
-              <Image
-                src={previewUrl}
-                alt={file?.name ?? "Uploaded cover preview"}
-                fill
-                className="object-cover"
-              />
-            </div>
+      <div className="space-y-3">
+        <Button
+          type="button"
+          variant="ghost"
+          disabled={disabled}
+          onClick={() => inputRef.current?.click()}
+          onDragOver={(event) => {
+            event.preventDefault();
+          }}
+          onDrop={(event) => {
+            if (disabled) {
+              return;
+            }
+            event.preventDefault();
+            const nextFile = event.dataTransfer.files?.[0] ?? null;
+            handleFileSelection(nextFile);
+          }}
+          className={cn(
+            "flex min-h-[150px] w-full flex-col items-center justify-center rounded-[24px] border border-dashed border-primary bg-[rgba(250,248,243,0.7)] px-6 py-8 text-center transition-colors hover:bg-[rgba(250,248,243,0.9)]",
+            file ? "border-primary/70" : "border-primary/85",
+            disabled ? "cursor-not-allowed opacity-60" : "",
+            error ? "border-destructive bg-destructive/5" : "",
+          )}
+        >
+          <span className="inline-flex items-center justify-center text-primary">
+            <ImageUp className="size-8" strokeWidth={2.2} />
+          </span>
 
-            <div className="space-y-1">
-              <p className="text-sm leading-5 tracking-[-0.01em] text-muted-text">
-                Preview selected image
-              </p>
-              <p className="rounded-full bg-white px-3 py-1 text-xs font-semibold text-primary shadow-[0_1px_2px_rgba(16,24,40,0.05)]">
-                {file?.name}
-              </p>
-            </div>
-          </div>
-        ) : (
-          <>
-            <span className="inline-flex items-center justify-center text-primary">
-              <ImageUp className="size-8" strokeWidth={2.2} />
+          <p className="mt-3 text-sm leading-5 tracking-[-0.01em] text-muted-text">
+            <span className="font-semibold text-muted-text">
+              Click to upload
             </span>
+            {" or drag and drop"}
+          </p>
 
-            <p className="mt-3 text-sm leading-5 tracking-[-0.01em] text-muted-text">
-              <span className="font-semibold text-muted-text">
-                Click to upload
-              </span>
-              {" or drag and drop"}
-            </p>
+          <p className="mt-1 text-xs leading-4 text-[#98A2B3]">
+            PNG, JPG (MAX. 5MB)
+          </p>
+        </Button>
 
-            <p className="mt-1 text-xs leading-4 text-[#98A2B3]">
-              PNG, JPG (MAX. 5MB)
-            </p>
-          </>
-        )}
-      </button>
+        {previewUrl ? (
+          <div className="relative size-[150px] overflow-visible rounded-[24px] border border-dashed border-primary bg-[#fbf8eb14]">
+            <Image
+              src={previewUrl}
+              alt={file?.name ?? "Uploaded cover preview"}
+              width={150}
+              height={150}
+              className="size-full rounded-[24px] object-cover"
+            />
+            <Button
+              type="button"
+              variant="ghost"
+              disabled={disabled}
+              onClick={() => handleFileSelection(null)}
+              className="absolute -right-2 -top-2 flex size-6 items-center justify-center rounded-full border border-danger bg-danger-soft text-danger shadow-[0_1px_2px_rgba(16,24,40,0.05)] disabled:cursor-not-allowed disabled:opacity-60"
+              aria-label="Remove selected cover image"
+            >
+              <X className="size-[14px]" strokeWidth={2.2} />
+            </Button>
+          </div>
+        ) : null}
+      </div>
 
       <input
         ref={inputRef}
@@ -115,9 +118,7 @@ export function AddMarketLocationUpload({
         }}
       />
 
-      {error ? (
-        <p className="text-sm font-medium text-destructive">{error}</p>
-      ) : null}
+      <InputErrorMessage msg={error} />
     </div>
   );
 }

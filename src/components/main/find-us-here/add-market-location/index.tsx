@@ -54,7 +54,7 @@ export default function AddMarketLocation({
       onClose={onClose}
       title="Add Market Location"
       contentClassName="md:max-w-[880px] gap-0 overflow-hidden rounded-[32px] border border-border/10 bg-background p-0 shadow-[0_24px_80px_rgba(61,44,30,0.18)] [&_[data-slot=dialog-header]]:border-b [&_[data-slot=dialog-header]]:border-black/6 [&_[data-slot=dialog-header]]:px-6 [&_[data-slot=dialog-header]]:pb-6 [&_[data-slot=dialog-header]]:pt-6 md:[&_[data-slot=dialog-header]]:px-8"
-      titleClassName="text-lg md:ps-14 md:text-[32px] font-bold tracking-[-0.04em] text-dark"
+      titleClassName="text-lg md:text-[32px] font-bold tracking-[-0.04em] text-dark"
     >
       <AddMarketLocationForm
         key={formResetKey}

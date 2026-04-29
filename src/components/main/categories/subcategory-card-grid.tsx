@@ -8,14 +8,12 @@ export function SubCategoryCardGrid({ items }: SubCategoryCardGridProps) {
   return (
     <div className="grid gap-4 md:grid-cols-2 2xl:grid-cols-3">
       {items.map((item) => {
-        const categoryHref = `/categories/${item.slug}`;
-
         return (
           <article
             key={item.id}
             className="rounded-[20px] border border-border/10 bg-white p-4 shadow-[0_18px_35px_rgba(61,44,30,0.05)]"
           >
-            <Link href={categoryHref} className="block">
+            <Link href="/categories" className="block">
               <div className="mb-4 flex items-start gap-4">
                 <Image
                   src={item.coverImage}
@@ -56,7 +54,7 @@ export function SubCategoryCardGrid({ items }: SubCategoryCardGridProps) {
                 label={`View ${item.name}`}
                 tone="primary"
                 icon={<Eye className="size-4" strokeWidth={2.1} />}
-                href={categoryHref}
+                href="/categories"
               />
             </div>
           </article>

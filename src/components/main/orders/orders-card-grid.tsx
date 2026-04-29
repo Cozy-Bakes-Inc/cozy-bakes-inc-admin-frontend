@@ -4,7 +4,6 @@ import {
   Clock3,
   Eye,
   Package,
-  Trash2,
   X,
 } from "lucide-react";
 import type { OrdersCardGridProps } from "@/interfaces/main/orders";
@@ -170,17 +169,6 @@ export function OrdersCardGrid({
               <Eye className="size-4" />
               <span>View Details</span>
             </Button>
-            {!isCompleted ? (
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                aria-label={`Delete ${order.id}`}
-                className="inline-flex size-11 items-center justify-center rounded-[8px] bg-[#FEF3F2] text-[#F04438]"
-              >
-                <Trash2 className="size-5" />
-              </Button>
-            ) : null}
           </div>
         </article>
           );

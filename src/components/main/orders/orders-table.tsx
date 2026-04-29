@@ -1,4 +1,4 @@
-import { Eye, Trash2 } from "lucide-react";
+import { Eye } from "lucide-react";
 import type { OrdersTableProps } from "@/interfaces/main/orders";
 import { Button } from "@/components/ui/button";
 import { OrdersStatusSelect } from "./orders-status-select";
@@ -74,17 +74,6 @@ export function OrdersTable({
                 </td>
                 <td className="border-b border-border/15 px-5 py-4">
                   <div className="flex items-center justify-center gap-2">
-                    {!isCompleted ? (
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon"
-                        aria-label={`Delete ${order.id}`}
-                        className="inline-flex size-11 items-center justify-center rounded-[10px] bg-[#FEF3F2] text-[#F04438] transition-transform hover:-translate-y-0.5"
-                      >
-                        <Trash2 className="size-5" />
-                      </Button>
-                    ) : null}
                     <Button
                       type="button"
                       variant="ghost"

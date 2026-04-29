@@ -3,6 +3,7 @@ import {
   reviewSettingsAPI,
   reviewStatsAPI,
   reviewStatusStatsAPI,
+  singleReviewAPI,
 } from "@/services/queries";
 import { useCustomInfiniteQuery, useCustomQuery } from "..";
 import { ReviewListApiSortOption, ReviewListApiStatus } from "@/types";
@@ -43,4 +44,10 @@ export function useReviewList(
       },
     },
   );
+}
+
+export function useSingleReview(slug: string) {
+  return useCustomQuery(["singleReview", slug], () => singleReviewAPI(slug), {
+    enabled: Boolean(slug),
+  });
 }

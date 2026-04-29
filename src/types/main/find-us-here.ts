@@ -1,5 +1,8 @@
 import type { ComponentType } from "react";
-import type { CreateMarketSchemaValues } from "@/schemas";
+import type {
+  CreateMarketSchemaValues,
+  EditMarketSchemaValues,
+} from "@/schemas";
 
 export type FindUsHereSummaryMetricIcon =
   | "store"
@@ -8,15 +11,27 @@ export type FindUsHereSummaryMetricIcon =
   | "trend";
 
 export type AddMarketLocationFormValues = CreateMarketSchemaValues;
+export type EditMarketLocationFormValues = EditMarketSchemaValues;
 
 export interface AddMarketLocationProps {
   open: boolean;
   onClose: () => void;
-  onSubmit?: (
-    values: AddMarketLocationFormValues,
-  ) => void | Promise<void>;
+  onSubmit?: (values: AddMarketLocationFormValues) => void | Promise<void>;
   submitLabel?: string;
   initialValues?: Partial<AddMarketLocationFormValues>;
+}
+
+export interface ViewMarketLocationProps {
+  open: boolean;
+  onClose: () => void;
+  marketSlug: string;
+}
+
+export interface EditMarketLocationProps {
+  open: boolean;
+  onClose: () => void;
+  marketSlug?: string;
+  onSubmit?: (values: EditMarketLocationFormValues) => void | Promise<void>;
 }
 
 export interface AddMarketLocationFieldProps {

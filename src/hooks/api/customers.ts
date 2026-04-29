@@ -44,10 +44,10 @@ export function useCustomersList(
   );
 }
 
-export function useSingleCustomer(slug: string, enabled = true) {
+export function useSingleCustomer(slug: string) {
   return useCustomQuery(
     ["singleCustomer", slug],
     () => singleCustomerAPI(slug),
-    { enabled: enabled && Boolean(slug) },
+    { enabled: Boolean(slug) },
   );
 }

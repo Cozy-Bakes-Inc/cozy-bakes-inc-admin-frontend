@@ -13,7 +13,6 @@ export interface CustomersWorkspaceConfig {
   ariaLabel: string;
   title: string;
   description: string;
-  primaryActionLabel: string;
 }
 
 export interface CustomersShellProps {
@@ -64,7 +63,6 @@ export interface CustomerRecord {
 export interface CustomersHeaderProps {
   title: string;
   description: string;
-  actionLabel: string;
 }
 
 export interface CustomersSummaryGridProps {

@@ -13,12 +13,6 @@ export interface ContactUsField {
   multiline?: boolean;
 }
 
-export interface ContactUsImageField {
-  label: string;
-  src: string;
-  alt: string;
-}
-
 export interface ContactUsSection {
   id: string;
   title: string;
@@ -26,7 +20,6 @@ export interface ContactUsSection {
   actionLabel: string;
   icon: ContactUsSectionIcon;
   fields: ContactUsField[];
-  imageField?: ContactUsImageField;
 }
 
 export interface ContactUsHeaderProps {
@@ -51,10 +44,6 @@ export interface ContactUsFieldCardProps {
 
 export interface ContactUsFieldGridProps {
   fields: ContactUsField[];
-}
-
-export interface ContactUsImageCardProps {
-  imageField: ContactUsImageField;
 }
 
 export interface ContactUsActionButtonProps {

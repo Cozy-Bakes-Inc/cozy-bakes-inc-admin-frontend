@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { format, parse, isValid } from "date-fns";
 import { CalendarDays } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
+import InputErrorMessage from "@/components/ui/input-error-message";
 import { cn } from "@/lib";
 
 interface AddMarketLocationDatePickerProps {
@@ -56,8 +57,8 @@ export function AddMarketLocationDatePicker({
   }, []);
 
   return (
-    <div ref={containerRef} className="relative flex flex-col gap-2">
-      <label className="text-[16px] font-medium leading-6 text-dark">
+    <div ref={containerRef} className="relative">
+      <label className="mb-2 block text-[16px] font-medium leading-6 text-dark">
         {label}
       </label>
 
@@ -98,9 +99,7 @@ export function AddMarketLocationDatePicker({
         </div>
       ) : null}
 
-      {error ? (
-        <p className="text-sm font-medium text-destructive">{error}</p>
-      ) : null}
+      <InputErrorMessage msg={error} />
     </div>
   );
 }

@@ -1,6 +1,5 @@
 import type { ContactUsSectionCardProps } from "@/interfaces/main/contact-us";
 import { ContactUsFieldGrid } from "./contact-us-field-grid";
-import { ContactUsImageCard } from "./contact-us-image-card";
 import { ContactUsSectionHeader } from "./contact-us-section-header";
 
 export function ContactUsSectionCard({ section }: ContactUsSectionCardProps) {
@@ -16,10 +15,6 @@ export function ContactUsSectionCard({ section }: ContactUsSectionCardProps) {
 
         <div className="space-y-4">
           <ContactUsFieldGrid fields={section.fields} />
-
-          {section.imageField ? (
-            <ContactUsImageCard imageField={section.imageField} />
-          ) : null}
         </div>
       </div>
     </article>

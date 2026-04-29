@@ -1,4 +1,4 @@
-import { PencilLine, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import type { FindUsHereHeaderProps } from "@/interfaces/main/find-us-here";
 import { Button } from "@/components/ui/button";
 
@@ -6,9 +6,7 @@ export function FindUsHereHeader({
   title,
   description,
   primaryActionLabel,
-  secondaryActionLabel,
   onPrimaryActionClick,
-  onSecondaryActionClick,
 }: FindUsHereHeaderProps) {
   return (
     <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
@@ -30,15 +28,6 @@ export function FindUsHereHeader({
           {primaryActionLabel}
         </Button>
 
-        <Button
-          type="button"
-          variant="ghost"
-          onClick={onSecondaryActionClick}
-          className="inline-flex h-10 items-center gap-2 rounded-full border border-primary/15 bg-[#fbf8eb80] px-5 text-sm font-semibold text-primary transition-colors hover:bg-[#fbf8eb]"
-        >
-          <PencilLine className="size-4" strokeWidth={2.2} />
-          {secondaryActionLabel}
-        </Button>
       </div>
     </div>
   );

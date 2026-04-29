@@ -86,7 +86,6 @@ function FindUsHere() {
         title={findUsHereWorkspace.title}
         description={findUsHereWorkspace.description}
         primaryActionLabel={findUsHereWorkspace.primaryActionLabel}
-        secondaryActionLabel={findUsHereWorkspace.secondaryActionLabel}
         onPrimaryActionClick={() => setIsAddMarketLocationOpen(true)}
       />
 

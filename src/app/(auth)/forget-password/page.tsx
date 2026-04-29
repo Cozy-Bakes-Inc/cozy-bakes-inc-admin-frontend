@@ -1,5 +1,11 @@
-function page() {
-  return <div>page</div>;
+import ForgotPassword from "@/components/auth/forget-password";
+
+function ForgotPasswordPage() {
+  return (
+    <>
+      <ForgotPassword />
+    </>
+  );
 }
 
-export default page;
+export default ForgotPasswordPage;

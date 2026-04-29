@@ -5,31 +5,20 @@ import {
   bakeryCategoryDetails,
   bakerySubCategories,
   categoryPagination,
-  getBakerySubCategoryBySlug,
 } from "@/data/main/categories";
 import type { CategoryViewMode } from "@/types/main/categories";
 import { CategoriesPagination } from "./categories-pagination";
+import { CategoriesEmptyState } from "./categories-empty-state";
 import { CategoryHeader } from "./category-header";
 import { CategorySearchToolbar } from "./category-search-toolbar";
 import { CategoryTable } from "./category-table";
 import { SubCategoryCardGrid } from "./subcategory-card-grid";
 
-type CategoriesProps = {
-  activeSlug?: string;
-};
-
-function Categories({ activeSlug }: CategoriesProps) {
+function Categories() {
   const [searchValue, setSearchValue] = useState("");
   const [viewMode, setViewMode] = useState<CategoryViewMode>("table");
-  const selectedCategory = activeSlug
-    ? getBakerySubCategoryBySlug(activeSlug)
-    : undefined;
 
   const visibleItems = useMemo(() => {
-    if (selectedCategory) {
-      return [selectedCategory];
-    }
-
     const normalizedSearch = searchValue.trim().toLowerCase();
 
     if (!normalizedSearch) {
@@ -43,32 +32,33 @@ function Categories({ activeSlug }: CategoriesProps) {
         item.description.toLowerCase().includes(normalizedSearch)
       );
     });
-  }, [searchValue, selectedCategory]);
-
-  const title = selectedCategory?.name ?? bakeryCategoryDetails.title;
-  const description =
-    selectedCategory?.description ?? bakeryCategoryDetails.description;
+  }, [searchValue]);
+  const hasSearchValue = searchValue.trim().length > 0;
+  const hasVisibleItems = visibleItems.length > 0;
 
   return (
     <section className="space-y-4 md:space-y-6">
-      <CategoryHeader title={title} description={description} />
+      <CategoryHeader
+        title={bakeryCategoryDetails.title}
+        description={bakeryCategoryDetails.description}
+      />
 
-      {!selectedCategory ? (
-        <CategorySearchToolbar
-          searchValue={searchValue}
-          onSearchChange={setSearchValue}
-          viewMode={viewMode}
-          onViewModeChange={setViewMode}
-        />
-      ) : null}
+      <CategorySearchToolbar
+        searchValue={searchValue}
+        onSearchChange={setSearchValue}
+        viewMode={viewMode}
+        onViewModeChange={setViewMode}
+      />
 
-      {viewMode === "table" ? (
+      {!hasVisibleItems && hasSearchValue ? (
+        <CategoriesEmptyState searchValue={searchValue} />
+      ) : viewMode === "table" ? (
         <CategoryTable items={visibleItems} />
       ) : (
         <SubCategoryCardGrid items={visibleItems} />
       )}
 
-      {!selectedCategory ? (
+      {hasVisibleItems ? (
         <div className="flex justify-center overflow-x-auto pt-2">
           <CategoriesPagination currentPage={1} pages={categoryPagination} />
         </div>

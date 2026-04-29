@@ -93,6 +93,7 @@ export interface ReviewsTableProps {
   rows: ReviewRow[];
   isLoading?: boolean;
   onDeleteRequest: (row: ReviewRow) => void;
+  onViewDetails: (row: ReviewRow) => void;
 }
 
 export interface ReviewsStatusBadgeProps {
@@ -157,7 +158,7 @@ export interface ReviewStatusStatsResponse {
 
 export interface ReviewListItem {
   id: number;
-  slug?: string;
+  slug: string;
   customer_name: string;
   customer_email: string;
   rating: number;
@@ -198,4 +199,24 @@ export interface ReviewListQueryParams {
   sort?: ReviewListApiSortOption;
   status?: ReviewListApiStatus;
   page: number;
+}
+
+export interface SingleReview {
+  id: number;
+  customer_name: string;
+  customer_email: string;
+  rating: number;
+  review_text: string;
+  status: string;
+  date: string | null;
+  created_at: string;
+}
+
+export interface SingleReviewData {
+  review: SingleReview;
+}
+
+export interface SingleReviewResponse {
+  status: string;
+  data: SingleReviewData;
 }

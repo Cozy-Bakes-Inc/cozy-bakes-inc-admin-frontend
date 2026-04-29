@@ -21,7 +21,7 @@ function parseTimeValue(value: string) {
   return hour * 60 + minute + meridiemOffset;
 }
 
-export const createMarketSchema = z.object({
+const marketDetailsSchema = z.object({
   marketName: z.string().trim().min(1, "Market name is required"),
   tagLabel: z.string().trim().min(1, "Tag/Label is required"),
   date: z
@@ -39,20 +39,12 @@ export const createMarketSchema = z.object({
     .regex(timePattern, "End time is required"),
   locationAddress: z.string().trim().min(1, "Location address is required"),
   description: z.string().trim().min(1, "Description is required"),
-  coverImage: z
-    .custom<File | null>((value) => value === null || isFile(value), {
-      message: "Cover image is required",
-    })
-    .refine((file) => file !== null, "Cover image is required")
-    .refine(
-      (file) => file === null || acceptedImageTypes.includes(file.type),
-      "Cover image must be PNG or JPG",
-    )
-    .refine(
-      (file) => file === null || file.size <= maxImageSizeInBytes,
-      "Cover image must be 2MB or less",
-    ),
-}).superRefine((values, context) => {
+});
+
+function validateMarketTimeRange(
+  values: z.infer<typeof marketDetailsSchema>,
+  context: z.RefinementCtx,
+) {
   const startTime = parseTimeValue(values.startTime);
   const endTime = parseTimeValue(values.endTime);
 
@@ -67,6 +59,41 @@ export const createMarketSchema = z.object({
       path: ["endTime"],
     });
   }
-});
+}
+
+const optionalMarketCoverImageSchema = z
+  .custom<File | null>((value) => value === null || isFile(value), {
+    message: "Cover image must be a valid file",
+  })
+  .refine(
+    (file) => file === null || acceptedImageTypes.includes(file.type),
+    "Cover image must be PNG or JPG",
+  )
+  .refine(
+    (file) => file === null || file.size <= maxImageSizeInBytes,
+    "Cover image must be 2MB or less",
+  );
+
+export const createMarketSchema = marketDetailsSchema.extend({
+  coverImage: z
+    .custom<File | null>((value) => value === null || isFile(value), {
+      message: "Cover image is required",
+    })
+    .refine((file) => file !== null, "Cover image is required")
+    .refine(
+      (file) => file === null || acceptedImageTypes.includes(file.type),
+      "Cover image must be PNG or JPG",
+    )
+    .refine(
+      (file) => file === null || file.size <= maxImageSizeInBytes,
+      "Cover image must be 2MB or less",
+    ),
+}).superRefine(validateMarketTimeRange);
+
+export const editMarketSchema = marketDetailsSchema.extend({
+  coverImage: optionalMarketCoverImageSchema,
+  existingImages: z.array(z.string()),
+}).superRefine(validateMarketTimeRange);
 
 export type CreateMarketSchemaValues = z.input<typeof createMarketSchema>;
+export type EditMarketSchemaValues = z.input<typeof editMarketSchema>;

@@ -12,6 +12,7 @@ export function ReviewsTable({
   rows,
   isLoading,
   onDeleteRequest,
+  onViewDetails,
 }: ReviewsTableProps) {
   const [openActionId, setOpenActionId] = useState<string | null>(null);
   const actionMenuRef = useRef<HTMLDivElement | null>(null);
@@ -75,6 +76,11 @@ export function ReviewsTable({
         </td>
       </tr>
     ));
+
+  const handleViewClick = (row: (typeof rows)[number]) => {
+    setOpenActionId(null);
+    onViewDetails(row);
+  };
 
   return (
     <div className="overflow-hidden rounded-2xl border border-border/25 bg-background shadow-[0_2px_8px_rgba(0,0,0,0.04)]">
@@ -178,6 +184,7 @@ export function ReviewsTable({
                             size="icon"
                             className="inline-flex size-10 items-center justify-center rounded-[10px] bg-primary text-white"
                             aria-label={`View ${row.name}`}
+                            onClick={() => handleViewClick(row)}
                           >
                             <Eye className="size-4" strokeWidth={2.2} />
                           </Button>

@@ -1,105 +1,27 @@
 "use client";
 
-import { Eye, EyeOff, LockKeyhole, Mail } from "lucide-react";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { useRouter } from "next/navigation";
-import { loginSchema, type LoginSchemaValues } from "@/schemas";
-import { loginAPI } from "@/services/mutations/auth";
-import { Button } from "@/components/ui/button";
-import { LoginHeader } from "./login-header";
-import { LoginInputField } from "./login-input-field";
-import { LoginOptions } from "./login-options";
-import { LoginSubmitButton } from "./login-submit-button";
-import toast from "react-hot-toast";
-import { setToken } from "@/lib";
+import SystemLoader from "@/components/ui/system-loader";
+import { Suspense } from "react";
+import { useSearchParams } from "next/navigation";
+import { LoginForm } from "./login-form";
+import { LoginIntro } from "./components/login-intro";
 
-export default function Login() {
-  const [showPassword, setShowPassword] = useState(false);
-  const router = useRouter();
-  const {
-    register,
-    handleSubmit,
-    formState: { errors, isSubmitting },
-  } = useForm<LoginSchemaValues>({
-    defaultValues: {
-      email: "",
-      password: "",
-    },
-  });
-
-  const onSubmit = async (data: LoginSchemaValues) => {
-    const result = await loginAPI(data);
-    if (result?.ok) {
-      toast.success(result?.message);
-      const token = result.data?.data?.token;
-      if (token) await setToken(token);
-      router.replace("/");
-      return;
-    }
-    toast.error(result?.message);
-  };
+function LoginContent() {
+  const searchParams = useSearchParams();
+  const returnTo = searchParams.get("returnTo")?.trim() || "/";
 
   return (
-    <div className="flex w-full flex-col items-start justify-center gap-8 py-2">
-      <LoginHeader />
+    <section className="content-stretch flex flex-col gap-8 items-start justify-center py-2">
+      <LoginIntro />
+      <LoginForm returnTo={returnTo} />
+    </section>
+  );
+}
 
-      <form
-        className="flex w-full flex-col items-center gap-5"
-        onSubmit={handleSubmit(onSubmit)}
-      >
-        <div className="flex w-full flex-col gap-4">
-          <LoginInputField
-            id="email"
-            type="email"
-            label="Email"
-            placeholder="Email"
-            icon={Mail}
-            error={errors.email?.message}
-            {...register("email", {
-              validate: (value) => {
-                const result = loginSchema.shape.email.safeParse(value);
-                return result.success || result.error.issues[0]?.message;
-              },
-            })}
-          />
-
-          <LoginInputField
-            id="password"
-            type={showPassword ? "text" : "password"}
-            label="Password"
-            placeholder="Password"
-            icon={LockKeyhole}
-            error={errors.password?.message}
-            {...register("password", {
-              validate: (value) => {
-                const result = loginSchema.shape.password.safeParse(value);
-                return result.success || result.error.issues[0]?.message;
-              },
-            })}
-            endAdornment={
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                onClick={() => setShowPassword((value) => !value)}
-                className="size-5 cursor-pointer rounded-none p-0 text-primary outline-none hover:bg-transparent hover:opacity-80"
-                aria-label={showPassword ? "Hide password" : "Show password"}
-              >
-                {showPassword ? (
-                  <EyeOff className="size-5" strokeWidth={1.8} />
-                ) : (
-                  <Eye className="size-5" strokeWidth={1.8} />
-                )}
-              </Button>
-            }
-          />
-        </div>
-
-        <LoginOptions />
-
-        <LoginSubmitButton isPending={isSubmitting} />
-      </form>
-    </div>
+export default function Login() {
+  return (
+    <Suspense fallback={<SystemLoader />}>
+      <LoginContent />
+    </Suspense>
   );
 }

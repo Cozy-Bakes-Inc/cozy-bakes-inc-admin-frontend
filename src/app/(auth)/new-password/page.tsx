@@ -1,5 +1,7 @@
-function page() {
-  return <div>page</div>;
+import NewPassword from "@/components/auth/new-password";
+
+function NewPasswordPage() {
+  return <NewPassword />;
 }
 
-export default page;
+export default NewPasswordPage;

@@ -13,7 +13,6 @@ export const customersWorkspace: CustomersWorkspaceConfig = {
   title: "Customers Overview",
   description:
     "Analyze, segment, and activate your customer base with smart insights",
-  primaryActionLabel: "Create Campaign",
 } as const;
 
 export const customerOverviewMetrics: CustomerOverviewMetric[] = [

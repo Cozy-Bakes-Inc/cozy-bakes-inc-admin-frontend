@@ -20,7 +20,7 @@ export default function CustomerDetails({
   onClose,
   customer,
 }: CustomerDetailsProps) {
-  const { data, isLoading } = useSingleCustomer(slug ?? "", open && !customer);
+  const { data, isLoading } = useSingleCustomer(slug ?? "");
   const customerDetails = customer ?? data?.data;
   console.log("CustomerDetails data:", data);
 

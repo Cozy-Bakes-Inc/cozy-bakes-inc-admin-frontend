@@ -9,7 +9,6 @@ export const findUsHereWorkspace: FindUsHereWorkspaceConfig = {
   description:
     "Manage your farmer market locations and public-facing content",
   primaryActionLabel: "Add Market Location",
-  secondaryActionLabel: "Edit Hero Section",
 };
 
 export const findUsHereSummaryMetrics: FindUsHereSummaryMetric[] = [

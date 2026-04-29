@@ -1,5 +1,3 @@
-import { DEFAULT_CATEGORY_SLUG } from "./main/categories";
-
 export type SidebarIconName =
   | "dashboard"
   | "orders"
@@ -38,8 +36,6 @@ export const sidebarProfile = {
   role: "Administrator",
 } as const;
 
-const bakeryCategoryHref = `/categories/${DEFAULT_CATEGORY_SLUG}`;
-
 export const sidebarItems: SidebarItem[] = [
   {
     id: "dashboard",
@@ -62,27 +58,7 @@ export const sidebarItems: SidebarItem[] = [
     id: "categories",
     label: "Categories",
     icon: "categories",
-    href: bakeryCategoryHref,
-    hasChevron: true,
-    children: [
-      {
-        label: "Bakery Product",
-        href: bakeryCategoryHref,
-      },
-      {
-        label: "Gelatines Free Product",
-        href: bakeryCategoryHref,
-      },
-      {
-        label: "preserves Product",
-        href: bakeryCategoryHref,
-      },
-      {
-        label: "Vanilla Product",
-        href: bakeryCategoryHref,
-      },
-    ],
-    ctaLabel: "Add New Category",
+    href: "/categories",
   },
   {
     id: "customers",

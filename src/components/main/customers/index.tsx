@@ -242,7 +242,6 @@ function Customers() {
       <CustomersHeader
         title={customersWorkspace.title}
         description={customersWorkspace.description}
-        actionLabel={customersWorkspace.primaryActionLabel}
       />
 
       <CustomersSummaryGrid metrics={customerOverviewMetrics} />

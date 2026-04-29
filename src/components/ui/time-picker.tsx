@@ -127,10 +127,10 @@ export function TimePicker({
   }
 
   return (
-    <div ref={containerRef} className="relative flex flex-col gap-2">
+    <div ref={containerRef} className="relative">
       <label
         htmlFor={id}
-        className="text-sm font-medium leading-5 text-dark md:text-[16px] md:leading-6"
+        className="mb-2 block text-sm font-medium leading-5 text-dark md:text-[16px] md:leading-6"
       >
         {label}
       </label>

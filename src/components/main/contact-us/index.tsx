@@ -15,43 +15,11 @@ function ContactUs() {
   const { data, isLoading } = useContactDetails();
   const contactDetails = data?.data;
   const resolvedSections: ContactUsSection[] = useMemo(() => {
-    const heroSection = contactDetails?.hero_section;
     const contactSection = contactDetails?.contact_section;
 
-    return contactUsSections.map((section) => {
-      if (section.id === "hero-section") {
-        const hasHeroSectionData = Boolean(
-          heroSection?.hero_title ||
-            heroSection?.hero_subtitle ||
-            heroSection?.cover_image,
-        );
-
-        return {
-          ...section,
-          actionLabel: hasHeroSectionData
-            ? "Edit Hero Section"
-            : "Add Hero Section",
-          fields: [
-            {
-              id: "hero-title",
-              label: "Hero Section Title",
-              value: heroSection?.hero_title ?? "",
-            },
-            {
-              id: "hero-subtitle",
-              label: "Hero Section Sub Title",
-              value: heroSection?.hero_subtitle ?? "",
-              multiline: true,
-            },
-          ],
-          imageField: {
-            label: "Cover Image",
-            src: heroSection?.cover_image ?? "",
-            alt: heroSection?.hero_title ?? "Hero cover image",
-          },
-        };
-      }
-
+    return contactUsSections
+      .filter((section) => section.id !== "hero-section")
+      .map((section) => {
       const hasContactSectionData = Boolean(
         contactSection?.contact_email ||
           contactSection?.phone_number ||
@@ -81,11 +49,6 @@ function ContactUs() {
             value: contactSection?.location ?? "",
           },
         ],
-        imageField: {
-          label: "Contact Section Image",
-          src: contactSection?.image ?? "",
-          alt: "Contact section image",
-        },
       };
     });
   }, [contactDetails]);

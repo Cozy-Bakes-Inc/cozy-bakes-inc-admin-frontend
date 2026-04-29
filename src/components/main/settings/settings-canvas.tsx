@@ -5,15 +5,10 @@ import type {
   AdminSettingsData,
   SettingsCanvasProps,
   SettingsFieldSection,
-  SettingsNotificationSection,
   SettingsSection,
 } from "@/interfaces/main/settings";
 import { useAdminSettings } from "@/hooks/api";
 import { SettingsSectionCard } from "./settings-section-card";
-
-function toToggleState(value: number | string | null | undefined) {
-  return value === 1 || value === "1";
-}
 
 function hasValue(value: string | null | undefined) {
   return Boolean(value && value.trim().length > 0);
@@ -33,7 +28,6 @@ function buildResolvedSections(
   const user = settingsData?.user;
   const profile = user?.profile;
   const shop = settingsData?.shop;
-  const notificationPreferences = settingsData?.notification_preferences;
 
   const storeFields: SettingsFieldSection["fields"] = [
     {
@@ -116,14 +110,6 @@ function buildResolvedSections(
       layout: "half",
       valueTone: "sm",
     },
-    {
-      id: "profile-address",
-      label: "Address",
-      value: profile?.address ?? "",
-      layout: "full",
-      multiline: true,
-      valueTone: "sm",
-    },
   ];
   const hasAccountValues = hasFieldValues(accountFields);
 
@@ -141,45 +127,10 @@ function buildResolvedSections(
     fields: accountFields,
   };
 
-  const notificationsSection: SettingsNotificationSection = {
-    id: "notification-preferences",
-    kind: "notifications",
-    icon: "notification",
-    title: "Notification Preferences",
-    description: "management your notification preferences",
-    preferences: [
-      {
-        id: "new-orders",
-        title: "New Orders",
-        description: "Get notified when a new order is placed",
-        enabled: toToggleState(notificationPreferences?.new_orders),
-      },
-      {
-        id: "low-stock-alerts",
-        title: "Low Stock Alerts",
-        description: "Receive alerts when products are running low",
-        enabled: toToggleState(notificationPreferences?.low_stock_alerts),
-      },
-      {
-        id: "customer-messages",
-        title: "Customer Messages",
-        description: "Notifications for customer inquiries",
-        enabled: toToggleState(notificationPreferences?.customer_messages),
-      },
-      {
-        id: "weekly-reports",
-        title: "Weekly Reports",
-        description: "Get weekly performance summaries",
-        enabled: toToggleState(notificationPreferences?.weekly_reports),
-      },
-    ],
-  };
-
   return [
     storeSection,
     accountSection,
     ...(passwordSection ? [passwordSection] : []),
-    notificationsSection,
   ];
 }
 
@@ -225,7 +176,7 @@ export function SettingsCanvas({ ariaLabel, sections }: SettingsCanvasProps) {
   if (isLoading) {
     return (
       <section aria-label={ariaLabel} className="space-y-4">
-        {Array.from({ length: 4 }).map((_, index) => (
+        {Array.from({ length: 3 }).map((_, index) => (
           <SettingsSectionCardSkeleton key={index} />
         ))}
       </section>
