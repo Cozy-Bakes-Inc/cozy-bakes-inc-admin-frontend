@@ -76,7 +76,6 @@ function EditMarketLocation({
       title="Edit Market Details"
       contentClassName="md:max-w-[880px] gap-0 overflow-hidden rounded-[32px] border border-border/10 bg-background p-0 shadow-[0_24px_80px_rgba(61,44,30,0.18)] [&_[data-slot=dialog-header]]:border-b [&_[data-slot=dialog-header]]:border-black/6 [&_[data-slot=dialog-header]]:px-6 [&_[data-slot=dialog-header]]:pb-6 [&_[data-slot=dialog-header]]:pt-6 md:[&_[data-slot=dialog-header]]:px-8"
       titleClassName="text-[24px] font-bold leading-8 tracking-normal text-dark"
-      closeButtonClassname="right-6 top-6 size-8 border-primary bg-primary text-white md:right-10"
     >
       {isLoading || !marketSlug || !market ? (
         <EditMarketLocationSkeleton />

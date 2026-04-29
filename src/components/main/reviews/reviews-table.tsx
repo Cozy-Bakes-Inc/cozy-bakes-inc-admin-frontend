@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Eye, MoreVertical, Trash2 } from "lucide-react";
+import { Edit3, Eye, MoreVertical, Trash2 } from "lucide-react";
 import type { ReviewsTableProps } from "@/interfaces/main/reviews";
 import { Button } from "@/components/ui/button";
 import { Shimmer } from "@/components/ui/shimmer";
@@ -11,6 +11,7 @@ import { ReviewsStatusBadge } from "./reviews-status-badge";
 export function ReviewsTable({
   rows,
   isLoading,
+  onEditRequest,
   onDeleteRequest,
   onViewDetails,
 }: ReviewsTableProps) {
@@ -82,6 +83,11 @@ export function ReviewsTable({
     onViewDetails(row);
   };
 
+  const handleEditClick = (row: (typeof rows)[number]) => {
+    setOpenActionId(null);
+    onEditRequest(row);
+  };
+
   return (
     <div className="overflow-hidden rounded-2xl border border-border/25 bg-background shadow-[0_2px_8px_rgba(0,0,0,0.04)]">
       <div className="overflow-x-auto">
@@ -143,7 +149,10 @@ export function ReviewsTable({
                       </td>
                       <td className="border-b border-primary/10 px-4 py-4 align-top">
                         <div className="flex items-center gap-2">
-                          <div className="relative" ref={openActionId === row.id ? actionMenuRef : null}>
+                          <div
+                            className="relative"
+                            ref={openActionId === row.id ? actionMenuRef : null}
+                          >
                             <Button
                               type="button"
                               variant="ghost"
@@ -164,6 +173,14 @@ export function ReviewsTable({
 
                             {openActionId === row.id ? (
                               <div className="absolute right-0 z-20 mt-2 min-w-36 overflow-hidden rounded-xl border border-primary/10 bg-white p-1 shadow-[0_18px_40px_rgba(61,44,30,0.14)]">
+                                <button
+                                  type="button"
+                                  className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-dark transition-colors hover:bg-primary/5"
+                                  onClick={() => handleEditClick(row)}
+                                >
+                                  <Edit3 className="size-4" strokeWidth={2} />
+                                  Edit
+                                </button>
                                 <button
                                   type="button"
                                   className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-[#f04438] transition-colors hover:bg-[#fff5f4]"

@@ -20,13 +20,15 @@ import { ReviewsFilterTabs } from "./reviews-filter-tabs";
 import { ReviewsHeader } from "./reviews-header";
 import { ReviewsModerationPanel } from "./reviews-moderation-panel";
 import { ReviewsDeleteModal } from "./reviews-delete-modal";
+import CreateReviewModal from "./create-review";
+import EditReviewModal from "./edit-review";
 import ViewReviewModal from "./view-review-modal";
 import { ReviewsShell } from "./reviews-shell";
 import { ReviewsSummaryGrid } from "./reviews-summary-grid";
 import { ReviewsTable } from "./reviews-table";
 import { ReviewsToolbar } from "./reviews-toolbar";
 import { useReviewList } from "@/hooks/api";
-import { deleteReviewAPI } from "@/services/mutations/orders";
+import { deleteReviewAPI } from "@/services/mutations";
 
 function Reviews() {
   const queryClient = useQueryClient();
@@ -35,7 +37,10 @@ function Reviews() {
   const [sortValue, setSortValue] = useState<ReviewListApiSortOption>("newest");
   const [reviewToDelete, setReviewToDelete] = useState<ReviewRow | null>(null);
   const [reviewSlugToView, setReviewSlugToView] = useState<string | null>(null);
+  const [reviewSlugToEdit, setReviewSlugToEdit] = useState<string | null>(null);
+  const [isCreateReviewOpen, setIsCreateReviewOpen] = useState(false);
   const [isViewReviewOpen, setIsViewReviewOpen] = useState(false);
+  const [isEditReviewOpen, setIsEditReviewOpen] = useState(false);
   const [isDeletingReview, setIsDeletingReview] = useState(false);
   const statusFilter: ReviewListApiStatus | undefined =
     activeFilter === "all"
@@ -102,6 +107,11 @@ function Reviews() {
     setReviewToDelete(row);
   }, []);
 
+  const handleEditRequest = useCallback((row: ReviewRow) => {
+    setReviewSlugToEdit(row.slug);
+    setIsEditReviewOpen(true);
+  }, []);
+
   const handleViewDetails = useCallback((row: ReviewRow) => {
     setReviewSlugToView(row.slug);
     setIsViewReviewOpen(true);
@@ -110,6 +120,15 @@ function Reviews() {
   const closeViewModal = useCallback(() => {
     setIsViewReviewOpen(false);
     setReviewSlugToView(null);
+  }, []);
+
+  const closeCreateModal = useCallback(() => {
+    setIsCreateReviewOpen(false);
+  }, []);
+
+  const closeEditModal = useCallback(() => {
+    setIsEditReviewOpen(false);
+    setReviewSlugToEdit(null);
   }, []);
 
   const closeDeleteModal = useCallback(() => {
@@ -147,6 +166,7 @@ function Reviews() {
           title={reviewsWorkspace.title}
           description={reviewsWorkspace.description}
           actionLabel={reviewsWorkspace.primaryActionLabel}
+          onActionClick={() => setIsCreateReviewOpen(true)}
         />
 
         <ReviewsSummaryGrid metrics={reviewSummaryMetrics} />
@@ -170,6 +190,7 @@ function Reviews() {
           <ReviewsTable
             rows={visibleRows}
             isLoading={isLoading}
+            onEditRequest={handleEditRequest}
             onDeleteRequest={handleDeleteRequest}
             onViewDetails={handleViewDetails}
           />
@@ -187,6 +208,17 @@ function Reviews() {
         open={isViewReviewOpen}
         onClose={closeViewModal}
         reviewSlug={reviewSlugToView ?? ""}
+      />
+
+      <CreateReviewModal
+        open={isCreateReviewOpen}
+        onClose={closeCreateModal}
+      />
+
+      <EditReviewModal
+        open={isEditReviewOpen}
+        onClose={closeEditModal}
+        reviewSlug={reviewSlugToEdit ?? ""}
       />
     </>
   );

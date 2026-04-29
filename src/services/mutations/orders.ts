@@ -11,6 +11,3 @@ export const updateOrderStatusAPI = async (
   orderNo: string,
   payload: UpdateOrderStatusPayload,
 ) => await safeApi("POST", `/order/${orderNo}/update-status`, payload);
-
-export const deleteReviewAPI = async (slug: string) =>
-  await safeApi("DELETE", `/review/${slug}/delete`);

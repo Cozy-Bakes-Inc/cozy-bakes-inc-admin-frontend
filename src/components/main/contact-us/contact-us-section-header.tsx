@@ -12,6 +12,7 @@ export function ContactUsSectionHeader({
   description,
   actionLabel,
   icon,
+  onActionClick,
 }: ContactUsSectionHeaderProps) {
   const Icon = sectionIcons[icon];
 
@@ -30,7 +31,7 @@ export function ContactUsSectionHeader({
         </div>
       </div>
 
-      <ContactUsActionButton>
+      <ContactUsActionButton onClick={onActionClick}>
         <PencilLine className="size-4" strokeWidth={2.1} />
         {actionLabel}
       </ContactUsActionButton>

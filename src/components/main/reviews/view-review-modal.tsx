@@ -46,10 +46,10 @@ function ViewReviewField({
 }: ViewReviewFieldProps) {
   return (
     <div className={cn("space-y-2", className)}>
-      <p className="text-base leading-6 font-medium text-[#344054]">{label}</p>
+      <p className="text-base leading-6 font-medium text-dark">{label}</p>
       <div
         className={cn(
-          "flex w-full items-center gap-2.5 rounded-[8px] border border-primary bg-[#fbf8eb]/10 px-3 text-sm leading-5 font-medium text-[#344054]",
+          "flex w-full items-center gap-2.5 rounded-[8px] border border-primary bg-[#fbf8eb]/10 px-3 text-sm leading-5 font-medium text-dark",
           multiline ? "min-h-[66px] py-3" : "h-[58px]",
         )}
       >
@@ -63,11 +63,13 @@ function ViewReviewField({
 }
 
 function ViewReviewRating({ rating }: { rating: number }) {
-  const safeRating = Number.isFinite(rating) ? Math.max(0, Math.min(5, rating)) : 0;
+  const safeRating = Number.isFinite(rating)
+    ? Math.max(0, Math.min(5, rating))
+    : 0;
 
   return (
     <div className="space-y-2">
-      <p className="text-base leading-6 font-medium text-[#344054]">Rating</p>
+      <p className="text-base leading-6 font-medium text-dark">Rating</p>
       <div className="flex h-10 items-center gap-2">
         {Array.from({ length: 5 }).map((_, index) => {
           const isFilled = index < Math.round(safeRating);
@@ -138,9 +140,8 @@ function ViewReviewModal({ open, onClose, reviewSlug }: ViewReviewModalProps) {
       open={open}
       onClose={onClose}
       title="View Review"
-      contentClassName="gap-0 overflow-hidden rounded-[32px] border border-border/10 bg-[#fcfcfd] p-0 shadow-[0_24px_80px_rgba(61,44,30,0.18)] md:max-w-[880px] [&_[data-slot=dialog-header]]:border-b [&_[data-slot=dialog-header]]:border-black/6 [&_[data-slot=dialog-header]]:px-6 [&_[data-slot=dialog-header]]:pb-6 [&_[data-slot=dialog-header]]:pt-6 md:[&_[data-slot=dialog-header]]:px-8"
-      titleClassName="text-[24px] font-bold leading-8 tracking-normal text-[#344054]"
-      closeButtonClassname="right-6 top-6 size-8 border-primary bg-primary text-white md:right-10"
+      contentClassName="gap-0 overflow-hidden rounded-[32px] border border-border/10 bg-background p-0 shadow-[0_24px_80px_rgba(61,44,30,0.18)] md:max-w-[880px] [&_[data-slot=dialog-header]]:border-b [&_[data-slot=dialog-header]]:border-black/6 [&_[data-slot=dialog-header]]:px-6 [&_[data-slot=dialog-header]]:pb-6 [&_[data-slot=dialog-header]]:pt-6 md:[&_[data-slot=dialog-header]]:px-8"
+      titleClassName="text-[24px] font-bold leading-8 tracking-normal text-dark"
     >
       {isLoading ? (
         <ViewReviewSkeleton />

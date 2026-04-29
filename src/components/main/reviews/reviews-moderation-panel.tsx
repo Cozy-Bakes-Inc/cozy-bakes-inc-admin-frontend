@@ -1,11 +1,34 @@
+"use client";
+
+import { useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { ChevronDown, SlidersHorizontal } from "lucide-react";
+import toast from "react-hot-toast";
 import type {
   ReviewSettings,
+  UpdateReviewSettingsPayload,
   ReviewsModerationPanelProps,
 } from "@/interfaces/main/reviews";
 import { cn } from "@/lib/utils";
 import { Shimmer } from "@/components/ui/shimmer";
 import { useReviewSettings } from "@/hooks/api";
+import { updateReviewSettings } from "@/services/mutations";
+
+const reviewSettingsKeysByControlId = {
+  "auto-approve": "auto_approve",
+  "website-section": "enable_reviews",
+  "homepage-five-star": "show_only_5_star",
+  "minimum-rating": "minimum_rating",
+} as const satisfies Record<
+  string,
+  keyof UpdateReviewSettingsPayload
+>;
+
+type ReviewSettingsControlId = keyof typeof reviewSettingsKeysByControlId;
+
+function isReviewSettingsControlId(id: string): id is ReviewSettingsControlId {
+  return id in reviewSettingsKeysByControlId;
+}
 
 function ReviewsModerationToggle({ enabled }: { enabled: boolean }) {
   return (
@@ -61,8 +84,53 @@ function buildReviewSettingsControls(
 export function ReviewsModerationPanel({
   controls,
 }: ReviewsModerationPanelProps) {
+  const queryClient = useQueryClient();
+  const [updatingControlId, setUpdatingControlId] = useState<string | null>(
+    null,
+  );
+  const [isRatingDropdownOpen, setIsRatingDropdownOpen] = useState(false);
   const { data, isLoading } = useReviewSettings();
   const reviewSettings = data?.data?.settings;
+
+  const handleSettingsUpdate = async (
+    control: ReviewsModerationPanelProps["controls"][number],
+    rating?: number,
+  ) => {
+    if (!reviewSettings || updatingControlId) {
+      return;
+    }
+
+    if (!isReviewSettingsControlId(control.id)) {
+      return;
+    }
+
+    const settingsKey = reviewSettingsKeysByControlId[control.id];
+
+    const currentRating = Number(reviewSettings.minimum_rating);
+    const nextPayload: UpdateReviewSettingsPayload =
+      settingsKey === "minimum_rating"
+        ? {
+            minimum_rating:
+              rating ?? (Number.isFinite(currentRating) ? currentRating : 1),
+          }
+        : {
+            [settingsKey]: String(reviewSettings[settingsKey]) !== "1",
+          };
+
+    setUpdatingControlId(control.id);
+    setIsRatingDropdownOpen(false);
+    const result = await updateReviewSettings(nextPayload);
+
+    if (result?.ok) {
+      toast.success(result?.message || "Review settings updated");
+      await queryClient.invalidateQueries({ queryKey: ["reviewSettings"] });
+      setUpdatingControlId(null);
+      return;
+    }
+
+    toast.error(result?.message);
+    setUpdatingControlId(null);
+  };
 
   if (isLoading) {
     return (
@@ -162,21 +230,59 @@ export function ReviewsModerationPanel({
             </div>
 
             {control.type === "toggle" ? (
-              <ReviewsModerationToggle enabled={Boolean(control.enabled)} />
-            ) : (
               <button
                 type="button"
-                className="inline-flex min-w-27 items-center justify-center gap-2 rounded-full border border-primary/30 bg-background px-3 py-2 text-xs font-medium text-dark transition-colors hover:bg-primary/5"
+                className="disabled:cursor-not-allowed disabled:opacity-60"
+                disabled={updatingControlId === control.id}
+                aria-pressed={Boolean(control.enabled)}
+                onClick={() => handleSettingsUpdate(control)}
               >
-                <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-primary/10 text-primary">
-                  <span className="text-[10px] leading-none">★</span>
-                </span>
-                {control.value}
-                <ChevronDown
-                  className="size-3.5 text-primary"
-                  strokeWidth={2}
-                />
+                <ReviewsModerationToggle enabled={Boolean(control.enabled)} />
               </button>
+            ) : (
+              <div className="relative">
+                <button
+                  type="button"
+                  className="inline-flex min-w-27 items-center justify-center gap-2 rounded-full border border-primary/30 bg-background px-3 py-2 text-xs font-medium text-dark transition-colors hover:bg-primary/5 disabled:cursor-not-allowed disabled:opacity-60"
+                  disabled={updatingControlId === control.id}
+                  aria-expanded={isRatingDropdownOpen}
+                  onClick={() =>
+                    setIsRatingDropdownOpen((isOpen) => !isOpen)
+                  }
+                >
+                  <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-primary/10 text-primary">
+                    <span className="text-[10px] leading-none">★</span>
+                  </span>
+                  {control.value}
+                  <ChevronDown
+                    className={cn(
+                      "size-3.5 text-primary transition-transform",
+                      isRatingDropdownOpen ? "rotate-180" : "rotate-0",
+                    )}
+                    strokeWidth={2}
+                  />
+                </button>
+
+                {isRatingDropdownOpen ? (
+                  <div className="absolute right-0 z-20 mt-2 w-full min-w-27 overflow-hidden rounded-2xl border border-primary/15 bg-white p-1 shadow-[0_18px_40px_rgba(61,44,30,0.14)]">
+                    {[1, 2, 3, 4, 5].map((rating) => (
+                      <button
+                        key={rating}
+                        type="button"
+                        className={cn(
+                          "flex w-full items-center gap-2 rounded-xl px-3 py-2 text-xs font-medium text-dark transition-colors hover:bg-primary/5",
+                          control.value === `${rating} star` &&
+                            "bg-primary/10 text-primary",
+                        )}
+                        onClick={() => handleSettingsUpdate(control, rating)}
+                      >
+                        <span className="text-primary">★</span>
+                        {rating} star
+                      </button>
+                    ))}
+                  </div>
+                ) : null}
+              </div>
             )}
           </article>
         ))}

@@ -29,6 +29,7 @@ export interface ContactUsHeaderProps {
 
 export interface ContactUsSectionCardProps {
   section: ContactUsSection;
+  onActionClick?: () => void;
 }
 
 export interface ContactUsSectionHeaderProps {
@@ -36,6 +37,7 @@ export interface ContactUsSectionHeaderProps {
   description: string;
   actionLabel: string;
   icon: ContactUsSectionIcon;
+  onActionClick?: () => void;
 }
 
 export interface ContactUsFieldCardProps {
@@ -48,6 +50,7 @@ export interface ContactUsFieldGridProps {
 
 export interface ContactUsActionButtonProps {
   children: ReactNode;
+  onClick?: () => void;
 }
 
 export interface ContactUsHeroSectionData {
@@ -60,7 +63,6 @@ export interface ContactUsDetailsSectionData {
   contact_email: string;
   phone_number: string;
   location: string;
-  image: string;
 }
 
 export interface ContactUsDetailsData {

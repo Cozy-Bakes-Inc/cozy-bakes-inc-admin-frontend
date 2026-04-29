@@ -25,6 +25,7 @@ export interface ReviewsHeaderProps {
   title: string;
   description: string;
   actionLabel: string;
+  onActionClick?: () => void;
 }
 
 export interface ReviewMetric {
@@ -92,6 +93,7 @@ export interface ReviewRow {
 export interface ReviewsTableProps {
   rows: ReviewRow[];
   isLoading?: boolean;
+  onEditRequest: (row: ReviewRow) => void;
   onDeleteRequest: (row: ReviewRow) => void;
   onViewDetails: (row: ReviewRow) => void;
 }
@@ -133,6 +135,13 @@ export interface ReviewSettings {
   minimum_rating: number;
   created_at: string;
   updated_at: string;
+}
+
+export interface UpdateReviewSettingsPayload {
+  auto_approve?: boolean;
+  enable_reviews?: boolean;
+  show_only_5_star?: boolean;
+  minimum_rating?: number;
 }
 
 export interface ReviewSettingsData {
@@ -219,4 +228,14 @@ export interface SingleReviewData {
 export interface SingleReviewResponse {
   status: string;
   data: SingleReviewData;
+}
+
+export type ReviewPayloadStatus = "approved" | "pending" | "rejected";
+
+export interface ReviewPayload {
+  customer_name: string;
+  customer_email?: string;
+  rating: number;
+  review_text?: string;
+  status: ReviewPayloadStatus;
 }

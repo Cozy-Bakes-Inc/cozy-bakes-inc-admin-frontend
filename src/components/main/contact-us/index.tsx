@@ -1,17 +1,16 @@
 "use client";
 
-import { useMemo } from "react";
-import {
-  contactUsSections,
-  contactUsWorkspace,
-} from "@/data/main/contact-us";
+import { useMemo, useState } from "react";
+import { contactUsSections, contactUsWorkspace } from "@/data/main/contact-us";
 import type { ContactUsSection } from "@/interfaces/main/contact-us";
 import { Shimmer } from "@/components/ui/shimmer";
 import { ContactUsHeader } from "./contact-us-header";
 import { ContactUsSectionCard } from "./contact-us-section-card";
+import AddUpdateContactUsModal from "./add-update-contact-us";
 import { useContactDetails } from "@/hooks/api";
 
 function ContactUs() {
+  const [isContactModalOpen, setIsContactModalOpen] = useState(false);
   const { data, isLoading } = useContactDetails();
   const contactDetails = data?.data;
   const resolvedSections: ContactUsSection[] = useMemo(() => {
@@ -20,37 +19,36 @@ function ContactUs() {
     return contactUsSections
       .filter((section) => section.id !== "hero-section")
       .map((section) => {
-      const hasContactSectionData = Boolean(
-        contactSection?.contact_email ||
+        const hasContactSectionData = Boolean(
+          contactSection?.contact_email ||
           contactSection?.phone_number ||
-          contactSection?.location ||
-          contactSection?.image,
-      );
+          contactSection?.location,
+        );
 
-      return {
-        ...section,
-        actionLabel: hasContactSectionData
-          ? "Edit Contact Data"
-          : "Add Contact Data",
-        fields: [
-          {
-            id: "contact-email",
-            label: "Contact Email",
-            value: contactSection?.contact_email ?? "",
-          },
-          {
-            id: "phone-number",
-            label: "Phone Number",
-            value: contactSection?.phone_number ?? "",
-          },
-          {
-            id: "location",
-            label: "Our Location",
-            value: contactSection?.location ?? "",
-          },
-        ],
-      };
-    });
+        return {
+          ...section,
+          actionLabel: hasContactSectionData
+            ? "Edit Contact Data"
+            : "Add Contact Data",
+          fields: [
+            {
+              id: "contact-email",
+              label: "Contact Email",
+              value: contactSection?.contact_email ?? "",
+            },
+            {
+              id: "phone-number",
+              label: "Phone Number",
+              value: contactSection?.phone_number ?? "",
+            },
+            {
+              id: "location",
+              label: "Our Location",
+              value: contactSection?.location ?? "",
+            },
+          ],
+        };
+      });
   }, [contactDetails]);
 
   return (
@@ -62,7 +60,7 @@ function ContactUs() {
 
       <div className="space-y-4">
         {isLoading
-          ? Array.from({ length: 2 }).map((_, index) => (
+          ? Array.from({ length: 1 }).map((_, index) => (
               <article
                 key={index}
                 className="rounded-2xl border-2 border-white/15 bg-[rgba(250,248,243,0.32)] p-4 shadow-[0_1px_0_rgba(255,255,255,0.06)_inset]"
@@ -81,18 +79,37 @@ function ContactUs() {
 
                   <div className="space-y-4">
                     <div className="grid gap-5 md:grid-cols-2">
-                      <Shimmer className="h-24 w-full rounded-2xl" />
-                      <Shimmer className="h-24 w-full rounded-2xl" />
+                      <div className="space-y-2">
+                        <Shimmer className="h-6 w-32 rounded-md" />
+                        <Shimmer className="min-h-[58px] w-full rounded-lg" />
+                      </div>
+                      <div className="space-y-2">
+                        <Shimmer className="h-6 w-28 rounded-md" />
+                        <Shimmer className="min-h-[58px] w-full rounded-lg" />
+                      </div>
                     </div>
-                    <Shimmer className="h-[142px] w-[142px] rounded-3xl" />
+
+                    <div className="space-y-2">
+                      <Shimmer className="h-6 w-28 rounded-md" />
+                      <Shimmer className="min-h-[58px] w-full rounded-lg" />
+                    </div>
                   </div>
                 </div>
               </article>
             ))
           : resolvedSections.map((section) => (
-                <ContactUsSectionCard key={section.id} section={section} />
-              ))}
+              <ContactUsSectionCard
+                key={section.id}
+                section={section}
+                onActionClick={() => setIsContactModalOpen(true)}
+              />
+            ))}
       </div>
+
+      <AddUpdateContactUsModal
+        open={isContactModalOpen}
+        onClose={() => setIsContactModalOpen(false)}
+      />
     </section>
   );
 }

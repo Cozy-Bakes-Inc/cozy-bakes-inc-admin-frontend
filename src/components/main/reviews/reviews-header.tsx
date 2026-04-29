@@ -6,6 +6,7 @@ export function ReviewsHeader({
   title,
   description,
   actionLabel,
+  onActionClick,
 }: ReviewsHeaderProps) {
   return (
     <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
@@ -18,6 +19,7 @@ export function ReviewsHeader({
         type="button"
         variant="ghost"
         className="inline-flex h-10 items-center gap-2 self-start rounded-full bg-primary px-5 text-sm font-semibold text-white transition-colors hover:bg-primary/90"
+        onClick={onActionClick}
       >
         <MessageSquarePlus className="size-4" strokeWidth={2.1} />
         {actionLabel}
