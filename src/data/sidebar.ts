@@ -53,6 +53,7 @@ export const sidebarItems: SidebarItem[] = [
     id: "products",
     label: "Products",
     icon: "products",
+    href: "/products",
   },
   {
     id: "categories",

@@ -15,9 +15,14 @@ export function DashboardHeader() {
       </div>
 
       <div className="flex flex-wrap items-center gap-3">
-        <Button className="h-10 rounded-full bg-primary px-5 text-xs font-semibold text-white hover:bg-primary/90 md:text-sm">
-          <Plus className="size-4" />
-          Add Product
+        <Button
+          asChild
+          className="h-10 rounded-full bg-primary px-5 text-xs font-semibold text-white hover:bg-primary/90 md:text-sm"
+        >
+          <Link href="/products?addProduct=1">
+            <Plus className="size-4" />
+            Add Product
+          </Link>
         </Button>
 
         <Button

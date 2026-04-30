@@ -1,0 +1,45 @@
+export type ProductPricingType =
+  | "perUnit"
+  | "packs"
+  | "sizes"
+  | "byWeight"
+  | "comboDeal";
+
+export interface ProductPriceOption {
+  id: string;
+  label?: string;
+  quantity?: string;
+  unit?: "OZ" | "LB" | "G" | "KG";
+  price: string;
+}
+
+export interface ProductDealTier {
+  id: string;
+  quantity: string;
+  price: string;
+}
+
+export interface AddProductFormValues {
+  productName: string;
+  category: string;
+  description: string;
+  pricingType: ProductPricingType;
+  perUnitPrice: string;
+  packs: ProductPriceOption[];
+  sizes: ProductPriceOption[];
+  weights: ProductPriceOption[];
+  comboDeals: ProductDealTier[];
+  hasVariants: boolean;
+  variants: string[];
+  ingredients: string;
+  allergens: string;
+  productImage: File | null;
+}
+
+export interface AddProductProps {
+  open: boolean;
+  onClose: () => void;
+  onSubmit?: (values: AddProductFormValues) => void | Promise<void>;
+  initialValues?: Partial<AddProductFormValues>;
+  submitLabel?: string;
+}
