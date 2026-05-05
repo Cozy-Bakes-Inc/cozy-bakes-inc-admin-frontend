@@ -2,7 +2,11 @@ import { Plus } from "lucide-react";
 import type { CategoryHeaderProps } from "@/interfaces/main/categories";
 import { Button } from "@/components/ui/button";
 
-export function CategoryHeader({ title, description }: CategoryHeaderProps) {
+export function CategoryHeader({
+  title,
+  description,
+  onAddCategoryClick,
+}: CategoryHeaderProps) {
   return (
     <header className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
       <div className="space-y-0.5">
@@ -18,6 +22,7 @@ export function CategoryHeader({ title, description }: CategoryHeaderProps) {
         <Button
           type="button"
           variant="ghost"
+          onClick={onAddCategoryClick}
           className="inline-flex h-10 items-center gap-2 rounded-full bg-primary px-5 text-sm font-semibold text-white transition-transform hover:-translate-y-0.5"
         >
           <Plus className="size-4" strokeWidth={2.4} />
