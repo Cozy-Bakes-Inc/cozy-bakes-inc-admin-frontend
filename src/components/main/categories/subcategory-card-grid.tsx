@@ -4,7 +4,12 @@ import { Eye, PencilLine, Trash2 } from "lucide-react";
 import type { SubCategoryCardGridProps } from "@/interfaces/main/categories";
 import { CategoryActionButton } from "./category-action-button";
 
-export function SubCategoryCardGrid({ items }: SubCategoryCardGridProps) {
+export function SubCategoryCardGrid({
+  items,
+  onViewDetails,
+  onEditDetails,
+  onDeleteDetails,
+}: SubCategoryCardGridProps) {
   return (
     <div className="grid gap-4 md:grid-cols-2 2xl:grid-cols-3">
       {items.map((item) => {
@@ -44,17 +49,19 @@ export function SubCategoryCardGrid({ items }: SubCategoryCardGridProps) {
                 label={`Delete ${item.name}`}
                 tone="danger"
                 icon={<Trash2 className="size-4" strokeWidth={2.1} />}
+                onClick={() => onDeleteDetails(item)}
               />
               <CategoryActionButton
                 label={`Edit ${item.name}`}
                 tone="info"
                 icon={<PencilLine className="size-4" strokeWidth={2.1} />}
+                onClick={() => onEditDetails(item)}
               />
               <CategoryActionButton
                 label={`View ${item.name}`}
                 tone="primary"
                 icon={<Eye className="size-4" strokeWidth={2.1} />}
-                href="/categories"
+                onClick={() => onViewDetails(item)}
               />
             </div>
           </article>

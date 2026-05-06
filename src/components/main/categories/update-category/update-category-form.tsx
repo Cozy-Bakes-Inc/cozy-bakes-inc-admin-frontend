@@ -1,68 +1,85 @@
 "use client";
 
+import Image from "next/image";
+import { useEffect } from "react";
+import { Controller, useForm, useWatch } from "react-hook-form";
 import { useQueryClient } from "@tanstack/react-query";
-import { Controller, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { Button } from "@/components/ui/button";
 import Loader from "@/components/ui/loader";
-import { createCategorySchema } from "@/schemas";
-import { createSubCategoryAPI } from "@/services/mutations";
-import type { AddCategoryFormValues } from "@/types/main/categories";
-import { AddCategoryField } from "./add-category-field";
-import { AddCategoryUpload } from "./add-category-upload";
+import type { SubCategoryDetailsItem } from "@/interfaces/main/categories";
+import { updateCategorySchema } from "@/schemas";
+import { updateSubCategoryAPI } from "@/services/mutations";
+import type { UpdateCategoryFormValues } from "@/types/main/categories";
+import { AddCategoryField } from "../add-category/add-category-field";
+import { AddCategoryUpload } from "../add-category/add-category-upload";
 
-interface AddCategoryFormProps {
-  initialValues: AddCategoryFormValues;
-  onSubmit?: (values: AddCategoryFormValues) => void | Promise<void>;
+interface UpdateCategoryFormProps {
+  slug: string;
+  category: SubCategoryDetailsItem;
   onCancel: () => void;
-  submitLabel: string;
+  onSubmit?: (values: UpdateCategoryFormValues) => void | Promise<void>;
 }
 
-export function AddCategoryForm({
-  initialValues,
-  onSubmit,
+const defaultFormValues: UpdateCategoryFormValues = {
+  title: "",
+  description: "",
+  image: null,
+};
+
+export function UpdateCategoryForm({
+  slug,
+  category,
   onCancel,
-  submitLabel,
-}: AddCategoryFormProps) {
+  onSubmit,
+}: UpdateCategoryFormProps) {
   const queryClient = useQueryClient();
   const {
     control,
     handleSubmit,
-    formState: { errors, isSubmitting },
-  } = useForm<AddCategoryFormValues>({
-    defaultValues: initialValues,
+    reset,
+    formState: { errors, isDirty, isSubmitting },
+  } = useForm<UpdateCategoryFormValues>({
+    defaultValues: defaultFormValues,
     reValidateMode: "onChange",
   });
+  const selectedImage = useWatch({ control, name: "image" });
 
-  function validateField<K extends keyof AddCategoryFormValues>(
+  useEffect(() => {
+    reset({
+      title: category.title,
+      description: category.description,
+      image: null,
+    });
+  }, [category, reset]);
+
+  function validateField<K extends keyof UpdateCategoryFormValues>(
     field: K,
-    value: AddCategoryFormValues[K],
+    value: UpdateCategoryFormValues[K],
   ) {
-    const result = createCategorySchema.shape[field].safeParse(value);
+    const result = updateCategorySchema.shape[field].safeParse(value);
     return result.success || result.error.issues[0]?.message;
   }
 
-  async function handleCreateCategory(values: AddCategoryFormValues) {
+  async function handleUpdateCategory(values: UpdateCategoryFormValues) {
+    if (!isDirty) {
+      return;
+    }
+
     const payload = new FormData();
     payload.append("title", values.title.trim());
     payload.append("description", values.description.trim());
 
-    if (!values.image) {
-      toast.error("Image is required");
-      return;
+    if (values.image) {
+      payload.append("image", values.image);
     }
 
-    payload.append("image", values.image);
-
-    if (values.categoryId?.trim()) {
-      payload.append("category_id", values.categoryId.trim());
-    }
-
-    const result = await createSubCategoryAPI(payload);
+    const result = await updateSubCategoryAPI(slug, payload);
 
     if (result?.ok) {
-      toast.success(result.message || "Category created successfully");
+      toast.success(result.message || "Category updated successfully");
       await queryClient.invalidateQueries({ queryKey: ["sub-categories"] });
+      await queryClient.invalidateQueries({ queryKey: ["sub-category", slug] });
       await onSubmit?.(values);
       return;
     }
@@ -72,7 +89,7 @@ export function AddCategoryForm({
 
   return (
     <form
-      onSubmit={handleSubmit(handleCreateCategory)}
+      onSubmit={handleSubmit(handleUpdateCategory)}
       className="flex min-h-0 max-w-full flex-col overflow-x-hidden"
     >
       <div className="max-w-full space-y-5 px-4 py-5 sm:px-6 md:px-8 md:py-6">
@@ -86,7 +103,7 @@ export function AddCategoryForm({
               }}
               render={({ field }) => (
                 <AddCategoryField
-                  id="categoryTitle"
+                  id="updateCategoryTitle"
                   label="Title"
                   placeholder="Title"
                   value={field.value}
@@ -105,7 +122,7 @@ export function AddCategoryForm({
               }}
               render={({ field }) => (
                 <AddCategoryField
-                  id="categoryDescription"
+                  id="updateCategoryDescription"
                   label="Description"
                   placeholder="Description"
                   value={field.value}
@@ -117,6 +134,24 @@ export function AddCategoryForm({
                 />
               )}
             />
+
+            {category.image && !selectedImage ? (
+              <div>
+                <p className="mb-2 block text-[16px] font-medium leading-6 text-dark">
+                  Current Image
+                </p>
+                <div className="size-[150px] overflow-hidden rounded-[24px] border border-dashed border-primary bg-bg-creamy">
+                  <Image
+                    src={category.image}
+                    alt={`${category.title} current image`}
+                    width={150}
+                    height={150}
+                    className="size-full object-cover"
+                    unoptimized
+                  />
+                </div>
+              </div>
+            ) : null}
 
             <Controller
               name="image"
@@ -149,10 +184,10 @@ export function AddCategoryForm({
         </Button>
         <Button
           type="submit"
-          disabled={isSubmitting}
+          disabled={isSubmitting || !isDirty}
           className="h-[48px] w-full rounded-[8px] bg-primary px-6 text-base font-semibold text-white hover:bg-primary/90 sm:w-auto sm:min-w-[176px]"
         >
-          {isSubmitting ? <Loader /> : submitLabel}
+          {isSubmitting ? <Loader /> : "Update Category"}
         </Button>
       </div>
     </form>

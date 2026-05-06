@@ -8,6 +8,7 @@ export function CategoryActionButton({
   tone,
   icon,
   href,
+  onClick,
 }: CategoryActionButtonProps) {
   const className = cn(
     "inline-flex size-9 items-center justify-center rounded-lg transition-transform hover:-translate-y-0.5",
@@ -25,7 +26,14 @@ export function CategoryActionButton({
   }
 
   return (
-    <Button type="button" variant="ghost" size="icon" aria-label={label} className={className}>
+    <Button
+      type="button"
+      variant="ghost"
+      size="icon"
+      aria-label={label}
+      className={className}
+      onClick={onClick}
+    >
       {icon}
     </Button>
   );

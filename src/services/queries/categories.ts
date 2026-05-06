@@ -1,5 +1,8 @@
 import { PAGE_SIZE } from "@/constants";
-import type { SubCategoryListResponse } from "@/interfaces";
+import type {
+  SubCategoryDetailsResponse,
+  SubCategoryListResponse,
+} from "@/interfaces";
 import { baseAPI } from "..";
 
 export const subCategoriesListAPI = async (page: number, search?: string) => {
@@ -17,3 +20,6 @@ export const subCategoriesListAPI = async (page: number, search?: string) => {
     `/sub-category/list?${params.toString()}`,
   );
 };
+
+export const subCategoryAPI = async (slug: string) =>
+  await baseAPI<SubCategoryDetailsResponse>("GET", `/sub-category/${slug}/show`);

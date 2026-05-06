@@ -1,5 +1,5 @@
-import { subCategoriesListAPI } from "@/services/queries";
-import { useCustomInfiniteQuery } from "..";
+import { subCategoriesListAPI, subCategoryAPI } from "@/services/queries";
+import { useCustomInfiniteQuery, useCustomQuery } from "..";
 
 export function useSubCategoriesList(search?: string) {
   return useCustomInfiniteQuery(
@@ -22,4 +22,10 @@ export function useSubCategoriesList(search?: string) {
       },
     },
   );
+}
+
+export function useSubCategory(slug: string) {
+  return useCustomQuery(["sub-category", slug], () => subCategoryAPI(slug), {
+    enabled: !!slug,
+  });
 }

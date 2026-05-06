@@ -40,10 +40,16 @@ export interface CategoryViewToggleOption {
 
 export interface CategoryTableProps {
   items: BakerySubCategoryRecord[];
+  onViewDetails: (item: BakerySubCategoryRecord) => void;
+  onEditDetails: (item: BakerySubCategoryRecord) => void;
+  onDeleteDetails: (item: BakerySubCategoryRecord) => void;
 }
 
 export interface SubCategoryCardGridProps {
   items: BakerySubCategoryRecord[];
+  onViewDetails: (item: BakerySubCategoryRecord) => void;
+  onEditDetails: (item: BakerySubCategoryRecord) => void;
+  onDeleteDetails: (item: BakerySubCategoryRecord) => void;
 }
 
 export interface CategoryActionButtonProps {
@@ -51,6 +57,7 @@ export interface CategoryActionButtonProps {
   tone: CategoryActionTone;
   icon: ReactNode;
   href?: string;
+  onClick?: () => void;
 }
 
 export interface CategoriesPaginationProps {
@@ -109,4 +116,24 @@ export interface SubCategoryListData {
 export interface SubCategoryListResponse {
   status: string;
   data: SubCategoryListData;
+}
+
+export interface SubCategoryDetailsCategory {
+  id: number;
+  title: string;
+}
+
+export interface SubCategoryDetailsItem {
+  id: number;
+  title: string;
+  description: string;
+  image: string | null;
+  category: SubCategoryDetailsCategory;
+}
+
+export interface SubCategoryDetailsResponse {
+  status: string;
+  data: {
+    sub_category: SubCategoryDetailsItem;
+  };
 }

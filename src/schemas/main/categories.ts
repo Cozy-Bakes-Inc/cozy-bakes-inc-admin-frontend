@@ -26,4 +26,20 @@ export const createCategorySchema = z.object({
   categoryId: z.string().trim().optional(),
 });
 
+export const updateCategorySchema = createCategorySchema.extend({
+  image: z
+    .custom<File | null>((value) => value === null || isFile(value), {
+      message: "Image must be PNG or JPG",
+    })
+    .refine(
+      (file) => file === null || acceptedImageTypes.includes(file.type),
+      "Image must be PNG or JPG",
+    )
+    .refine(
+      (file) => file === null || file.size <= maxImageSizeInBytes,
+      "Image must be 5MB or less",
+    ),
+});
+
 export type CreateCategorySchemaValues = z.input<typeof createCategorySchema>;
+export type UpdateCategorySchemaValues = z.input<typeof updateCategorySchema>;

@@ -17,6 +17,9 @@ import { CategorySearchToolbar } from "./category-search-toolbar";
 import { CategoryTable } from "./category-table";
 import { SubCategoryCardGrid } from "./subcategory-card-grid";
 import AddCategory from "./add-category";
+import DeleteCategory from "./delete-category";
+import UpdateCategory from "./update-category";
+import ViewCategory from "./view-category";
 
 function mapSubCategoryToRecord(
   item: SubCategoryListItem,
@@ -34,6 +37,14 @@ function Categories() {
   const [searchValue, setSearchValue] = useState("");
   const [viewMode, setViewMode] = useState<CategoryViewMode>("table");
   const [isAddCategoryOpen, setIsAddCategoryOpen] = useState(false);
+  const [selectedCategorySlug, setSelectedCategorySlug] = useState<
+    string | null
+  >(null);
+  const [selectedUpdateCategorySlug, setSelectedUpdateCategorySlug] = useState<
+    string | null
+  >(null);
+  const [selectedDeleteCategory, setSelectedDeleteCategory] =
+    useState<BakerySubCategoryRecord | null>(null);
   const { data, isLoading, hasNextPage, fetchNextPage, isFetchingNextPage } =
     useSubCategoriesList(searchValue);
 
@@ -45,6 +56,21 @@ function Categories() {
     [data],
   );
   const hasEmptyState = !isLoading && visibleItems.length === 0;
+  const isViewCategoryOpen = Boolean(selectedCategorySlug);
+  const isUpdateCategoryOpen = Boolean(selectedUpdateCategorySlug);
+  const isDeleteCategoryOpen = Boolean(selectedDeleteCategory);
+
+  function handleViewCategory(item: BakerySubCategoryRecord) {
+    setSelectedCategorySlug(item.slug);
+  }
+
+  function handleEditCategory(item: BakerySubCategoryRecord) {
+    setSelectedUpdateCategorySlug(item.slug);
+  }
+
+  function handleDeleteCategory(item: BakerySubCategoryRecord) {
+    setSelectedDeleteCategory(item);
+  }
 
   return (
     <section className="space-y-4 md:space-y-6">
@@ -70,9 +96,19 @@ function Categories() {
       ) : hasEmptyState ? (
         <CategoriesEmptyState searchValue={searchValue} />
       ) : viewMode === "table" ? (
-        <CategoryTable items={visibleItems} />
+        <CategoryTable
+          items={visibleItems}
+          onViewDetails={handleViewCategory}
+          onEditDetails={handleEditCategory}
+          onDeleteDetails={handleDeleteCategory}
+        />
       ) : (
-        <SubCategoryCardGrid items={visibleItems} />
+        <SubCategoryCardGrid
+          items={visibleItems}
+          onViewDetails={handleViewCategory}
+          onEditDetails={handleEditCategory}
+          onDeleteDetails={handleDeleteCategory}
+        />
       )}
 
       {!isLoading && !hasEmptyState && hasNextPage ? (
@@ -87,6 +123,31 @@ function Categories() {
         onClose={() => setIsAddCategoryOpen(false)}
         onSubmit={async () => {
           setIsAddCategoryOpen(false);
+        }}
+      />
+
+      <ViewCategory
+        open={isViewCategoryOpen}
+        slug={selectedCategorySlug}
+        onClose={() => setSelectedCategorySlug(null)}
+      />
+
+      <UpdateCategory
+        open={isUpdateCategoryOpen}
+        slug={selectedUpdateCategorySlug}
+        onClose={() => setSelectedUpdateCategorySlug(null)}
+        onSubmit={async () => {
+          setSelectedUpdateCategorySlug(null);
+        }}
+      />
+
+      <DeleteCategory
+        open={isDeleteCategoryOpen}
+        slug={selectedDeleteCategory?.slug ?? null}
+        name={selectedDeleteCategory?.name ?? ""}
+        onClose={() => setSelectedDeleteCategory(null)}
+        onDeleted={async () => {
+          setSelectedDeleteCategory(null);
         }}
       />
     </section>
