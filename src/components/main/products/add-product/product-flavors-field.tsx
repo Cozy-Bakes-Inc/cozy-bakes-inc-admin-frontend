@@ -1,33 +1,36 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import InputErrorMessage from "@/components/ui/input-error-message";
 import { cn } from "@/lib";
 import { AddProductField } from "./add-product-field";
 
-interface ProductVariantsFieldProps {
+interface ProductFlavorsFieldProps {
   enabled: boolean;
-  variants: string[];
+  flavors: string[];
   onEnabledChange: (enabled: boolean) => void;
-  onVariantsChange: (variants: string[]) => void;
+  onFlavorsChange: (flavors: string[]) => void;
   disabled?: boolean;
+  error?: string;
 }
 
-export function ProductVariantsField({
+export function ProductFlavorsField({
   enabled,
-  variants,
+  flavors,
   onEnabledChange,
-  onVariantsChange,
+  onFlavorsChange,
   disabled = false,
-}: ProductVariantsFieldProps) {
-  const [draftVariant, setDraftVariant] = useState("");
+  error,
+}: ProductFlavorsFieldProps) {
+  const [draftFlavor, setDraftFlavor] = useState("");
 
-  function addVariant() {
-    const nextVariant = draftVariant.trim();
-    if (!nextVariant) {
+  function addFlavor() {
+    const nextFlavor = draftFlavor.trim();
+    if (!nextFlavor) {
       return;
     }
 
-    onVariantsChange([...variants, nextVariant]);
-    setDraftVariant("");
+    onFlavorsChange([...flavors, nextFlavor]);
+    setDraftFlavor("");
   }
 
   return (
@@ -57,16 +60,16 @@ export function ProductVariantsField({
       {enabled ? (
         <div className="mt-3 grid gap-3 md:grid-cols-[1fr_108px]">
           <AddProductField
-            id="productVariant"
-            value={draftVariant}
+            id="productFlavor"
+            value={draftFlavor}
             placeholder="Type custom flavor and press Enter..."
             disabled={disabled}
-            onChange={setDraftVariant}
+            onChange={setDraftFlavor}
             inputClassName="h-[48px]"
             onKeyDown={(event) => {
               if (event.key === "Enter") {
                 event.preventDefault();
-                addVariant();
+                addFlavor();
               }
             }}
           />
@@ -74,33 +77,33 @@ export function ProductVariantsField({
             type="button"
             variant="ghost"
             disabled={disabled}
-            onClick={addVariant}
+            onClick={addFlavor}
             className="h-[48px] rounded-[8px] border border-primary bg-background text-base font-medium text-primary hover:bg-primary/5"
           >
             + Add
           </Button>
 
-          {variants.length > 0 ? (
+          {flavors.length > 0 ? (
             <div className="flex flex-wrap gap-2 md:col-span-2">
-              {variants.map((variant) => (
+              {flavors.map((flavor) => (
                 <button
-                  key={variant}
+                  key={flavor}
                   type="button"
                   disabled={disabled}
                   onClick={() =>
-                    onVariantsChange(
-                      variants.filter((item) => item !== variant),
-                    )
+                    onFlavorsChange(flavors.filter((item) => item !== flavor))
                   }
                   className="rounded-full border border-primary/25 bg-primary/5 px-3 py-1 text-sm font-medium text-primary"
                 >
-                  {variant}
+                  {flavor}
                 </button>
               ))}
             </div>
           ) : null}
         </div>
       ) : null}
+
+      <InputErrorMessage msg={error} />
     </div>
   );
 }

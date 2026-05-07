@@ -3,3 +3,4 @@ export * from "./market";
 export * from "./orders";
 export * from "./reviews";
 export * from "./categories";
+export * from "./products";

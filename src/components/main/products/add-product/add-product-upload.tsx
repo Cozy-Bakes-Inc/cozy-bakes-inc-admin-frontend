@@ -40,11 +40,21 @@ export function AddProductUpload({
         Product Image
       </label>
 
-      <Button
-        type="button"
-        variant="ghost"
-        disabled={disabled}
+      <div
+        role="button"
+        tabIndex={disabled ? -1 : 0}
+        aria-disabled={disabled}
         onClick={() => inputRef.current?.click()}
+        onKeyDown={(event) => {
+          if (disabled) {
+            return;
+          }
+
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            inputRef.current?.click();
+          }
+        }}
         onDragOver={(event) => event.preventDefault()}
         onDrop={(event) => {
           if (disabled) {
@@ -55,7 +65,8 @@ export function AddProductUpload({
           onChange(event.dataTransfer.files?.[0] ?? null);
         }}
         className={cn(
-          "relative flex min-h-[140px] w-full flex-col items-center justify-center whitespace-normal rounded-[10px] border border-dashed border-primary bg-[rgba(250,248,243,0.35)] px-4 py-5 text-center transition-colors hover:bg-[rgba(250,248,243,0.75)] sm:px-6",
+          "relative flex min-h-[140px] cursor-pointer flex-col items-center justify-center whitespace-normal rounded-[10px] border border-dashed border-primary bg-[rgba(250,248,243,0.35)] px-4 py-5 text-center outline-none transition-colors hover:bg-[rgba(250,248,243,0.75)] focus:border-primary/70 focus:ring-2 focus:ring-primary/10 sm:px-6",
+          previewUrl ? "aspect-[4/3] w-full max-w-[260px] p-0" : "w-full",
           error ? "border-destructive bg-destructive/5" : "",
           disabled ? "cursor-not-allowed opacity-60" : "",
         )}
@@ -98,7 +109,7 @@ export function AddProductUpload({
             </p>
           </>
         )}
-      </Button>
+      </div>
 
       <input
         ref={inputRef}

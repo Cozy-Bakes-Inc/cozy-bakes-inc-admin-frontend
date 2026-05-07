@@ -9,26 +9,26 @@ const defaultFormValues: AddProductFormValues = {
   category: "",
   description: "",
   pricingType: "perUnit",
-  perUnitPrice: "0.00",
+  perUnitPrice: "",
   packs: [
-    { id: "pack-1", quantity: "6", price: "12" },
-    { id: "pack-2", quantity: "", price: "0.00" },
+    { id: "pack-1", quantity: "", price: "" },
+    { id: "pack-2", quantity: "", price: "" },
   ],
   sizes: [
-    { id: "size-1", label: "Small", price: "0.00" },
-    { id: "size-2", label: "Medium", price: "0.00" },
-    { id: "size-3", label: "Large", price: "0.00" },
+    { id: "size-1", label: "", price: "" },
+    { id: "size-2", label: "", price: "" },
+    { id: "size-3", label: "", price: "" },
   ],
   weights: [
-    { id: "weight-1", quantity: "8", unit: "OZ", price: "0.00" },
-    { id: "weight-2", quantity: "16", unit: "OZ", price: "0.00" },
+    { id: "weight-1", quantity: "", unit: "OZ", price: "" },
+    { id: "weight-2", quantity: "", unit: "OZ", price: "" },
   ],
   comboDeals: [
-    { id: "deal-1", quantity: "1", price: "0.00" },
-    { id: "deal-2", quantity: "2", price: "0.00" },
+    { id: "deal-1", quantity: "", price: "" },
+    { id: "deal-2", quantity: "", price: "" },
   ],
-  hasVariants: true,
-  variants: [],
+  hasFlavors: false,
+  flavors: [],
   ingredients: "",
   allergens: "",
   productImage: null,
@@ -44,7 +44,8 @@ function resolveInitialValues(
     sizes: initialValues?.sizes ?? defaultFormValues.sizes,
     weights: initialValues?.weights ?? defaultFormValues.weights,
     comboDeals: initialValues?.comboDeals ?? defaultFormValues.comboDeals,
-    variants: initialValues?.variants ?? defaultFormValues.variants,
+    hasFlavors: initialValues?.hasFlavors ?? defaultFormValues.hasFlavors,
+    flavors: initialValues?.flavors ?? defaultFormValues.flavors,
   };
 }
 

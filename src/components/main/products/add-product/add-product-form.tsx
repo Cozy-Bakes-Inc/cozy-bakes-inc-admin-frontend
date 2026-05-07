@@ -1,20 +1,23 @@
 "use client";
 
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import Loader from "@/components/ui/loader";
-import type {
-  AddProductFormValues,
-  ProductDealTier,
-  ProductPriceOption,
-  ProductPricingType,
-} from "@/types/main";
-import { AddProductCategorySelect } from "./add-product-category-select";
-import { AddProductField } from "./add-product-field";
-import { AddProductUpload } from "./add-product-upload";
-import { PricingTypeSelector } from "./pricing-type-selector";
-import { ProductPricingFields } from "./product-pricing-fields";
-import { ProductVariantsField } from "./product-variants-field";
+import { useQueryClient } from "@tanstack/react-query";
+import {
+  PathValue,
+  useForm,
+  useWatch,
+} from "react-hook-form";
+import toast from "react-hot-toast";
+import { createProduct } from "@/services/mutations";
+import type { AddProductFormValues } from "@/types/main";
+import { AddProductAdditionalFields } from "./add-product-additional-fields";
+import { AddProductBasicFields } from "./add-product-basic-fields";
+import { AddProductFormActions } from "./add-product-form-actions";
+import { buildProductPayload } from "./add-product-payload";
+import { AddProductPricingSection } from "./add-product-pricing-section";
+import {
+  applyProductSchemaErrors,
+  validateProductField,
+} from "./add-product-validation";
 
 interface AddProductFormProps {
   initialValues: AddProductFormValues;
@@ -29,152 +32,88 @@ export function AddProductForm({
   onCancel,
   submitLabel,
 }: AddProductFormProps) {
-  const [values, setValues] = useState<AddProductFormValues>(initialValues);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const queryClient = useQueryClient();
+  const {
+    control,
+    clearErrors,
+    getValues,
+    handleSubmit,
+    setError,
+    setValue,
+    formState: { errors, isSubmitting },
+  } = useForm<AddProductFormValues>({
+    defaultValues: initialValues,
+    reValidateMode: "onChange",
+  });
+
+  const values = useWatch({ control }) as AddProductFormValues;
 
   function updateValue<K extends keyof AddProductFormValues>(
     key: K,
     value: AddProductFormValues[K],
   ) {
-    setValues((currentValues) => ({
-      ...currentValues,
-      [key]: value,
-    }));
+    clearErrors(key);
+    setValue(key, value as PathValue<AddProductFormValues, K>, {
+      shouldDirty: true,
+      shouldTouch: true,
+      shouldValidate: true,
+    });
   }
 
-  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    setIsSubmitting(true);
-
-    try {
-      await onSubmit?.(values);
-    } finally {
-      setIsSubmitting(false);
+  async function handleCreateProduct(valuesToSubmit: AddProductFormValues) {
+    const validatedValues = applyProductSchemaErrors(valuesToSubmit, setError);
+    if (!validatedValues) {
+      return;
     }
+    const result = await createProduct(buildProductPayload(validatedValues));
+
+    if (result?.ok) {
+      toast.success(result.message || "Product created successfully");
+      await queryClient.invalidateQueries({ queryKey: ["products"] });
+      await onSubmit?.(validatedValues);
+      return;
+    }
+
+    toast.error(result?.message);
   }
 
   return (
     <form
-      onSubmit={handleSubmit}
+      onSubmit={handleSubmit(handleCreateProduct, () => {
+        applyProductSchemaErrors(getValues(), setError);
+      })}
       className="flex min-h-0 max-w-full flex-col overflow-x-hidden"
     >
       <div className="max-w-full space-y-5 px-4 py-5 sm:px-6 md:space-y-6 md:px-8 md:py-6">
-        <div className="grid gap-5 md:grid-cols-2">
-          <AddProductField
-            id="productName"
-            label="Product Name"
-            value={values.productName}
-            placeholder="e.g. Sourdough Loaf"
-            disabled={isSubmitting}
-            onChange={(value) => updateValue("productName", value)}
-          />
-
-          <AddProductCategorySelect
-            value={values.category}
-            disabled={isSubmitting}
-            onChange={(value) => updateValue("category", value)}
-          />
-        </div>
-
-        <AddProductField
-          id="description"
-          label="Description"
-          value={values.description}
-          placeholder="Short product description..."
-          multiline
-          rows={4}
+        <AddProductBasicFields
+          control={control}
+          errors={errors}
           disabled={isSubmitting}
-          onChange={(value) => updateValue("description", value)}
+          validateField={validateProductField}
         />
 
-        <div className="border-t border-[#E4E7EC] pt-6">
-          <PricingTypeSelector
-            value={values.pricingType}
-            disabled={isSubmitting}
-            onChange={(value: ProductPricingType) =>
-              updateValue("pricingType", value)
-            }
-          />
-        </div>
-
-        <ProductPricingFields
-          pricingType={values.pricingType}
-          perUnitPrice={values.perUnitPrice}
-          packs={values.packs}
-          sizes={values.sizes}
-          weights={values.weights}
-          comboDeals={values.comboDeals}
+        <AddProductPricingSection
+          values={values}
+          errors={errors}
           disabled={isSubmitting}
-          onPerUnitPriceChange={(value) => updateValue("perUnitPrice", value)}
-          onPacksChange={(value: ProductPriceOption[]) =>
-            updateValue("packs", value)
-          }
-          onSizesChange={(value: ProductPriceOption[]) =>
-            updateValue("sizes", value)
-          }
-          onWeightsChange={(value: ProductPriceOption[]) =>
-            updateValue("weights", value)
-          }
-          onComboDealsChange={(value: ProductDealTier[]) =>
-            updateValue("comboDeals", value)
-          }
+          updateValue={updateValue}
         />
 
-        <ProductVariantsField
-          enabled={values.hasVariants}
-          variants={values.variants}
+        <AddProductAdditionalFields
+          control={control}
+          values={values}
+          errors={errors}
           disabled={isSubmitting}
-          onEnabledChange={(value) => updateValue("hasVariants", value)}
-          onVariantsChange={(value) => updateValue("variants", value)}
-        />
-
-        <AddProductField
-          id="ingredients"
-          label="Ingredients"
-          value={values.ingredients}
-          placeholder="Add ingredients..."
-          multiline
-          rows={2}
-          disabled={isSubmitting}
-          onChange={(value) => updateValue("ingredients", value)}
-        />
-
-        <AddProductField
-          id="allergens"
-          label="Allergens"
-          value={values.allergens}
-          placeholder="Add allergens..."
-          multiline
-          rows={2}
-          disabled={isSubmitting}
-          onChange={(value) => updateValue("allergens", value)}
-        />
-
-        <AddProductUpload
-          file={values.productImage}
-          disabled={isSubmitting}
-          onChange={(value) => updateValue("productImage", value)}
+          validateField={validateProductField}
+          updateValue={updateValue}
         />
       </div>
 
-      <div className="grid gap-3 border-t border-[#E4E7EC] px-4 py-4 sm:flex sm:justify-end sm:gap-4 sm:px-6 md:px-8">
-        <Button
-          type="button"
-          variant="outline"
-          disabled={isSubmitting}
-          onClick={onCancel}
-          className="h-[48px] w-full rounded-[8px] border-[#D0D5DD] bg-background text-base font-medium text-dark hover:bg-muted sm:w-auto sm:min-w-[140px]"
-        >
-          Cancel
-        </Button>
-        <Button
-          type="submit"
-          disabled={isSubmitting}
-          className="h-[48px] w-full rounded-[8px] bg-primary px-6 text-base font-semibold text-white hover:bg-primary/90 sm:w-auto sm:min-w-[176px]"
-        >
-          {isSubmitting ? <Loader /> : submitLabel}
-        </Button>
-      </div>
+      <AddProductFormActions
+        disabled={isSubmitting}
+        submitLabel={submitLabel}
+        onCancel={onCancel}
+      />
     </form>
   );
 }

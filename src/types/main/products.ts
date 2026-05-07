@@ -29,8 +29,8 @@ export interface AddProductFormValues {
   sizes: ProductPriceOption[];
   weights: ProductPriceOption[];
   comboDeals: ProductDealTier[];
-  hasVariants: boolean;
-  variants: string[];
+  hasFlavors: boolean;
+  flavors: string[];
   ingredients: string;
   allergens: string;
   productImage: File | null;

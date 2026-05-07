@@ -21,10 +21,23 @@ interface ProductPricingFieldsProps {
   onSizesChange: (value: ProductPriceOption[]) => void;
   onWeightsChange: (value: ProductPriceOption[]) => void;
   onComboDealsChange: (value: ProductDealTier[]) => void;
+  errors?: ProductPricingErrors;
+}
+
+interface ProductPricingErrors {
+  perUnitPrice?: string;
+  packs?: Array<Partial<Record<"quantity" | "price", string>> | undefined>;
+  sizes?: Array<Partial<Record<"label" | "price", string>> | undefined>;
+  weights?: Array<Partial<Record<"quantity" | "price", string>> | undefined>;
+  comboDeals?: Array<Partial<Record<"quantity" | "price", string>> | undefined>;
 }
 
 function createId() {
-  return crypto.randomUUID();
+  if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
+    return crypto.randomUUID();
+  }
+
+  return `price-${Date.now()}-${Math.random().toString(36).slice(2)}`;
 }
 
 function RemoveButton({
@@ -83,7 +96,13 @@ export function ProductPricingFields({
   onSizesChange,
   onWeightsChange,
   onComboDealsChange,
+  errors,
 }: ProductPricingFieldsProps) {
+  const safePacks = packs ?? [];
+  const safeSizes = sizes ?? [];
+  const safeWeights = weights ?? [];
+  const safeComboDeals = comboDeals ?? [];
+
   if (pricingType === "perUnit") {
     return (
       <div className="rounded-[10px] border border-[#D0D5DD] bg-bg-creamy/55 p-3 md:p-4">
@@ -93,9 +112,10 @@ export function ProductPricingFields({
             id="perUnitPrice"
             value={perUnitPrice}
             type="number"
-            placeholder="0.00"
+            placeholder="Price"
             suffix="$"
             disabled={disabled}
+            error={errors?.perUnitPrice}
             onChange={onPerUnitPriceChange}
             inputClassName="text-sm"
           />
@@ -107,7 +127,7 @@ export function ProductPricingFields({
   if (pricingType === "packs") {
     return (
       <div className="space-y-3">
-        {packs.map((pack) => (
+        {safePacks.map((pack, packIndex) => (
           <div
             key={pack.id}
             className="grid items-center gap-3 rounded-[8px] border border-[#D0D5DD] bg-bg-creamy/55 p-3 md:grid-cols-[104px_130px_1fr_32px_56px]"
@@ -115,11 +135,13 @@ export function ProductPricingFields({
             <AddProductField
               id={`pack-quantity-${pack.id}`}
               value={pack.quantity ?? ""}
+              type="number"
               placeholder="qty"
               disabled={disabled}
+              error={errors?.packs?.[packIndex]?.quantity}
               onChange={(value) =>
                 onPacksChange(
-                  packs.map((item) =>
+                  safePacks.map((item) =>
                     item.id === pack.id ? { ...item, quantity: value } : item,
                   ),
                 )
@@ -132,11 +154,12 @@ export function ProductPricingFields({
               id={`pack-price-${pack.id}`}
               value={pack.price}
               type="number"
-              placeholder="0.00"
+              placeholder="Price"
               disabled={disabled}
+              error={errors?.packs?.[packIndex]?.price}
               onChange={(value) =>
                 onPacksChange(
-                  packs.map((item) =>
+                  safePacks.map((item) =>
                     item.id === pack.id ? { ...item, price: value } : item,
                   ),
                 )
@@ -144,9 +167,9 @@ export function ProductPricingFields({
             />
             <span className="text-center text-lg font-medium text-dark">$</span>
             <RemoveButton
-              disabled={disabled || packs.length === 1}
+              disabled={disabled || safePacks.length === 1}
               onClick={() =>
-                onPacksChange(packs.filter((item) => item.id !== pack.id))
+                onPacksChange(safePacks.filter((item) => item.id !== pack.id))
               }
             />
           </div>
@@ -156,8 +179,8 @@ export function ProductPricingFields({
           disabled={disabled}
           onClick={() =>
             onPacksChange([
-              ...packs,
-              { id: createId(), quantity: "", price: "0.00" },
+              ...safePacks,
+              { id: createId(), quantity: "", price: "" },
             ])
           }
         />
@@ -170,7 +193,7 @@ export function ProductPricingFields({
       <div className="space-y-3">
         <div className="rounded-[8px] border border-[#D0D5DD] bg-bg-creamy/55 p-3">
           <div className="space-y-3">
-            {sizes.map((size) => (
+            {safeSizes.map((size, sizeIndex) => (
               <div
                 key={size.id}
                 className="grid items-center gap-3 md:grid-cols-[180px_76px_1fr_32px_56px]"
@@ -180,9 +203,10 @@ export function ProductPricingFields({
                   value={size.label ?? ""}
                   placeholder="Size"
                   disabled={disabled}
+                  error={errors?.sizes?.[sizeIndex]?.label}
                   onChange={(value) =>
                     onSizesChange(
-                      sizes.map((item) =>
+                      safeSizes.map((item) =>
                         item.id === size.id ? { ...item, label: value } : item,
                       ),
                     )
@@ -195,11 +219,12 @@ export function ProductPricingFields({
                   id={`size-price-${size.id}`}
                   value={size.price}
                   type="number"
-                  placeholder="0.00"
+                  placeholder="Price"
                   disabled={disabled}
+                  error={errors?.sizes?.[sizeIndex]?.price}
                   onChange={(value) =>
                     onSizesChange(
-                      sizes.map((item) =>
+                      safeSizes.map((item) =>
                         item.id === size.id ? { ...item, price: value } : item,
                       ),
                     )
@@ -209,9 +234,9 @@ export function ProductPricingFields({
                   $
                 </span>
                 <RemoveButton
-                  disabled={disabled || sizes.length === 1}
+                  disabled={disabled || safeSizes.length === 1}
                   onClick={() =>
-                    onSizesChange(sizes.filter((item) => item.id !== size.id))
+                    onSizesChange(safeSizes.filter((item) => item.id !== size.id))
                   }
                 />
               </div>
@@ -223,8 +248,8 @@ export function ProductPricingFields({
           disabled={disabled}
           onClick={() =>
             onSizesChange([
-              ...sizes,
-              { id: createId(), label: "", price: "0.00" },
+              ...safeSizes,
+              { id: createId(), label: "", price: "" },
             ])
           }
         />
@@ -237,7 +262,7 @@ export function ProductPricingFields({
       <div className="space-y-3">
         <div className="rounded-[8px] border border-[#D0D5DD] bg-bg-creamy/55 p-3">
           <div className="space-y-3">
-            {weights.map((weight) => (
+            {safeWeights.map((weight, weightIndex) => (
               <div
                 key={weight.id}
                 className="grid items-center gap-3 md:grid-cols-[104px_108px_84px_1fr_32px_56px]"
@@ -246,11 +271,12 @@ export function ProductPricingFields({
                   id={`weight-quantity-${weight.id}`}
                   value={weight.quantity ?? ""}
                   type="number"
-                  placeholder="0"
+                  placeholder="qty"
                   disabled={disabled}
+                  error={errors?.weights?.[weightIndex]?.quantity}
                   onChange={(value) =>
                     onWeightsChange(
-                      weights.map((item) =>
+                      safeWeights.map((item) =>
                         item.id === weight.id
                           ? { ...item, quantity: value }
                           : item,
@@ -263,7 +289,7 @@ export function ProductPricingFields({
                   disabled={disabled}
                   onChange={(event) =>
                     onWeightsChange(
-                      weights.map((item) =>
+                      safeWeights.map((item) =>
                         item.id === weight.id
                           ? {
                               ...item,
@@ -288,11 +314,12 @@ export function ProductPricingFields({
                   id={`weight-price-${weight.id}`}
                   value={weight.price}
                   type="number"
-                  placeholder="0.00"
+                  placeholder="Price"
                   disabled={disabled}
+                  error={errors?.weights?.[weightIndex]?.price}
                   onChange={(value) =>
                     onWeightsChange(
-                      weights.map((item) =>
+                      safeWeights.map((item) =>
                         item.id === weight.id ? { ...item, price: value } : item,
                       ),
                     )
@@ -302,10 +329,10 @@ export function ProductPricingFields({
                   $
                 </span>
                 <RemoveButton
-                  disabled={disabled || weights.length === 1}
+                  disabled={disabled || safeWeights.length === 1}
                   onClick={() =>
                     onWeightsChange(
-                      weights.filter((item) => item.id !== weight.id),
+                      safeWeights.filter((item) => item.id !== weight.id),
                     )
                   }
                 />
@@ -318,8 +345,8 @@ export function ProductPricingFields({
           disabled={disabled}
           onClick={() =>
             onWeightsChange([
-              ...weights,
-              { id: createId(), quantity: "", unit: "OZ", price: "0.00" },
+              ...safeWeights,
+              { id: createId(), quantity: "", unit: "OZ", price: "" },
             ])
           }
         />
@@ -331,7 +358,7 @@ export function ProductPricingFields({
     <div className="space-y-3">
       <div className="rounded-[8px] border border-[#D0D5DD] bg-bg-creamy/55 p-3">
         <div className="space-y-3">
-          {comboDeals.map((deal) => (
+          {safeComboDeals.map((deal, dealIndex) => (
             <div
               key={deal.id}
               className="grid items-center gap-3 md:grid-cols-[120px_120px_1fr_32px_56px]"
@@ -340,11 +367,12 @@ export function ProductPricingFields({
                 id={`deal-quantity-${deal.id}`}
                 value={deal.quantity}
                 type="number"
-                placeholder="1"
+                placeholder="qty"
                 disabled={disabled}
+                error={errors?.comboDeals?.[dealIndex]?.quantity}
                 onChange={(value) =>
                   onComboDealsChange(
-                    comboDeals.map((item) =>
+                    safeComboDeals.map((item) =>
                       item.id === deal.id ? { ...item, quantity: value } : item,
                     ),
                   )
@@ -357,11 +385,12 @@ export function ProductPricingFields({
                 id={`deal-price-${deal.id}`}
                 value={deal.price}
                 type="number"
-                placeholder="0.00"
+                placeholder="Price"
                 disabled={disabled}
+                error={errors?.comboDeals?.[dealIndex]?.price}
                 onChange={(value) =>
                   onComboDealsChange(
-                    comboDeals.map((item) =>
+                    safeComboDeals.map((item) =>
                       item.id === deal.id ? { ...item, price: value } : item,
                     ),
                   )
@@ -371,10 +400,10 @@ export function ProductPricingFields({
                 $
               </span>
               <RemoveButton
-                disabled={disabled || comboDeals.length === 1}
+                disabled={disabled || safeComboDeals.length === 1}
                 onClick={() =>
                   onComboDealsChange(
-                    comboDeals.filter((item) => item.id !== deal.id),
+                    safeComboDeals.filter((item) => item.id !== deal.id),
                   )
                 }
               />
@@ -387,11 +416,11 @@ export function ProductPricingFields({
         disabled={disabled}
         onClick={() =>
           onComboDealsChange([
-            ...comboDeals,
+            ...safeComboDeals,
             {
               id: createId(),
-              quantity: String(comboDeals.length + 1),
-              price: "0.00",
+              quantity: "",
+              price: "",
             },
           ])
         }
