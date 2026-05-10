@@ -1,30 +1,15 @@
-import { LayoutGrid, Rows3, Search } from "lucide-react";
-import type {
-  CategorySearchToolbarProps,
-  CategoryViewToggleOption,
-} from "@/interfaces/main/categories";
+import { Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib";
+import { viewToggleOptions } from "@/data";
+import { SearchToolbarProps } from "@/interfaces";
 
-const viewToggleOptions: CategoryViewToggleOption[] = [
-  {
-    value: "table",
-    label: "Table",
-    icon: <Rows3 className="size-4" strokeWidth={2.2} />,
-  },
-  {
-    value: "card",
-    label: "Card",
-    icon: <LayoutGrid className="size-4" strokeWidth={2.2} />,
-  },
-];
-
-export function CategorySearchToolbar({
+export function ProductSearchToolbar({
   searchValue,
   onSearchChange,
   viewMode,
   onViewModeChange,
-}: CategorySearchToolbarProps) {
+}: SearchToolbarProps) {
   return (
     <div className="rounded-2xl border border-border/10 bg-bg-creamy/30 p-4 md:p-5">
       <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
@@ -33,7 +18,7 @@ export function CategorySearchToolbar({
           <input
             value={searchValue}
             onChange={(event) => onSearchChange(event.target.value)}
-            placeholder="Search by category name..."
+            placeholder="Search by product name..."
             className="w-full bg-transparent font-medium text-dark outline-none placeholder:text-gray"
           />
         </label>

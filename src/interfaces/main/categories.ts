@@ -1,8 +1,6 @@
 import type { ReactNode } from "react";
-import type {
-  CategoryActionTone,
-  CategoryViewMode,
-} from "@/types/main/categories";
+import type { CategoryActionTone } from "@/types/main/categories";
+import { ViewMode } from "@/types";
 
 export interface BakeryCategoryDetails {
   slug: string;
@@ -11,7 +9,7 @@ export interface BakeryCategoryDetails {
   heroTitle: string;
 }
 
-export interface BakerySubCategoryRecord {
+export interface SubCategoryRecord {
   id: string;
   slug: string;
   name: string;
@@ -28,28 +26,28 @@ export interface CategoryHeaderProps {
 export interface CategorySearchToolbarProps {
   searchValue: string;
   onSearchChange: (value: string) => void;
-  viewMode: CategoryViewMode;
-  onViewModeChange: (value: CategoryViewMode) => void;
+  viewMode: ViewMode;
+  onViewModeChange: (value: ViewMode) => void;
 }
 
 export interface CategoryViewToggleOption {
-  value: CategoryViewMode;
+  value: ViewMode;
   label: string;
   icon: ReactNode;
 }
 
 export interface CategoryTableProps {
-  items: BakerySubCategoryRecord[];
-  onViewDetails: (item: BakerySubCategoryRecord) => void;
-  onEditDetails: (item: BakerySubCategoryRecord) => void;
-  onDeleteDetails: (item: BakerySubCategoryRecord) => void;
+  items: SubCategoryRecord[];
+  onViewDetails: (item: SubCategoryRecord) => void;
+  onEditDetails: (item: SubCategoryRecord) => void;
+  onDeleteDetails: (item: SubCategoryRecord) => void;
 }
 
 export interface SubCategoryCardGridProps {
-  items: BakerySubCategoryRecord[];
-  onViewDetails: (item: BakerySubCategoryRecord) => void;
-  onEditDetails: (item: BakerySubCategoryRecord) => void;
-  onDeleteDetails: (item: BakerySubCategoryRecord) => void;
+  items: SubCategoryRecord[];
+  onViewDetails: (item: SubCategoryRecord) => void;
+  onEditDetails: (item: SubCategoryRecord) => void;
+  onDeleteDetails: (item: SubCategoryRecord) => void;
 }
 
 export interface CategoryActionButtonProps {

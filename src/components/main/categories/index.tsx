@@ -1,13 +1,11 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { bakeryCategoryDetails } from "@/data/main/categories";
 import { useSubCategoriesList } from "@/hooks/api";
 import type {
-  BakerySubCategoryRecord,
+  SubCategoryRecord,
   SubCategoryListItem,
 } from "@/interfaces/main/categories";
-import type { CategoryViewMode } from "@/types/main/categories";
 import { CategoriesEmptyState } from "./categories-empty-state";
 import { CategoriesCardGridShimmer } from "./categories-card-grid-shimmer";
 import { CategoriesShowMoreButton } from "./categories-show-more-button";
@@ -20,10 +18,9 @@ import AddCategory from "./add-category";
 import DeleteCategory from "./delete-category";
 import UpdateCategory from "./update-category";
 import ViewCategory from "./view-category";
+import { ViewMode } from "@/types";
 
-function mapSubCategoryToRecord(
-  item: SubCategoryListItem,
-): BakerySubCategoryRecord {
+function mapSubCategoryToRecord(item: SubCategoryListItem): SubCategoryRecord {
   return {
     id: `#CATE-${item.id}`,
     slug: item.slug,
@@ -35,7 +32,7 @@ function mapSubCategoryToRecord(
 
 function Categories() {
   const [searchValue, setSearchValue] = useState("");
-  const [viewMode, setViewMode] = useState<CategoryViewMode>("table");
+  const [viewMode, setViewMode] = useState<ViewMode>("table");
   const [isAddCategoryOpen, setIsAddCategoryOpen] = useState(false);
   const [selectedCategorySlug, setSelectedCategorySlug] = useState<
     string | null
@@ -44,7 +41,7 @@ function Categories() {
     string | null
   >(null);
   const [selectedDeleteCategory, setSelectedDeleteCategory] =
-    useState<BakerySubCategoryRecord | null>(null);
+    useState<SubCategoryRecord | null>(null);
   const { data, isLoading, hasNextPage, fetchNextPage, isFetchingNextPage } =
     useSubCategoriesList(searchValue);
 
@@ -60,31 +57,37 @@ function Categories() {
   const isUpdateCategoryOpen = Boolean(selectedUpdateCategorySlug);
   const isDeleteCategoryOpen = Boolean(selectedDeleteCategory);
 
-  function handleViewCategory(item: BakerySubCategoryRecord) {
+  function handleViewCategory(item: SubCategoryRecord) {
     setSelectedCategorySlug(item.slug);
   }
 
-  function handleEditCategory(item: BakerySubCategoryRecord) {
+  function handleEditCategory(item: SubCategoryRecord) {
     setSelectedUpdateCategorySlug(item.slug);
   }
 
-  function handleDeleteCategory(item: BakerySubCategoryRecord) {
+  function handleDeleteCategory(item: SubCategoryRecord) {
     setSelectedDeleteCategory(item);
   }
 
+  const changeSearchValue = (value: string) => {
+    setSearchValue(value);
+  };
+  const changeViewMode = (mode: ViewMode) => {
+    setViewMode(mode);
+  };
   return (
     <section className="space-y-4 md:space-y-6">
       <CategoryHeader
-        title={bakeryCategoryDetails.title}
-        description={bakeryCategoryDetails.description}
+        title={"Categories Management"}
+        description={"Organize your products into Categories"}
         onAddCategoryClick={() => setIsAddCategoryOpen(true)}
       />
 
       <CategorySearchToolbar
         searchValue={searchValue}
-        onSearchChange={setSearchValue}
+        onSearchChange={changeSearchValue}
         viewMode={viewMode}
-        onViewModeChange={setViewMode}
+        onViewModeChange={changeViewMode}
       />
 
       {isLoading ? (

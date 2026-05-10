@@ -1,7 +1,8 @@
 import { PAGE_SIZE } from "@/constants";
+import type { ProductListResponse } from "@/interfaces";
 import { baseAPI } from "..";
 
-export const subCategoriesListAPI = async (page: number, search?: string) => {
+export const productListAPI = async (page: number, search?: string) => {
   const params = new URLSearchParams();
 
   if (search) {
@@ -11,7 +12,7 @@ export const subCategoriesListAPI = async (page: number, search?: string) => {
   params.append("page", String(page));
   params.append("per_page", String(PAGE_SIZE));
 
-  return await baseAPI(
+  return await baseAPI<ProductListResponse>(
     "GET",
     `/product/list?${params.toString()}`,
   );
