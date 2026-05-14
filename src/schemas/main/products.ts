@@ -51,22 +51,22 @@ export const createProductSchema = z
     productName: requiredText("Title"),
     category: requiredText("Category"),
     description: requiredText("Description"),
-    pricingType: z.enum([
-      "perUnit",
-      "packs",
-      "sizes",
-      "byWeight",
-      "comboDeal",
-    ]),
+
+    pricingType: z.enum(["perUnit", "packs", "sizes", "byWeight", "comboDeal"]),
+
     perUnitPrice: z.string(),
+
     packs: z.array(priceOptionSchema).min(1, "Add at least one pack"),
     sizes: z.array(priceOptionSchema).min(1, "Add at least one size"),
     weights: z.array(priceOptionSchema).min(1, "Add at least one weight"),
     comboDeals: z.array(dealTierSchema).min(1, "Add at least one combo deal"),
+
     hasFlavors: z.boolean(),
     flavors: z.array(z.string()),
+
     ingredients: requiredText("Ingredients"),
     allergens: requiredText("Allergens"),
+
     productImage: z
       .custom<File | null>((value) => value === null || isFile(value), {
         message: "Image is required",
@@ -84,6 +84,7 @@ export const createProductSchema = z
   .superRefine((values, context) => {
     if (values.pricingType === "perUnit") {
       const result = positiveMoney("Price").safeParse(values.perUnitPrice);
+
       if (!result.success) {
         context.addIssue({
           code: "custom",
@@ -95,25 +96,28 @@ export const createProductSchema = z
 
     if (values.pricingType === "packs") {
       values.packs.forEach((pack, index) => {
-        const quantityResult = positiveQuantity("Quantity").safeParse(
+        const quantityResult = positiveQuantity("Quantity", 2).safeParse(
           pack.quantity,
         );
+
         if (!quantityResult.success) {
           context.addIssue({
             code: "custom",
             path: ["packs", index, "quantity"],
             message:
               quantityResult.error.issues[0]?.message ??
-              "Quantity is required",
+              "Quantity must be at least 2",
           });
         }
 
         const priceResult = positiveMoney("Price").safeParse(pack.price);
+
         if (!priceResult.success) {
           context.addIssue({
             code: "custom",
             path: ["packs", index, "price"],
-            message: priceResult.error.issues[0]?.message ?? "Price is required",
+            message:
+              priceResult.error.issues[0]?.message ?? "Price is required",
           });
         }
       });
@@ -122,6 +126,7 @@ export const createProductSchema = z
     if (values.pricingType === "sizes") {
       values.sizes.forEach((size, index) => {
         const labelResult = requiredText("Size").safeParse(size.label);
+
         if (!labelResult.success) {
           context.addIssue({
             code: "custom",
@@ -131,11 +136,13 @@ export const createProductSchema = z
         }
 
         const priceResult = positiveMoney("Price").safeParse(size.price);
+
         if (!priceResult.success) {
           context.addIssue({
             code: "custom",
             path: ["sizes", index, "price"],
-            message: priceResult.error.issues[0]?.message ?? "Price is required",
+            message:
+              priceResult.error.issues[0]?.message ?? "Price is required",
           });
         }
       });
@@ -146,22 +153,24 @@ export const createProductSchema = z
         const quantityResult = positiveQuantity("Quantity").safeParse(
           weight.quantity,
         );
+
         if (!quantityResult.success) {
           context.addIssue({
             code: "custom",
             path: ["weights", index, "quantity"],
             message:
-              quantityResult.error.issues[0]?.message ??
-              "Quantity is required",
+              quantityResult.error.issues[0]?.message ?? "Quantity is required",
           });
         }
 
         const priceResult = positiveMoney("Price").safeParse(weight.price);
+
         if (!priceResult.success) {
           context.addIssue({
             code: "custom",
             path: ["weights", index, "price"],
-            message: priceResult.error.issues[0]?.message ?? "Price is required",
+            message:
+              priceResult.error.issues[0]?.message ?? "Price is required",
           });
         }
       });
@@ -172,22 +181,24 @@ export const createProductSchema = z
         const quantityResult = positiveQuantity("Quantity").safeParse(
           deal.quantity,
         );
+
         if (!quantityResult.success) {
           context.addIssue({
             code: "custom",
             path: ["comboDeals", index, "quantity"],
             message:
-              quantityResult.error.issues[0]?.message ??
-              "Quantity is required",
+              quantityResult.error.issues[0]?.message ?? "Quantity is required",
           });
         }
 
         const priceResult = positiveMoney("Price").safeParse(deal.price);
+
         if (!priceResult.success) {
           context.addIssue({
             code: "custom",
             path: ["comboDeals", index, "price"],
-            message: priceResult.error.issues[0]?.message ?? "Price is required",
+            message:
+              priceResult.error.issues[0]?.message ?? "Price is required",
           });
         }
       });

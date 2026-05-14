@@ -3,7 +3,9 @@ import type { AddProductFormValues } from "@/types/main";
 export function buildProductPayload(valuesToSubmit: AddProductFormValues) {
   const payload = new FormData();
 
-  payload.append("title", valuesToSubmit.productName.trim());
+  const productTitle = valuesToSubmit.productName.trim();
+
+  payload.append("title", productTitle);
   payload.append("sub_category_id", valuesToSubmit.category.trim());
   payload.append("description", valuesToSubmit.description.trim());
   payload.append("description_ingredient", valuesToSubmit.ingredients.trim());
@@ -14,14 +16,28 @@ export function buildProductPayload(valuesToSubmit: AddProductFormValues) {
   }
 
   if (valuesToSubmit.pricingType === "perUnit") {
-    payload.append("prices[per_unit][0][price]", valuesToSubmit.perUnitPrice);
+    if (valuesToSubmit.pricingType === "perUnit") {
+      const label = `Single ${productTitle}`;
+
+      payload.append("prices[per_unit][0][price]", valuesToSubmit.perUnitPrice);
+      payload.append("prices[per_unit][0][label]", label);
+    }
   }
 
   if (valuesToSubmit.pricingType === "packs") {
     valuesToSubmit.packs.forEach((pack, index) => {
       const quantity = Number(pack.quantity);
-      payload.append("prices[packs][" + index + "][label]", `Pack of ${quantity}`);
-      payload.append("prices[packs][" + index + "][quantity]", String(quantity));
+
+      payload.append(
+        "prices[packs][" + index + "][label]",
+        `Pack of ${quantity}`,
+      );
+
+      payload.append(
+        "prices[packs][" + index + "][quantity]",
+        String(quantity),
+      );
+
       payload.append("prices[packs][" + index + "][price]", pack.price);
     });
   }
@@ -32,6 +48,7 @@ export function buildProductPayload(valuesToSubmit: AddProductFormValues) {
         "prices[sizes][" + index + "][label]",
         size.label?.trim() ?? "",
       );
+
       payload.append("prices[sizes][" + index + "][price]", size.price);
     });
   }
@@ -40,11 +57,17 @@ export function buildProductPayload(valuesToSubmit: AddProductFormValues) {
     valuesToSubmit.weights.forEach((weight, index) => {
       const quantity = Number(weight.quantity);
       const unit = weight.unit ?? "OZ";
+
       payload.append(
         "prices[weight][" + index + "][label]",
         `${quantity} ${unit.toLowerCase()}`,
       );
-      payload.append("prices[weight][" + index + "][quantity]", String(quantity));
+
+      payload.append(
+        "prices[weight][" + index + "][quantity]",
+        String(quantity),
+      );
+
       payload.append("prices[weight][" + index + "][price]", weight.price);
     });
   }
@@ -52,11 +75,17 @@ export function buildProductPayload(valuesToSubmit: AddProductFormValues) {
   if (valuesToSubmit.pricingType === "comboDeal") {
     valuesToSubmit.comboDeals.forEach((deal, index) => {
       const quantity = Number(deal.quantity);
+
+      const label =
+        quantity === 1 ? `Single ${productTitle}` : `Pack of ${quantity}`;
+
+      payload.append("prices[combo][" + index + "][label]", label);
+
       payload.append(
-        "prices[combo][" + index + "][label]",
-        `Pack of ${quantity} Combo`,
+        "prices[combo][" + index + "][quantity]",
+        String(quantity),
       );
-      payload.append("prices[combo][" + index + "][quantity]", String(quantity));
+
       payload.append("prices[combo][" + index + "][price]", deal.price);
     });
   }

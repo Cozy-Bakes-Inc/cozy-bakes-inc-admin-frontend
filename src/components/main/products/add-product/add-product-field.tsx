@@ -94,7 +94,7 @@ export function AddProductField({
         ) : null}
       </div>
 
-      <InputErrorMessage msg={error} />
+      <InputErrorMessage msg={error} className="whitespace-nowrap" />
     </div>
   );
 }

@@ -1,5 +1,5 @@
-import { productListAPI } from "@/services/queries";
-import { useCustomInfiniteQuery } from "..";
+import { productListAPI, singleProductAPI } from "@/services/queries";
+import { useCustomInfiniteQuery, useCustomQuery } from "..";
 
 export function useProductList(search?: string) {
   return useCustomInfiniteQuery(
@@ -22,4 +22,10 @@ export function useProductList(search?: string) {
       },
     },
   );
+}
+
+export function useProduct(slug: string) {
+  return useCustomQuery(["product", slug], () => singleProductAPI(slug), {
+    enabled: !!slug,
+  });
 }

@@ -13,8 +13,9 @@ import { ProductTable } from "./product-table";
 import { ProductEmptyState } from "./product-empty-state";
 import { ProductTableShimmer } from "./product-table-shimmer";
 import { ProductCardGridShimmer } from "./product-card-grid-shimmer";
-import { ProductRecord } from "@/interfaces";
+import type { ProductRecord } from "@/interfaces";
 import { ProductShowMoreButton } from "./product-show-more-button";
+import { ProductDetailsModal } from "./view-product";
 
 function Products() {
   const router = useRouter();
@@ -22,6 +23,10 @@ function Products() {
   const shouldOpenAddProduct = searchParams.get("addProduct") === "1";
   const [isAddProductOpen, setIsAddProductOpen] =
     useState(shouldOpenAddProduct);
+  const [selectedProductSlug, setSelectedProductSlug] = useState<string | null>(
+    null,
+  );
+  const [isDetailsOpen, setIsDetailsOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("");
   const [viewMode, setViewMode] = useState<ViewMode>("table");
 
@@ -35,7 +40,6 @@ function Products() {
         .map(mapProductToRecord) ?? [],
     [data],
   );
-  console.log(data);
   const hasEmptyState = !isLoading && visibleItems.length === 0;
   const changeSearchValue = (value: string) => {
     setSearchValue(value);
@@ -45,7 +49,8 @@ function Products() {
   };
 
   function handleViewProduct(item: ProductRecord) {
-    console.log("view product", item);
+    setSelectedProductSlug(item.slug);
+    setIsDetailsOpen(true);
   }
 
   function handleEditProduct(item: ProductRecord) {
@@ -110,6 +115,14 @@ function Products() {
         open={isAddProductOpen}
         onClose={() => setIsAddProductOpen(false)}
         onSubmit={() => setIsAddProductOpen(false)}
+      />
+      <ProductDetailsModal
+        slug={selectedProductSlug}
+        isOpen={isDetailsOpen}
+        onClose={() => {
+          setIsDetailsOpen(false);
+          setSelectedProductSlug(null);
+        }}
       />
     </div>
   );

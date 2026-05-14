@@ -1,10 +1,15 @@
-interface IProps {
+import { cn } from "@/lib";
+
+interface InputErrorMessageProps {
   msg?: string;
-  key?: string;
+  className?: string;
 }
-const InputErrorMessage = ({ msg }: IProps) => {
+
+const InputErrorMessage = ({ msg, className }: InputErrorMessageProps) => {
   return msg ? (
-    <span className="mt-2 block text-sm text-red-700">{msg}</span>
+    <span className={cn("mt-2 block text-sm text-red-700", className)}>
+      {msg}
+    </span>
   ) : null;
 };
 
