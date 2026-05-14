@@ -18,21 +18,41 @@ interface AddProductPricingSectionProps {
   updateValue: AddProductValueUpdater;
 }
 
+function getDefaultSizeRows(): ProductPriceOption[] {
+  return [
+    { id: "size-1", label: "Small", price: "" },
+    { id: "size-2", label: "Medium", price: "" },
+    { id: "size-3", label: "Large", price: "" },
+  ];
+}
+
+function hasCustomSizeRows(sizes: ProductPriceOption[]) {
+  return sizes.some(
+    (size) => size.label?.trim() || size.price.trim(),
+  );
+}
+
 export function AddProductPricingSection({
   values,
   errors,
   disabled,
   updateValue,
 }: AddProductPricingSectionProps) {
+  function handlePricingTypeChange(value: ProductPricingType) {
+    if (value === "sizes" && !hasCustomSizeRows(values.sizes)) {
+      updateValue("sizes", getDefaultSizeRows());
+    }
+
+    updateValue("pricingType", value);
+  }
+
   return (
     <>
       <div className="border-t border-[#E4E7EC] pt-6">
         <PricingTypeSelector
           value={values.pricingType}
           disabled={disabled}
-          onChange={(value: ProductPricingType) =>
-            updateValue("pricingType", value)
-          }
+          onChange={handlePricingTypeChange}
         />
       </div>
 

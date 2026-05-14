@@ -15,9 +15,9 @@ const defaultFormValues: AddProductFormValues = {
     { id: "pack-2", quantity: "", price: "" },
   ],
   sizes: [
-    { id: "size-1", label: "", price: "" },
-    { id: "size-2", label: "", price: "" },
-    { id: "size-3", label: "", price: "" },
+    { id: "size-1", label: "Small", price: "" },
+    { id: "size-2", label: "Medium", price: "" },
+    { id: "size-3", label: "Large", price: "" },
   ],
   weights: [
     { id: "weight-1", quantity: "", unit: "OZ", price: "" },
