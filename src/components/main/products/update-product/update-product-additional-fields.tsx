@@ -1,31 +1,28 @@
 import { Controller, type Control } from "react-hook-form";
 import type { AddProductFormValues } from "@/types/main";
-import { AddProductField } from "./add-product-field";
-import type {
-  AddProductFieldValidator,
-  AddProductFormErrors,
-  AddProductValueUpdater,
-} from "./add-product-form-types";
-import { AddProductUpload } from "./add-product-upload";
-import { ProductFlavorsField } from "./product-flavors-field";
+import { AddProductField } from "../add-product/add-product-field";
+import type { AddProductFieldValidator } from "../add-product/add-product-form-types";
+import { ProductFlavorsField } from "../add-product/product-flavors-field";
+import type { UpdateProductFormErrors, UpdateProductFormValues, UpdateProductValueUpdater } from "./update-product-form-types";
+import { UpdateProductUpload } from "./update-product-upload";
 
-interface AddProductAdditionalFieldsProps {
-  control: Control<AddProductFormValues>;
-  values: AddProductFormValues;
-  errors: AddProductFormErrors;
+interface UpdateProductAdditionalFieldsProps {
+  control: Control<UpdateProductFormValues>;
+  values: UpdateProductFormValues;
+  errors: UpdateProductFormErrors;
   disabled: boolean;
   validateField: AddProductFieldValidator;
-  updateValue: AddProductValueUpdater;
+  updateValue: UpdateProductValueUpdater;
 }
 
-export function AddProductAdditionalFields({
+export function UpdateProductAdditionalFields({
   control,
   values,
   errors,
   disabled,
   validateField,
   updateValue,
-}: AddProductAdditionalFieldsProps) {
+}: UpdateProductAdditionalFieldsProps) {
   return (
     <>
       <ProductFlavorsField
@@ -39,7 +36,7 @@ export function AddProductAdditionalFields({
 
       <Controller
         name="ingredients"
-        control={control}
+        control={control as unknown as Control<AddProductFormValues>}
         rules={{
           validate: (value) => validateField("ingredients", value),
         }}
@@ -60,7 +57,7 @@ export function AddProductAdditionalFields({
 
       <Controller
         name="allergens"
-        control={control}
+        control={control as unknown as Control<AddProductFormValues>}
         rules={{
           validate: (value) => validateField("allergens", value),
         }}
@@ -81,16 +78,15 @@ export function AddProductAdditionalFields({
 
       <Controller
         name="productImages"
-        control={control}
-        rules={{
-          validate: (value) => validateField("productImages", value),
-        }}
+        control={control as unknown as Control<AddProductFormValues>}
         render={({ field }) => (
-          <AddProductUpload
+          <UpdateProductUpload
             files={field.value}
+            existingImageUrls={values.existingImageUrls}
             disabled={disabled}
             error={errors.productImages?.message}
             onChange={field.onChange}
+            onExistingUrlsChange={(urls) => updateValue("existingImageUrls", urls)}
           />
         )}
       />

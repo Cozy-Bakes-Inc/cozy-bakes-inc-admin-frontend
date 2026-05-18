@@ -31,7 +31,7 @@ const defaultFormValues: AddProductFormValues = {
   flavors: [],
   ingredients: "",
   allergens: "",
-  productImage: null,
+  productImages: [],
 };
 
 function resolveInitialValues(
@@ -62,7 +62,7 @@ export default function AddProductModal({
     resolvedInitialValues.category,
     resolvedInitialValues.description,
     resolvedInitialValues.pricingType,
-    resolvedInitialValues.productImage?.name ?? "",
+    resolvedInitialValues.productImages.map((f) => f.name).join(","),
   ].join("|");
 
   return (

@@ -67,19 +67,20 @@ export const createProductSchema = z
     ingredients: requiredText("Ingredients"),
     allergens: requiredText("Allergens"),
 
-    productImage: z
-      .custom<File | null>((value) => value === null || isFile(value), {
-        message: "Image is required",
-      })
-      .refine((file) => file !== null, "Image is required")
-      .refine(
-        (file) => file === null || acceptedImageTypes.includes(file.type),
-        "Image must be PNG or JPG",
+    productImages: z
+      .array(
+        z
+          .custom<File>((value) => isFile(value), { message: "Invalid file" })
+          .refine(
+            (file) => acceptedImageTypes.includes(file.type),
+            "Images must be PNG or JPG",
+          )
+          .refine(
+            (file) => file.size <= maxImageSizeInBytes,
+            "Each image must be 5MB or less",
+          ),
       )
-      .refine(
-        (file) => file === null || file.size <= maxImageSizeInBytes,
-        "Image must be 5MB or less",
-      ),
+      .min(1, "At least one image is required"),
   })
   .superRefine((values, context) => {
     if (values.pricingType === "perUnit") {

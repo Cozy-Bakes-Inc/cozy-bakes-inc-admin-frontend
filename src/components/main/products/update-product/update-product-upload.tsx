@@ -7,24 +7,27 @@ import { Button } from "@/components/ui/button";
 import InputErrorMessage from "@/components/ui/input-error-message";
 import { cn } from "@/lib";
 
-export interface AddProductUploadProps {
+export interface UpdateProductUploadProps {
   files: File[];
+  existingImageUrls: string[];
   onChange: (files: File[]) => void;
+  onExistingUrlsChange: (urls: string[]) => void;
   error?: string;
   disabled?: boolean;
 }
 
-export function AddProductUpload({
+export function UpdateProductUpload({
   files,
+  existingImageUrls,
   onChange,
+  onExistingUrlsChange,
   error,
   disabled = false,
-}: AddProductUploadProps) {
+}: UpdateProductUploadProps) {
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   const blobUrls = useMemo(
     () => files.map((f) => URL.createObjectURL(f)),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [files],
   );
 
@@ -47,11 +50,16 @@ export function AddProductUpload({
     if (dropped.length) onChange([...files, ...dropped]);
   }
 
-  function removeFile(index: number) {
+  function removeNewFile(index: number) {
     onChange(files.filter((_, i) => i !== index));
   }
 
-  const isEmpty = files.length === 0;
+  function removeExistingUrl(index: number) {
+    onExistingUrlsChange(existingImageUrls.filter((_, i) => i !== index));
+  }
+
+  const totalImages = existingImageUrls.length + files.length;
+  const isEmpty = totalImages === 0;
 
   return (
     <div>
@@ -95,14 +103,40 @@ export function AddProductUpload({
           onDrop={handleDrop}
           className="flex flex-wrap gap-3"
         >
-          {blobUrls.map((url, i) => (
+          {existingImageUrls.map((url, i) => (
             <div
-              key={url}
-              className="relative size-24 shrink-0 overflow-hidden rounded-[10px] border border-border/15"
+              key={`existing-${i}`}
+              className="relative size-37.5 shrink-0 overflow-hidden rounded-[10px] border border-border/15"
             >
               <Image
                 src={url}
-                alt={files[i]?.name ?? `Image ${i + 1}`}
+                alt={`Existing image ${i + 1}`}
+                fill
+                className="object-cover"
+                unoptimized
+              />
+              <span className="absolute inset-0 bg-black/20" />
+              <Button
+                type="button"
+                variant="ghost"
+                disabled={disabled}
+                aria-label={`Remove existing image ${i + 1}`}
+                onClick={() => removeExistingUrl(i)}
+                className="absolute right-1 top-1 size-6 rounded-full border border-danger bg-danger-soft p-0 text-danger hover:bg-danger-soft"
+              >
+                <X className="size-3" />
+              </Button>
+            </div>
+          ))}
+
+          {blobUrls.map((url, i) => (
+            <div
+              key={url}
+              className="relative size-37.5 shrink-0 overflow-hidden rounded-[10px] border border-border/15"
+            >
+              <Image
+                src={url}
+                alt={files[i]?.name ?? `New image ${i + 1}`}
                 fill
                 className="object-cover"
               />
@@ -112,7 +146,7 @@ export function AddProductUpload({
                 variant="ghost"
                 disabled={disabled}
                 aria-label={`Remove image ${i + 1}`}
-                onClick={() => removeFile(i)}
+                onClick={() => removeNewFile(i)}
                 className="absolute right-1 top-1 size-6 rounded-full border border-danger bg-danger-soft p-0 text-danger hover:bg-danger-soft"
               >
                 <X className="size-3" />
@@ -125,7 +159,7 @@ export function AddProductUpload({
             disabled={disabled}
             onClick={() => inputRef.current?.click()}
             className={cn(
-              "flex size-24 shrink-0 flex-col items-center justify-center gap-1 rounded-[10px] border border-dashed border-primary bg-[rgba(250,248,243,0.35)] text-primary transition-colors hover:bg-[rgba(250,248,243,0.75)]",
+              "flex size-37.5 shrink-0 flex-col items-center justify-center gap-1 rounded-[10px] border border-dashed border-primary bg-[rgba(250,248,243,0.35)] text-primary transition-colors hover:bg-[rgba(250,248,243,0.75)]",
               disabled ? "cursor-not-allowed opacity-60" : "cursor-pointer",
             )}
           >

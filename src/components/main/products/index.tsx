@@ -16,6 +16,8 @@ import { ProductCardGridShimmer } from "./product-card-grid-shimmer";
 import type { ProductRecord } from "@/interfaces";
 import { ProductShowMoreButton } from "./product-show-more-button";
 import { ProductDetailsModal } from "./view-product";
+import { UpdateProductModal } from "./update-product";
+import { DeleteProductModal } from "./delete-product";
 
 function Products() {
   const router = useRouter();
@@ -27,6 +29,8 @@ function Products() {
     null,
   );
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
+  const [editProductSlug, setEditProductSlug] = useState<string | null>(null);
+  const [deleteProduct, setDeleteProduct] = useState<{ slug: string; name: string } | null>(null);
   const [searchValue, setSearchValue] = useState("");
   const [viewMode, setViewMode] = useState<ViewMode>("table");
 
@@ -54,11 +58,11 @@ function Products() {
   }
 
   function handleEditProduct(item: ProductRecord) {
-    console.log("edit product", item);
+    setEditProductSlug(item.slug);
   }
 
   function handleDeleteProduct(item: ProductRecord) {
-    console.log("delete product", item);
+    setDeleteProduct({ slug: item.slug, name: item.name });
   }
 
   useEffect(() => {
@@ -115,6 +119,21 @@ function Products() {
         open={isAddProductOpen}
         onClose={() => setIsAddProductOpen(false)}
         onSubmit={() => setIsAddProductOpen(false)}
+      />
+      {editProductSlug ? (
+        <UpdateProductModal
+          open={!!editProductSlug}
+          slug={editProductSlug}
+          onClose={() => setEditProductSlug(null)}
+          onSubmit={() => setEditProductSlug(null)}
+        />
+      ) : null}
+      <DeleteProductModal
+        open={!!deleteProduct}
+        slug={deleteProduct?.slug ?? null}
+        name={deleteProduct?.name ?? ""}
+        onClose={() => setDeleteProduct(null)}
+        onDeleted={() => setDeleteProduct(null)}
       />
       <ProductDetailsModal
         slug={selectedProductSlug}

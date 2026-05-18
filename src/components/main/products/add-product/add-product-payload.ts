@@ -11,9 +11,9 @@ export function buildProductPayload(valuesToSubmit: AddProductFormValues) {
   payload.append("description_ingredient", valuesToSubmit.ingredients.trim());
   payload.append("description_allergens", valuesToSubmit.allergens.trim());
 
-  if (valuesToSubmit.productImage) {
-    payload.append("images[]", valuesToSubmit.productImage);
-  }
+  valuesToSubmit.productImages.forEach((image) => {
+    payload.append("images[]", image);
+  });
 
   if (valuesToSubmit.pricingType === "perUnit") {
     if (valuesToSubmit.pricingType === "perUnit") {

@@ -33,7 +33,7 @@ export interface AddProductFormValues {
   flavors: string[];
   ingredients: string;
   allergens: string;
-  productImage: File | null;
+  productImages: File[];
 }
 
 export interface AddProductProps {
