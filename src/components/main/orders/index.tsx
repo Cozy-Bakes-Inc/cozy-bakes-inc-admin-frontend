@@ -7,7 +7,11 @@ import type { OrderRecord } from "@/interfaces";
 import type { PendingOrderStatusUpdate } from "@/interfaces/main/orders";
 import { orderFilters } from "@/data/main/orders";
 import { useOrders } from "@/hooks/api";
-import { filterSortMap, mapOrderToRecord, reverseOrderStatusMap } from "@/lib/utils/orders";
+import {
+  filterSortMap,
+  mapOrderToRecord,
+  reverseOrderStatusMap,
+} from "@/lib/utils/orders";
 import { updateOrderStatusAPI } from "@/services/mutations/orders";
 import type { OrderFilterValue, OrderViewMode } from "@/types/main/orders";
 import OrderDetails from "./order-details";
@@ -30,15 +34,14 @@ function Orders() {
   const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
   const [selectedOrderNo, setSelectedOrderNo] = useState<string | null>(null);
   const [isOrderDetailsOpen, setIsOrderDetailsOpen] = useState(false);
-  const [statusOverrides, setStatusOverrides] = useState<Record<string, OrderRecord["status"]>>(
-    {},
-  );
+  const [statusOverrides, setStatusOverrides] = useState<
+    Record<string, OrderRecord["status"]>
+  >({});
   const [pendingStatusUpdate, setPendingStatusUpdate] =
     useState<PendingOrderStatusUpdate | null>(null);
   const sort = filterSortMap[activeFilter];
   const { data, isLoading, hasNextPage, fetchNextPage, isFetchingNextPage } =
     useOrders(sort);
-
   const orders = useMemo(
     () =>
       data?.pages
@@ -54,6 +57,7 @@ function Orders() {
       })),
     [orders, statusOverrides],
   );
+  console.log(data);
   const normalizedSearch = searchValue.trim().toLowerCase();
   const visibleOrders = useMemo(() => {
     if (!normalizedSearch) {
@@ -165,20 +169,18 @@ function Orders() {
               setSearchValue("");
             }}
           />
+        ) : viewMode === "table" ? (
+          <OrdersTable
+            orders={visibleOrders}
+            onStatusChangeRequest={handleStatusChangeRequest}
+            onViewDetails={handleViewDetails}
+          />
         ) : (
-          viewMode === "table" ? (
-            <OrdersTable
-              orders={visibleOrders}
-              onStatusChangeRequest={handleStatusChangeRequest}
-              onViewDetails={handleViewDetails}
-            />
-          ) : (
-            <OrdersCardGrid
-              orders={visibleOrders}
-              onStatusChangeRequest={handleStatusChangeRequest}
-              onViewDetails={handleViewDetails}
-            />
-          )
+          <OrdersCardGrid
+            orders={visibleOrders}
+            onStatusChangeRequest={handleStatusChangeRequest}
+            onViewDetails={handleViewDetails}
+          />
         )}
 
         {!isLoading && !hasEmptyState && hasNextPage ? (

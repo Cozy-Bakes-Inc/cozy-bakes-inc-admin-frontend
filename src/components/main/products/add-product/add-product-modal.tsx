@@ -32,6 +32,14 @@ const defaultFormValues: AddProductFormValues = {
   ingredients: "",
   allergens: "",
   productImages: [],
+  parcel: {
+    length: "",
+    width: "",
+    height: "",
+    distanceUnit: "in",
+    weight: "",
+    massUnit: "lb",
+  },
 };
 
 function resolveInitialValues(

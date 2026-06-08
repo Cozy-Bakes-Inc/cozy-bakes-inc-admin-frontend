@@ -6,6 +6,7 @@ import type {
   AddProductFormErrors,
   AddProductValueUpdater,
 } from "./add-product-form-types";
+import { AddProductParcelFields } from "./add-product-parcel-fields";
 import { AddProductUpload } from "./add-product-upload";
 import { ProductFlavorsField } from "./product-flavors-field";
 
@@ -93,6 +94,12 @@ export function AddProductAdditionalFields({
             onChange={field.onChange}
           />
         )}
+      />
+
+      <AddProductParcelFields
+        control={control}
+        errors={errors}
+        disabled={disabled}
       />
     </>
   );

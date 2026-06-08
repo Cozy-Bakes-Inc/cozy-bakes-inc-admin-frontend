@@ -5,6 +5,18 @@ export type ProductPricingType =
   | "byWeight"
   | "comboDeal";
 
+export type ParcelDistanceUnit = "in" | "cm" | "ft" | "m";
+export type ParcelMassUnit = "lb" | "oz" | "g" | "kg";
+
+export interface ParcelDimensions {
+  length: string;
+  width: string;
+  height: string;
+  distanceUnit: ParcelDistanceUnit;
+  weight: string;
+  massUnit: ParcelMassUnit;
+}
+
 export interface ProductPriceOption {
   id: string;
   label?: string;
@@ -34,6 +46,7 @@ export interface AddProductFormValues {
   ingredients: string;
   allergens: string;
   productImages: File[];
+  parcel: ParcelDimensions;
 }
 
 export interface AddProductProps {

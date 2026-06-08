@@ -11,6 +11,8 @@ import type { UpdateProductFormValues } from "./update-product-form-types";
 const acceptedImageTypes = ["image/png", "image/jpeg", "image/jpg"];
 const maxImageSizeInBytes = 5 * 1024 * 1024;
 const weightUnits = ["OZ", "LB", "G", "KG"] as const;
+const distanceUnits = ["in", "cm", "ft", "m"] as const;
+const massUnits = ["lb", "oz", "g", "kg"] as const;
 
 function isFile(value: unknown): value is File {
   return typeof File !== "undefined" && value instanceof File;
@@ -39,6 +41,24 @@ const positiveQuantity = (field: string, min = 1) =>
     .refine((v) => Number(v) >= min, {
       message: `${field} must be at least ${min}`,
     });
+
+const positiveDecimal = (field: string) =>
+  z
+    .string()
+    .trim()
+    .min(1, `${field} is required`)
+    .refine((v) => Number.isFinite(Number(v)) && Number(v) > 0, {
+      message: `${field} must be greater than 0`,
+    });
+
+const parcelSchema = z.object({
+  length: positiveDecimal("Length"),
+  width: positiveDecimal("Width"),
+  height: positiveDecimal("Height"),
+  distanceUnit: z.enum(distanceUnits),
+  weight: positiveDecimal("Weight"),
+  massUnit: z.enum(massUnits),
+});
 
 const priceOptionSchema = z.object({
   id: z.string(),
@@ -81,6 +101,7 @@ const baseUpdateProductSchema = z.object({
       ),
   ),
   existingImageUrls: z.array(z.string()),
+  parcel: parcelSchema,
 });
 
 export const updateProductSchema = baseUpdateProductSchema.superRefine(
@@ -325,5 +346,30 @@ export function mapProductToFormValues(
     allergens: product.description_allergens ?? "",
     productImages: [],
     existingImageUrls: product.images ?? [],
+    parcel: mapParcel(prices, pricingType),
+  };
+}
+
+function mapParcel(prices: ProductPrices, pricingType: ProductPricingType) {
+  const keyMap: Record<ProductPricingType, string> = {
+    perUnit: "per_unit",
+    packs: "packs",
+    sizes: "sizes",
+    byWeight: "weight",
+    comboDeal: "combo",
+  };
+  const meta = prices[keyMap[pricingType]]?.[0]?.meta as
+    | { parcel?: Record<string, string | number> }
+    | null
+    | undefined;
+  const p = meta?.parcel;
+
+  return {
+    length: p?.length != null ? String(p.length) : "",
+    width: p?.width != null ? String(p.width) : "",
+    height: p?.height != null ? String(p.height) : "",
+    distanceUnit: (p?.distance_unit as "in" | "cm" | "ft" | "m") ?? "in",
+    weight: p?.weight != null ? String(p.weight) : "",
+    massUnit: (p?.mass_unit as "lb" | "oz" | "g" | "kg") ?? "lb",
   };
 }

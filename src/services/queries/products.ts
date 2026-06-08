@@ -19,7 +19,4 @@ export const productListAPI = async (page: number, search?: string) => {
 };
 
 export const singleProductAPI = async (slug: string) =>
-  await baseAPI<SingleProductResponse>(
-    "GET",
-    `/product/${slug}/view`,
-  );
+  await baseAPI<SingleProductResponse>("GET", `/product/${slug}/view`);

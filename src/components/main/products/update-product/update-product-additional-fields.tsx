@@ -2,6 +2,7 @@ import { Controller, type Control } from "react-hook-form";
 import type { AddProductFormValues } from "@/types/main";
 import { AddProductField } from "../add-product/add-product-field";
 import type { AddProductFieldValidator } from "../add-product/add-product-form-types";
+import { AddProductParcelFields } from "../add-product/add-product-parcel-fields";
 import { ProductFlavorsField } from "../add-product/product-flavors-field";
 import type { UpdateProductFormErrors, UpdateProductFormValues, UpdateProductValueUpdater } from "./update-product-form-types";
 import { UpdateProductUpload } from "./update-product-upload";
@@ -89,6 +90,12 @@ export function UpdateProductAdditionalFields({
             onExistingUrlsChange={(urls) => updateValue("existingImageUrls", urls)}
           />
         )}
+      />
+
+      <AddProductParcelFields
+        control={control as unknown as Control<AddProductFormValues>}
+        errors={errors}
+        disabled={disabled}
       />
     </>
   );

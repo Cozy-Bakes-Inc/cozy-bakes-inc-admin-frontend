@@ -77,6 +77,7 @@ export const sidebarItems: SidebarItem[] = [
     id: "our-menu",
     label: "Our Menu",
     icon: "menu",
+    href: "/menu",
   },
   {
     id: "reports",

@@ -9,4 +9,5 @@ export * from "./contact-us";
 export * from "./settings";
 export * from "./auth";
 export * from "./products";
+export * from "./menu";
 export * from "./view-toggle-option";

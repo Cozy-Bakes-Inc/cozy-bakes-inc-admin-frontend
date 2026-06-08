@@ -3,6 +3,8 @@ import { z } from "zod";
 const acceptedImageTypes = ["image/png", "image/jpeg", "image/jpg"];
 const maxImageSizeInBytes = 5 * 1024 * 1024;
 const weightUnits = ["OZ", "LB", "G", "KG"] as const;
+const distanceUnits = ["in", "cm", "ft", "m"] as const;
+const massUnits = ["lb", "oz", "g", "kg"] as const;
 
 function isFile(value: unknown): value is File {
   return typeof File !== "undefined" && value instanceof File;
@@ -31,6 +33,24 @@ const positiveQuantity = (field: string, min = 1) =>
     .refine((value) => Number(value) >= min, {
       message: `${field} must be at least ${min}`,
     });
+
+const positiveDecimal = (field: string) =>
+  z
+    .string()
+    .trim()
+    .min(1, `${field} is required`)
+    .refine((value) => Number.isFinite(Number(value)) && Number(value) > 0, {
+      message: `${field} must be greater than 0`,
+    });
+
+const parcelSchema = z.object({
+  length: positiveDecimal("Length"),
+  width: positiveDecimal("Width"),
+  height: positiveDecimal("Height"),
+  distanceUnit: z.enum(distanceUnits),
+  weight: positiveDecimal("Weight"),
+  massUnit: z.enum(massUnits),
+});
 
 const priceOptionSchema = z.object({
   id: z.string(),
@@ -81,6 +101,8 @@ export const createProductSchema = z
           ),
       )
       .min(1, "At least one image is required"),
+
+    parcel: parcelSchema,
   })
   .superRefine((values, context) => {
     if (values.pricingType === "perUnit") {
