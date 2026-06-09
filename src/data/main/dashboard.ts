@@ -10,12 +10,11 @@ import type {
   CategoryShare,
   DashboardAction,
   DashboardStat,
-  DashboardStockAlert,
   RecentOrder,
   SalesPoint,
-  StockProduct,
   TopProduct,
 } from "@/interfaces/main/dashboard";
+
 
 export const dashboardStats: DashboardStat[] = [
   {
@@ -50,19 +49,6 @@ export const dashboardStats: DashboardStat[] = [
     icon: PackageCheck,
     tone: "gray",
   },
-];
-
-export const stockAlert: DashboardStockAlert = {
-  title: "Low Stock Alert",
-  description: "4 products need restocking",
-  icon: CircleAlert,
-};
-
-export const lowStockProducts: StockProduct[] = [
-  { name: "Sourdough Bread", stock: 8, threshold: 20 },
-  { name: "Whole Grain Bread", stock: 4, threshold: 10 },
-  { name: "Multigrain Bread", stock: 3, threshold: 10 },
-  { name: "Pain au Chocolat", stock: 0, threshold: 15 },
 ];
 
 export const weeklySales: SalesPoint[] = [

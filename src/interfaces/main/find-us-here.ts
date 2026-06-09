@@ -21,6 +21,7 @@ export interface FindUsHereMarketLocation {
   description: string;
   schedule: string;
   address: string;
+  mapLink?: string;
   imageSrc: string;
   imageAlt: string;
 }
@@ -69,6 +70,7 @@ export interface FindUsHereMarketApiItem {
   day: string;
   time: string;
   location_address: string;
+  map_link?: string;
   description: string;
   cover_images: string[];
   created_at: string;

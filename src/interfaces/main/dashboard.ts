@@ -28,12 +28,6 @@ export interface CategoryShare {
   tone: DashboardCategoryTone;
 }
 
-export interface StockProduct {
-  name: string;
-  stock: number;
-  threshold: number;
-}
-
 export interface RecentOrder {
   id: string;
   customer: string;
@@ -49,12 +43,6 @@ export interface TopProduct {
   sold: number;
   growth: string;
   revenue: string;
-}
-
-export interface DashboardStockAlert {
-  title: string;
-  description: string;
-  icon: LucideIcon;
 }
 
 export interface DashboardAction {
@@ -134,50 +122,3 @@ export interface DashboardTopProductItem {
 export type DashboardTopProductsApiResponse =
   PaginatedApiResponse<DashboardTopProductItem>;
 
-export interface DashboardPaginationLink {
-  url: string | null;
-  label: string;
-  page: number | null;
-  active: boolean;
-}
-
-export interface DashboardLowStockSubCategory {
-  id: number;
-  title: string;
-  category: string;
-}
-
-export interface DashboardLowStockProduct {
-  slug: string;
-  title: string;
-  price: number;
-  discount_percentage: number;
-  final_price: number;
-  quantity: number;
-  stock_status: string;
-  status: number;
-  sub_categories: DashboardLowStockSubCategory[];
-  images: unknown[];
-}
-
-export interface DashboardLowStockPaginationData {
-  current_page: number;
-  data: DashboardLowStockProduct[];
-  first_page_url: string;
-  from: number | null;
-  last_page: number;
-  last_page_url: string;
-  links: DashboardPaginationLink[];
-  next_page_url: string | null;
-  path: string;
-  per_page: number;
-  prev_page_url: string | null;
-  to: number | null;
-  total: number;
-}
-
-export interface DashboardLowStockProductsApiResponse {
-  status: string;
-  threshold: number;
-  data: DashboardLowStockPaginationData;
-}

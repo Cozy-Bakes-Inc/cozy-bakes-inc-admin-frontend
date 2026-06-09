@@ -1,6 +1,5 @@
 import { DashboardCategoryChart } from "./dashboard-category-chart";
 import { DashboardHeader } from "./dashboard-header";
-import { DashboardLowStockAlert } from "./dashboard-low-stock-alert";
 import { DashboardRecentOrders } from "./dashboard-recent-orders";
 import { DashboardSalesOverview } from "./dashboard-sales-overview";
 import { DashboardStatsGrid } from "./dashboard-stats-grid";
@@ -11,7 +10,6 @@ function Dashboard() {
     <div className="space-y-4 md:space-y-6 xl:space-y-7">
       <DashboardHeader />
       <DashboardStatsGrid />
-      <DashboardLowStockAlert />
 
       <div className="grid gap-4 md:gap-6 2xl:grid-cols-[minmax(0,1.65fr)_minmax(320px,0.85fr)]">
         <div className="min-w-0">

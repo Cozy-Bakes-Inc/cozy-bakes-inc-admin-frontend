@@ -1,13 +1,19 @@
 "use client";
 
+import { useState } from "react";
 import { Shimmer } from "@/components/ui/shimmer";
 import type {
   AdminSettingsData,
   SettingsCanvasProps,
   SettingsFieldSection,
+  SettingsNotificationSection,
   SettingsSection,
 } from "@/interfaces/main/settings";
 import { useAdminSettings } from "@/hooks/api";
+import { UpdateAccountDialog } from "./update-account/update-account-dialog";
+import { UpdateCompanyDialog } from "./update-company/update-company-dialog";
+import { UpdateDeliveryDialog } from "./update-delivery/update-delivery-dialog";
+import { ChangePasswordDialog } from "./change-password/change-password-dialog";
 import { SettingsSectionCard } from "./settings-section-card";
 
 function hasValue(value: string | null | undefined) {
@@ -21,13 +27,17 @@ function hasFieldValues(fields: readonly { value: string }[]) {
 function buildResolvedSections(
   sections: readonly SettingsSection[],
   settingsData?: AdminSettingsData,
+  onEditCompany?: () => void,
+  onEditAccount?: () => void,
+  onEditDelivery?: () => void,
+  onChangePassword?: () => void,
 ): SettingsSection[] {
   const passwordSection = sections.find(
     (section) => section.id === "change-password",
   );
   const user = settingsData?.user;
-  const profile = user?.profile;
   const shop = settingsData?.shop;
+  const delivery = settingsData?.delivery_settings;
 
   const storeFields: SettingsFieldSection["fields"] = [
     {
@@ -66,6 +76,14 @@ function buildResolvedSections(
       layout: "full",
       valueTone: "sm",
     },
+    {
+      id: "map-link",
+      label: "Map Link",
+      value: shop?.map_link ?? "",
+      layout: "full",
+      valueTone: "sm",
+      href: shop?.map_link ?? undefined,
+    },
   ];
   const hasStoreValues = hasFieldValues(storeFields);
 
@@ -77,6 +95,7 @@ function buildResolvedSections(
     description: "management your store information",
     action: {
       label: hasStoreValues ? "Edit Store Information" : "Add Store Information",
+      onClick: onEditCompany,
     },
     fields: storeFields,
   };
@@ -103,13 +122,6 @@ function buildResolvedSections(
       layout: "full",
       valueTone: "sm",
     },
-    {
-      id: "profile-phone-number",
-      label: "Phone Number",
-      value: profile?.phone_number ?? "",
-      layout: "half",
-      valueTone: "sm",
-    },
   ];
   const hasAccountValues = hasFieldValues(accountFields);
 
@@ -123,14 +135,81 @@ function buildResolvedSections(
       label: hasAccountValues
         ? "Edit Account Information"
         : "Add Account Information",
+      onClick: onEditAccount,
     },
     fields: accountFields,
   };
 
+  const deliveryFields: SettingsFieldSection["fields"] = [
+    {
+      id: "delivery-fee",
+      label: "Delivery Fee ($)",
+      value: delivery?.fee != null ? String(delivery.fee) : "",
+      layout: "half",
+      valueTone: "sm",
+    },
+    {
+      id: "delivery-miles",
+      label: "Delivery Radius (miles)",
+      value: delivery?.miles != null ? String(delivery.miles) : "",
+      layout: "half",
+      valueTone: "sm",
+    },
+  ];
+  const hasDeliveryValues = hasFieldValues(deliveryFields);
+
+  const deliverySection: SettingsFieldSection = {
+    id: "delivery-settings",
+    kind: "fields",
+    icon: "delivery",
+    title: "Delivery Settings",
+    description: "Manage your delivery fee and radius",
+    action: {
+      label: hasDeliveryValues ? "Edit Delivery Settings" : "Add Delivery Settings",
+      onClick: onEditDelivery,
+    },
+    fields: deliveryFields,
+  };
+
+  const notifPrefs = settingsData?.notification_preferences;
+  const notificationSection: SettingsNotificationSection = {
+    id: "notification-preferences",
+    kind: "notifications",
+    icon: "notification",
+    title: "Notification Preferences",
+    description: "Manage how you receive notifications",
+    preferences: [
+      {
+        id: "new-orders",
+        title: "New Orders",
+        description: "Get notified when a new order is placed",
+        enabled: Number(notifPrefs?.new_orders ?? 0) === 1,
+      },
+      {
+        id: "customer-messages",
+        title: "Customer Messages",
+        description: "Receive alerts for new customer messages",
+        enabled: Number(notifPrefs?.customer_messages ?? 0) === 1,
+      },
+      {
+        id: "weekly-reports",
+        title: "Weekly Reports",
+        description: "Receive a weekly summary of orders and revenue",
+        enabled: Number(notifPrefs?.weekly_reports ?? 0) === 1,
+      },
+    ],
+  };
+
+  const resolvedPasswordSection: SettingsSection | undefined = passwordSection
+    ? ({ ...passwordSection, action: { ...passwordSection.action, onClick: onChangePassword } } as SettingsSection)
+    : undefined;
+
   return [
     storeSection,
     accountSection,
-    ...(passwordSection ? [passwordSection] : []),
+    deliverySection,
+    notificationSection,
+    ...(resolvedPasswordSection ? [resolvedPasswordSection] : []),
   ];
 }
 
@@ -152,15 +231,15 @@ function SettingsSectionCardSkeleton() {
         <div className="grid gap-5 md:grid-cols-2">
           <div className="space-y-2 md:col-span-2">
             <Shimmer className="h-5 w-28 rounded-md" />
-            <Shimmer className="h-[58px] w-full rounded-lg" />
+            <Shimmer className="h-14.5 w-full rounded-lg" />
           </div>
           <div className="space-y-2">
             <Shimmer className="h-5 w-24 rounded-md" />
-            <Shimmer className="h-[58px] w-full rounded-lg" />
+            <Shimmer className="h-14.5 w-full rounded-lg" />
           </div>
           <div className="space-y-2">
             <Shimmer className="h-5 w-24 rounded-md" />
-            <Shimmer className="h-[58px] w-full rounded-lg" />
+            <Shimmer className="h-14.5 w-full rounded-lg" />
           </div>
         </div>
       </div>
@@ -169,9 +248,20 @@ function SettingsSectionCardSkeleton() {
 }
 
 export function SettingsCanvas({ ariaLabel, sections }: SettingsCanvasProps) {
+  const [companyDialogOpen, setCompanyDialogOpen] = useState(false);
+  const [accountDialogOpen, setAccountDialogOpen] = useState(false);
+  const [deliveryDialogOpen, setDeliveryDialogOpen] = useState(false);
+  const [changePasswordDialogOpen, setChangePasswordDialogOpen] = useState(false);
   const { data, isLoading } = useAdminSettings();
   const settingsData = data?.data;
-  const resolvedSections = buildResolvedSections(sections, settingsData);
+  const resolvedSections = buildResolvedSections(
+    sections,
+    settingsData,
+    () => setCompanyDialogOpen(true),
+    () => setAccountDialogOpen(true),
+    () => setDeliveryDialogOpen(true),
+    () => setChangePasswordDialogOpen(true),
+  );
 
   if (isLoading) {
     return (
@@ -184,10 +274,35 @@ export function SettingsCanvas({ ariaLabel, sections }: SettingsCanvasProps) {
   }
 
   return (
-    <section aria-label={ariaLabel} className="space-y-4">
-      {resolvedSections.map((section) => (
-        <SettingsSectionCard key={section.id} section={section} />
-      ))}
-    </section>
+    <>
+      <section aria-label={ariaLabel} className="space-y-4">
+        {resolvedSections.map((section) => (
+          <SettingsSectionCard key={section.id} section={section} />
+        ))}
+      </section>
+
+      <UpdateCompanyDialog
+        open={companyDialogOpen}
+        shop={settingsData?.shop ?? null}
+        onClose={() => setCompanyDialogOpen(false)}
+      />
+
+      <UpdateAccountDialog
+        open={accountDialogOpen}
+        user={settingsData?.user ?? null}
+        onClose={() => setAccountDialogOpen(false)}
+      />
+
+      <UpdateDeliveryDialog
+        open={deliveryDialogOpen}
+        delivery={settingsData?.delivery_settings}
+        onClose={() => setDeliveryDialogOpen(false)}
+      />
+
+      <ChangePasswordDialog
+        open={changePasswordDialogOpen}
+        onClose={() => setChangePasswordDialogOpen(false)}
+      />
+    </>
   );
 }

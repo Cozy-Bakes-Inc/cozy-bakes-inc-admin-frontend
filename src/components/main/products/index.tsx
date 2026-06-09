@@ -34,8 +34,10 @@ function Products() {
   const [searchValue, setSearchValue] = useState("");
   const [viewMode, setViewMode] = useState<ViewMode>("table");
 
-  const { data, isLoading, hasNextPage, fetchNextPage, isFetchingNextPage } =
+  const { data, isLoading, isFetching, hasNextPage, fetchNextPage, isFetchingNextPage } =
     useProductList(searchValue);
+
+  const showShimmer = isLoading || (isFetching && !isFetchingNextPage);
 
   const visibleItems = useMemo(
     () =>
@@ -44,7 +46,7 @@ function Products() {
         .map(mapProductToRecord) ?? [],
     [data],
   );
-  const hasEmptyState = !isLoading && visibleItems.length === 0;
+  const hasEmptyState = !showShimmer && visibleItems.length === 0;
   const changeSearchValue = (value: string) => {
     setSearchValue(value);
   };
@@ -86,7 +88,7 @@ function Products() {
         viewMode={viewMode}
         onViewModeChange={changeViewMode}
       />
-      {isLoading ? (
+      {showShimmer ? (
         viewMode === "table" ? (
           <ProductTableShimmer />
         ) : (
@@ -109,7 +111,7 @@ function Products() {
           onDeleteDetails={handleDeleteProduct}
         />
       )}
-      {!isLoading && !hasEmptyState && hasNextPage ? (
+      {!showShimmer && !hasEmptyState && hasNextPage ? (
         <ProductShowMoreButton
           isFetchingNextPage={isFetchingNextPage}
           onClick={() => fetchNextPage()}

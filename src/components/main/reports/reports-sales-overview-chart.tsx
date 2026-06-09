@@ -17,13 +17,12 @@ export function ReportsSalesOverviewChart() {
     salesOverviewData !== undefined &&
     salesOverviewData.labels.length === salesOverviewData.revenues.length &&
     salesOverviewData.labels.length > 0;
-  const resolvedPoints =
-    hasSalesOverviewData
-      ? salesOverviewData.labels.map((label, index) => ({
-          label,
-          value: salesOverviewData.revenues[index] ?? 0,
-        }))
-      : salesOverviewPoints;
+  const resolvedPoints = hasSalesOverviewData
+    ? salesOverviewData.labels.map((label, index) => ({
+        label,
+        value: salesOverviewData.revenues[index] ?? 0,
+      }))
+    : salesOverviewPoints;
 
   const points = resolvedPoints.map((point, index) => ({
     ...point,
@@ -48,7 +47,9 @@ export function ReportsSalesOverviewChart() {
   const path = buildLinePath(points);
 
   if (isLoading) {
-    return <Shimmer className="h-[220px] w-full rounded-2xl sm:h-[250px] md:h-[280px]" />;
+    return (
+      <Shimmer className="h-[220px] w-full rounded-2xl sm:h-[250px] md:h-[280px]" />
+    );
   }
 
   return (

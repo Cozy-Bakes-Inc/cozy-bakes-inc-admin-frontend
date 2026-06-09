@@ -24,6 +24,7 @@ export interface SettingsHeaderProps {
 
 export interface SettingsSectionAction {
   label: string;
+  onClick?: () => void;
 }
 
 export interface SettingsField {
@@ -33,6 +34,7 @@ export interface SettingsField {
   layout: SettingsFieldLayout;
   multiline?: boolean;
   valueTone?: SettingsFieldValueTone;
+  href?: string;
 }
 
 export interface SettingsNotificationPreference {
@@ -132,22 +134,33 @@ export interface AdminSettingsShopData {
   email: string;
   address_line: string;
   is_active: number | string;
+  latitude?: number | null;
+  longitude?: number | null;
+  apt_villa?: string | null;
+  building_cluster?: string | null;
+  street_landmark?: string | null;
+  map_link?: string | null;
 }
 
 export interface AdminNotificationPreferencesData {
   id: number;
   new_orders: number | string;
-  low_stock_alerts: number | string;
   customer_messages: number | string;
   weekly_reports: number | string;
   created_at: string;
   updated_at: string;
 }
 
+export interface AdminDeliverySettingsData {
+  fee: number;
+  miles: number;
+}
+
 export interface AdminSettingsData {
   user: AdminSettingsUserData | null;
   shop: AdminSettingsShopData | null;
   notification_preferences: AdminNotificationPreferencesData | null;
+  delivery_settings?: AdminDeliverySettingsData | null;
 }
 
 export interface AdminSettingsResponse {

@@ -10,3 +10,4 @@ export * from "./settings";
 export * from "./products";
 export * from "./view-toggle-option";
 export * from "./menu";
+export * from "./pickup-locations";

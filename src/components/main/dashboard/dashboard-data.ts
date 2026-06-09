@@ -28,12 +28,6 @@ export type CategoryShare = {
   tone: "primary" | "secondary" | "light" | "taupe";
 };
 
-export type StockProduct = {
-  name: string;
-  stock: number;
-  threshold: number;
-};
-
 export type RecentOrder = {
   id: string;
   customer: string;
@@ -84,19 +78,6 @@ export const dashboardStats: DashboardStat[] = [
     icon: PackageCheck,
     tone: "gray",
   },
-];
-
-export const stockAlert = {
-  title: "Low Stock Alert",
-  description: "4 products need restocking",
-  icon: CircleAlert,
-};
-
-export const lowStockProducts: StockProduct[] = [
-  { name: "Sourdough Bread", stock: 8, threshold: 20 },
-  { name: "Whole Grain Bread", stock: 4, threshold: 10 },
-  { name: "Multigrain Bread", stock: 3, threshold: 10 },
-  { name: "Pain au Chocolat", stock: 0, threshold: 15 },
 ];
 
 export const weeklySales: SalesPoint[] = [

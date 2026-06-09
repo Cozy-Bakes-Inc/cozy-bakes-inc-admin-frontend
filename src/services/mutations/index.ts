@@ -6,3 +6,4 @@ export * from "./categories";
 export * from "./products";
 export * from "./pickup-locations";
 export * from "./menu";
+export * from "./settings";

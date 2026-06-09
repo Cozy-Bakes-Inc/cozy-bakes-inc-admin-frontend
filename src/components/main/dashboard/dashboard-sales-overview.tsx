@@ -32,11 +32,10 @@ export function DashboardSalesOverview() {
   const { data, isLoading } = useSaleOverviewChart();
   const chartData: DashboardChartsData | undefined = data?.data;
   const salesOverview = chartData?.sales_overview;
-
   const labels = salesOverview?.labels ?? [];
   const revenues = salesOverview?.revenues ?? [];
   const pointsCount = Math.min(labels.length, revenues.length);
-
+  console.log(data);
   const maxRevenue = pointsCount
     ? Math.max(...revenues.slice(0, pointsCount), 0)
     : 0;

@@ -1,8 +1,9 @@
 import { PAGE_SIZE } from "@/constants";
+import { PickupLocationsAnalytics } from "@/types/main/pickup-locations";
 import { baseAPI } from "..";
 
-// export const shopAnalyticsAPI = async () =>
-//   await baseAPI<>("GET", `/shop/analytics`);
+export const shopAnalyticsAPI = async () =>
+  await baseAPI<PickupLocationsAnalytics>("GET", `/shop/analytics`);
 
 // export const shopListAPI = async (
 //   page: number,

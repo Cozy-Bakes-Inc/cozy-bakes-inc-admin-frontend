@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { format, isValid, parse } from "date-fns";
-import { MapPin } from "lucide-react";
+import { Link, MapPin } from "lucide-react";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import toast from "react-hot-toast";
 import { Button } from "@/components/ui/button";
@@ -122,6 +122,7 @@ export function EditMarketLocationForm({
         payload.append("day", values.day);
         payload.append("time", `${values.startTime} - ${values.endTime}`);
         payload.append("location_address", values.locationAddress);
+        payload.append("map_link", values.mapLink);
         payload.append("description", values.description);
 
         values.existingImages.forEach((image) => {
@@ -324,6 +325,28 @@ export function EditMarketLocationForm({
                 icon={MapPin}
                 disabled={isSubmitting}
                 error={errors.locationAddress?.message}
+                onChange={field.onChange}
+              />
+            )}
+          />
+        </div>
+
+        <div className="mt-5">
+          <Controller
+            name="mapLink"
+            control={control}
+            rules={{
+              validate: (value) => validateField("mapLink", value),
+            }}
+            render={({ field }) => (
+              <AddMarketLocationField
+                id="mapLink"
+                label="Map Link"
+                placeholder="https://maps.google.com/..."
+                value={field.value}
+                icon={Link}
+                disabled={isSubmitting}
+                error={errors.mapLink?.message}
                 onChange={field.onChange}
               />
             )}

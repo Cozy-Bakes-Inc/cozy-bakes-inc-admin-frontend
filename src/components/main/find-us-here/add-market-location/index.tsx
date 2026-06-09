@@ -15,6 +15,7 @@ const defaultFormValues: AddMarketLocationFormValues = {
   startTime: "",
   endTime: "",
   locationAddress: "",
+  mapLink: "",
   description: "",
   coverImage: null,
 };
@@ -44,6 +45,7 @@ export default function AddMarketLocation({
     resolvedInitialValues.startTime,
     resolvedInitialValues.endTime,
     resolvedInitialValues.locationAddress,
+    resolvedInitialValues.mapLink ?? "",
     resolvedInitialValues.description,
     resolvedInitialValues.coverImage?.name ?? "",
   ].join("|");

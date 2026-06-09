@@ -94,6 +94,14 @@ function ViewMarketLocation({
 
             <div className="mt-5">
               <ViewMarketLocationField
+                label="Map Link"
+                value={market?.map_link}
+                link
+              />
+            </div>
+
+            <div className="mt-5">
+              <ViewMarketLocationField
                 label="Description"
                 value={market?.description}
                 multiline

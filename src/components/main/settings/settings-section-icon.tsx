@@ -1,4 +1,4 @@
-import { Bell, LockKeyhole, Store, UserRound } from "lucide-react";
+import { Bell, LockKeyhole, Store, Truck, UserRound } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { SettingsSectionIcon as SettingsSectionIconName } from "@/types/main/settings";
 
@@ -12,6 +12,7 @@ const iconMap = {
   account: UserRound,
   password: LockKeyhole,
   notification: Bell,
+  delivery: Truck,
 } satisfies Record<
   SettingsSectionIconName,
   React.ComponentType<{ className?: string; strokeWidth?: number }>

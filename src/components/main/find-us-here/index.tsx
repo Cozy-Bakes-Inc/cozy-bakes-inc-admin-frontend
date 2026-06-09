@@ -49,6 +49,7 @@ function mapMarketDayToUiDay(
       description: market.description,
       schedule: formatMarketSchedule(market),
       address: market.location_address,
+      mapLink: market.map_link ?? "",
       imageSrc: market.cover_images[0] ?? "",
       imageAlt: market.market_name,
     })),

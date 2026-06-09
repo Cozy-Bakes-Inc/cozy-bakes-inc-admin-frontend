@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { CalendarDays, Eye, MapPin, PencilLine } from "lucide-react";
+import { CalendarDays, Eye, Link as LinkIcon, MapPin, PencilLine } from "lucide-react";
 import { useState } from "react";
 import type {
   FindUsHereActionButtonProps,
@@ -99,6 +99,19 @@ export function FindUsHereMarketCard({
                 <MapPin className="size-4 text-primary" strokeWidth={2} />
                 <span>{location.address}</span>
               </div>
+              {location.mapLink && (
+                <div className="flex items-center gap-2">
+                  <LinkIcon className="size-4 text-primary" strokeWidth={2} />
+                  <a
+                    href={location.mapLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="truncate text-primary underline underline-offset-2 hover:text-primary/80"
+                  >
+                    View on Map
+                  </a>
+                </div>
+              )}
             </div>
 
             <div className="flex flex-wrap items-center gap-3">

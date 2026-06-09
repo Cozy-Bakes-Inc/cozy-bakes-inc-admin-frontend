@@ -93,6 +93,34 @@ const accountInformationSection = {
   ],
 } as const;
 
+const notificationPreferencesSection = {
+  id: "notification-preferences",
+  kind: "notifications",
+  icon: "notification",
+  title: "Notification Preferences",
+  description: "Manage how you receive notifications",
+  preferences: [
+    {
+      id: "new-orders",
+      title: "New Orders",
+      description: "Get notified when a new order is placed",
+      enabled: false,
+    },
+    {
+      id: "customer-messages",
+      title: "Customer Messages",
+      description: "Receive alerts for new customer messages",
+      enabled: false,
+    },
+    {
+      id: "weekly-reports",
+      title: "Weekly Reports",
+      description: "Receive a weekly summary of orders and revenue",
+      enabled: false,
+    },
+  ],
+} as const;
+
 const passwordSection = {
   id: "change-password",
   kind: "action",
@@ -107,5 +135,6 @@ const passwordSection = {
 export const settingsSections: SettingsSection[] = [
   storeInformationSection,
   accountInformationSection,
+  notificationPreferencesSection,
   passwordSection,
 ];

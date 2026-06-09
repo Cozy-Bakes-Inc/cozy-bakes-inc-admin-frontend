@@ -21,7 +21,7 @@ export function SettingsSectionHeader({
         </div>
       </div>
 
-      {action ? <SettingsSectionAction label={action.label} /> : null}
+      {action ? <SettingsSectionAction label={action.label} onClick={action.onClick} /> : null}
     </div>
   );
 }

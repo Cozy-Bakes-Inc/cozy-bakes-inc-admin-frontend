@@ -38,6 +38,14 @@ const marketDetailsSchema = z.object({
     .trim()
     .regex(timePattern, "End time is required"),
   locationAddress: z.string().trim().min(1, "Location address is required"),
+  mapLink: z
+    .string()
+    .trim()
+    .min(1, "Map link is required")
+    .refine(
+      (v) => v.startsWith("http://") || v.startsWith("https://"),
+      "Map link must be a valid URL",
+    ),
   description: z.string().trim().min(1, "Description is required"),
 });
 

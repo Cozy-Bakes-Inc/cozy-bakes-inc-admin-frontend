@@ -8,7 +8,7 @@ import { GridShimmer } from "@/components/ui/shimmer";
 export function DashboardStatsGrid() {
   const { data, isLoading } = useSummaryDataSets();
   const stats = buildDashboardStats(data?.data);
-  console.log("DashboardStatsGrid data:", data);
+
   return (
     <section
       className={isLoading ? "" : "grid gap-4 md:grid-cols-2 2xl:grid-cols-4"}

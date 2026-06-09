@@ -1,6 +1,5 @@
 import {
   DashboardChartsApiResponse,
-  DashboardLowStockProductsApiResponse,
   DashboardSummaryApiResponse,
   DashboardTopProductsApiResponse,
 } from "@/interfaces";
@@ -20,10 +19,4 @@ export const topProductsAPI = async (page: number) =>
   await baseAPI<DashboardTopProductsApiResponse>(
     "GET",
     `/product/top-products?sort_by=revenue&page=${page}&per_page=${PAGE_SIZE}`,
-  );
-
-export const lowStockProductsAPI = async (threshold: number, page: number) =>
-  await baseAPI<DashboardLowStockProductsApiResponse>(
-    "GET",
-    `/product/low-stock?threshold=${threshold}&page=${page}&per_page=${PAGE_SIZE}`,
   );
