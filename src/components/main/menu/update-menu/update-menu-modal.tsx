@@ -12,7 +12,7 @@ function mapMenuToFormValues(menu: Menu): MenuFormValues {
     title: menu.title,
     description: menu.description,
     pdfFile: null,
-    isActive: menu.is_active === 1,
+    isActive: menu.is_active === "1",
   };
 }
 

@@ -59,7 +59,6 @@ export function AddCategoryForm({
     }
 
     const result = await createSubCategoryAPI(payload);
-
     if (result?.ok) {
       toast.success(result.message || "Category created successfully");
       await queryClient.invalidateQueries({ queryKey: ["sub-categories"] });

@@ -1,7 +1,13 @@
 "use client";
 
 import Image from "next/image";
-import { CalendarDays, Eye, Link as LinkIcon, MapPin, PencilLine } from "lucide-react";
+import {
+  CalendarDays,
+  Eye,
+  Link as LinkIcon,
+  MapPin,
+  PencilLine,
+} from "lucide-react";
 import { useState } from "react";
 import type {
   FindUsHereActionButtonProps,
@@ -36,9 +42,7 @@ function FindUsHereActionButton({
   );
 }
 
-export function FindUsHereMarketCard({
-  location,
-}: FindUsHereMarketCardProps) {
+export function FindUsHereMarketCard({ location }: FindUsHereMarketCardProps) {
   const [isViewMarketLocationOpen, setIsViewMarketLocationOpen] =
     useState(false);
   const [isEditMarketLocationOpen, setIsEditMarketLocationOpen] =
@@ -48,7 +52,7 @@ export function FindUsHereMarketCard({
     <>
       <article className="overflow-hidden rounded-2xl bg-background shadow-[0_1px_2px_rgba(16,24,40,0.05),0_0_0_4px_rgba(209,150,40,0.05)]">
         <div className="grid lg:grid-cols-[1.02fr_1fr]">
-          <div className="relative min-h-72">
+          <div className="relative h-full min-h-72">
             {location.imageSrc ? (
               <Image
                 src={location.imageSrc}

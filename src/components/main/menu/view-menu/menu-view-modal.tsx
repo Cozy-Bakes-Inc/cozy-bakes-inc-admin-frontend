@@ -64,12 +64,14 @@ export function MenuViewModal({ slug, isOpen, onClose }: MenuViewModalProps) {
           <div className="grid gap-5 sm:grid-cols-2">
             <LabeledField label="Title">{menu.title}</LabeledField>
             <LabeledField label="Status">
-              <MenuStatusBadge isActive={menu.is_active as 0 | 1} />
+              <MenuStatusBadge isActive={menu.is_active} />
             </LabeledField>
           </div>
 
           <LabeledField label="Description">
-            <p className="leading-relaxed text-muted-text">{menu.description}</p>
+            <p className="leading-relaxed text-muted-text">
+              {menu.description}
+            </p>
           </LabeledField>
 
           <LabeledField label="PDF File">

@@ -8,6 +8,7 @@ import { ContactUsHeader } from "./contact-us-header";
 import { ContactUsSectionCard } from "./contact-us-section-card";
 import AddUpdateContactUsModal from "./add-update-contact-us";
 import { useContactDetails } from "@/hooks/api";
+import { formatPhoneDisplay } from "@/lib/utils/phone";
 
 function ContactUs() {
   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
@@ -39,7 +40,9 @@ function ContactUs() {
             {
               id: "phone-number",
               label: "Phone Number",
-              value: contactSection?.phone_number ?? "",
+              value: contactSection?.phone_number
+                ? formatPhoneDisplay(contactSection.phone_number)
+                : "",
             },
             {
               id: "location",

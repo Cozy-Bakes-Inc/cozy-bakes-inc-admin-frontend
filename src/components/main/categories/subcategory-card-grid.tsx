@@ -39,7 +39,7 @@ export function SubCategoryCardGrid({
                 </div>
               </div>
 
-              <p className="min-h-12 text-sm leading-6 text-muted-text">
+              <p className="line-clamp-2 min-h-12 text-sm leading-6 text-muted-text">
                 {item.description}
               </p>
             </Link>

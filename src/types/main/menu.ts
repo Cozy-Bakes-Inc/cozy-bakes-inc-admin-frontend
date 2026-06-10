@@ -18,7 +18,7 @@ export type Menu = {
   description: string;
   pdf_file_link: string;
   shop_id: number | null;
-  is_active: 0 | 1;
+  is_active: "0" | "1";
   created_at: string;
   updated_at: string;
 };

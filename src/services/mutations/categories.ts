@@ -11,4 +11,4 @@ export const updateSubCategoryAPI = async (slug: string, payload: FormData) =>
   });
 
 export const deleteSubCategoryAPI = async (slug: string) =>
-  await safeApi("POST", `/sub-category/${slug}/delete`);
+  await safeApi("DELETE", `/sub-category/${slug}/delete`);

@@ -1,11 +1,11 @@
 import { cn } from "@/lib";
 
 interface MenuStatusBadgeProps {
-  isActive: 0 | 1;
+  isActive: "0" | "1";
 }
 
 export function MenuStatusBadge({ isActive }: MenuStatusBadgeProps) {
-  const active = isActive === 1;
+  const active = isActive === "1";
 
   return (
     <span

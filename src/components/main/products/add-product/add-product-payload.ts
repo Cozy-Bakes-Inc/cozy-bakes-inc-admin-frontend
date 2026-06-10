@@ -16,7 +16,7 @@ export function buildProductPayload(valuesToSubmit: AddProductFormValues) {
   });
 
   if (valuesToSubmit.pricingType === "perUnit") {
-    const label = `Single ${productTitle}`;
+    const label = `Single`;
     const { parcel } = valuesToSubmit;
 
     payload.append("prices[per_unit][0][price]", valuesToSubmit.perUnitPrice);
@@ -24,9 +24,15 @@ export function buildProductPayload(valuesToSubmit: AddProductFormValues) {
     payload.append("prices[per_unit][0][meta][parcel][length]", parcel.length);
     payload.append("prices[per_unit][0][meta][parcel][width]", parcel.width);
     payload.append("prices[per_unit][0][meta][parcel][height]", parcel.height);
-    payload.append("prices[per_unit][0][meta][parcel][distance_unit]", parcel.distanceUnit);
+    payload.append(
+      "prices[per_unit][0][meta][parcel][distance_unit]",
+      parcel.distanceUnit,
+    );
     payload.append("prices[per_unit][0][meta][parcel][weight]", parcel.weight);
-    payload.append("prices[per_unit][0][meta][parcel][mass_unit]", parcel.massUnit);
+    payload.append(
+      "prices[per_unit][0][meta][parcel][mass_unit]",
+      parcel.massUnit,
+    );
   }
 
   if (valuesToSubmit.pricingType === "packs") {
@@ -39,12 +45,30 @@ export function buildProductPayload(valuesToSubmit: AddProductFormValues) {
       payload.append("prices[packs][" + i + "][label]", `Pack of ${quantity}`);
       payload.append("prices[packs][" + i + "][quantity]", String(quantity));
       payload.append("prices[packs][" + i + "][price]", pack.price);
-      payload.append("prices[packs][" + i + "][meta][parcel][length]", parcel.length);
-      payload.append("prices[packs][" + i + "][meta][parcel][width]", parcel.width);
-      payload.append("prices[packs][" + i + "][meta][parcel][height]", parcel.height);
-      payload.append("prices[packs][" + i + "][meta][parcel][distance_unit]", parcel.distanceUnit);
-      payload.append("prices[packs][" + i + "][meta][parcel][weight]", parcel.weight);
-      payload.append("prices[packs][" + i + "][meta][parcel][mass_unit]", parcel.massUnit);
+      payload.append(
+        "prices[packs][" + i + "][meta][parcel][length]",
+        parcel.length,
+      );
+      payload.append(
+        "prices[packs][" + i + "][meta][parcel][width]",
+        parcel.width,
+      );
+      payload.append(
+        "prices[packs][" + i + "][meta][parcel][height]",
+        parcel.height,
+      );
+      payload.append(
+        "prices[packs][" + i + "][meta][parcel][distance_unit]",
+        parcel.distanceUnit,
+      );
+      payload.append(
+        "prices[packs][" + i + "][meta][parcel][weight]",
+        parcel.weight,
+      );
+      payload.append(
+        "prices[packs][" + i + "][meta][parcel][mass_unit]",
+        parcel.massUnit,
+      );
     });
   }
 
@@ -54,14 +78,35 @@ export function buildProductPayload(valuesToSubmit: AddProductFormValues) {
     valuesToSubmit.sizes.forEach((size, index) => {
       const i = String(index);
 
-      payload.append("prices[sizes][" + i + "][label]", size.label?.trim() ?? "");
+      payload.append(
+        "prices[sizes][" + i + "][label]",
+        size.label?.trim() ?? "",
+      );
       payload.append("prices[sizes][" + i + "][price]", size.price);
-      payload.append("prices[sizes][" + i + "][meta][parcel][length]", parcel.length);
-      payload.append("prices[sizes][" + i + "][meta][parcel][width]", parcel.width);
-      payload.append("prices[sizes][" + i + "][meta][parcel][height]", parcel.height);
-      payload.append("prices[sizes][" + i + "][meta][parcel][distance_unit]", parcel.distanceUnit);
-      payload.append("prices[sizes][" + i + "][meta][parcel][weight]", parcel.weight);
-      payload.append("prices[sizes][" + i + "][meta][parcel][mass_unit]", parcel.massUnit);
+      payload.append(
+        "prices[sizes][" + i + "][meta][parcel][length]",
+        parcel.length,
+      );
+      payload.append(
+        "prices[sizes][" + i + "][meta][parcel][width]",
+        parcel.width,
+      );
+      payload.append(
+        "prices[sizes][" + i + "][meta][parcel][height]",
+        parcel.height,
+      );
+      payload.append(
+        "prices[sizes][" + i + "][meta][parcel][distance_unit]",
+        parcel.distanceUnit,
+      );
+      payload.append(
+        "prices[sizes][" + i + "][meta][parcel][weight]",
+        parcel.weight,
+      );
+      payload.append(
+        "prices[sizes][" + i + "][meta][parcel][mass_unit]",
+        parcel.massUnit,
+      );
     });
   }
 
@@ -73,15 +118,36 @@ export function buildProductPayload(valuesToSubmit: AddProductFormValues) {
       const unit = weight.unit ?? "OZ";
       const i = String(index);
 
-      payload.append("prices[weight][" + i + "][label]", `${quantity} ${unit.toLowerCase()}`);
+      payload.append(
+        "prices[weight][" + i + "][label]",
+        `${quantity} ${unit.toLowerCase()}`,
+      );
       payload.append("prices[weight][" + i + "][quantity]", String(quantity));
       payload.append("prices[weight][" + i + "][price]", weight.price);
-      payload.append("prices[weight][" + i + "][meta][parcel][length]", parcel.length);
-      payload.append("prices[weight][" + i + "][meta][parcel][width]", parcel.width);
-      payload.append("prices[weight][" + i + "][meta][parcel][height]", parcel.height);
-      payload.append("prices[weight][" + i + "][meta][parcel][distance_unit]", parcel.distanceUnit);
-      payload.append("prices[weight][" + i + "][meta][parcel][weight]", parcel.weight);
-      payload.append("prices[weight][" + i + "][meta][parcel][mass_unit]", parcel.massUnit);
+      payload.append(
+        "prices[weight][" + i + "][meta][parcel][length]",
+        parcel.length,
+      );
+      payload.append(
+        "prices[weight][" + i + "][meta][parcel][width]",
+        parcel.width,
+      );
+      payload.append(
+        "prices[weight][" + i + "][meta][parcel][height]",
+        parcel.height,
+      );
+      payload.append(
+        "prices[weight][" + i + "][meta][parcel][distance_unit]",
+        parcel.distanceUnit,
+      );
+      payload.append(
+        "prices[weight][" + i + "][meta][parcel][weight]",
+        parcel.weight,
+      );
+      payload.append(
+        "prices[weight][" + i + "][meta][parcel][mass_unit]",
+        parcel.massUnit,
+      );
     });
   }
 
@@ -90,18 +156,36 @@ export function buildProductPayload(valuesToSubmit: AddProductFormValues) {
 
     valuesToSubmit.comboDeals.forEach((deal, index) => {
       const quantity = Number(deal.quantity);
-      const label = quantity === 1 ? `Single ${productTitle}` : `Pack of ${quantity}`;
+      const label = quantity === 1 ? `Single` : `Pack of ${quantity}`;
       const i = String(index);
 
       payload.append("prices[combo][" + i + "][label]", label);
       payload.append("prices[combo][" + i + "][quantity]", String(quantity));
       payload.append("prices[combo][" + i + "][price]", deal.price);
-      payload.append("prices[combo][" + i + "][meta][parcel][length]", parcel.length);
-      payload.append("prices[combo][" + i + "][meta][parcel][width]", parcel.width);
-      payload.append("prices[combo][" + i + "][meta][parcel][height]", parcel.height);
-      payload.append("prices[combo][" + i + "][meta][parcel][distance_unit]", parcel.distanceUnit);
-      payload.append("prices[combo][" + i + "][meta][parcel][weight]", parcel.weight);
-      payload.append("prices[combo][" + i + "][meta][parcel][mass_unit]", parcel.massUnit);
+      payload.append(
+        "prices[combo][" + i + "][meta][parcel][length]",
+        parcel.length,
+      );
+      payload.append(
+        "prices[combo][" + i + "][meta][parcel][width]",
+        parcel.width,
+      );
+      payload.append(
+        "prices[combo][" + i + "][meta][parcel][height]",
+        parcel.height,
+      );
+      payload.append(
+        "prices[combo][" + i + "][meta][parcel][distance_unit]",
+        parcel.distanceUnit,
+      );
+      payload.append(
+        "prices[combo][" + i + "][meta][parcel][weight]",
+        parcel.weight,
+      );
+      payload.append(
+        "prices[combo][" + i + "][meta][parcel][mass_unit]",
+        parcel.massUnit,
+      );
     });
   }
 

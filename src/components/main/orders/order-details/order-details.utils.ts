@@ -30,8 +30,8 @@ export function formatPaymentMethod(
   return "Stripe";
 }
 
-export function getOrderLineTotal(price: string, quantity: number, subtotal: string | null) {
-  const numericSubtotal = subtotal ? Number(subtotal) : Number(price) * quantity;
+export function getOrderLineTotal(price: string, quantity: string | number, subtotal: string | number | null) {
+  const numericSubtotal = subtotal != null ? Number(subtotal) : Number(price) * Number(quantity);
   return formatCurrency(numericSubtotal);
 }
 

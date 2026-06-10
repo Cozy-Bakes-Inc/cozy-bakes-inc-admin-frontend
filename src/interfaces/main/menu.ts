@@ -3,6 +3,6 @@ export interface MenuRecord {
   title: string;
   description: string;
   pdfFileLink: string;
-  isActive: 0 | 1;
+  isActive: "0" | "1";
   createdAt: string;
 }

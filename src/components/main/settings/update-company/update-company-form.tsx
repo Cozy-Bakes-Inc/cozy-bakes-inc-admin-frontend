@@ -11,6 +11,7 @@ import {
   updateCompanySettingsSchema,
   type UpdateCompanySettingsSchemaValues,
 } from "@/schemas/main/settings";
+import { formatPhoneInput, stripPhoneDigits } from "@/lib/utils/phone";
 import { updateCompanySettingsAPI } from "@/services/mutations/settings";
 import { LocationPicker } from "./location-picker";
 
@@ -24,7 +25,7 @@ function getInitialValues(
 ): UpdateCompanySettingsSchemaValues {
   return {
     name: shop?.name ?? "",
-    phone_number: shop?.phone_number ?? "",
+    phone_number: formatPhoneInput(shop?.phone_number ?? ""),
     email: shop?.email ?? "",
     store_description: shop?.store_description ?? "",
     address_line: shop?.address_line ?? "",
@@ -74,7 +75,7 @@ export function UpdateCompanyForm({ shop, onUpdated }: UpdateCompanyFormProps) {
 
     const result = await updateCompanySettingsAPI({
       name: values.name.trim(),
-      phone_number: values.phone_number.trim(),
+      phone_number: stripPhoneDigits(values.phone_number),
       email: values.email.trim(),
       store_description: values.store_description.trim(),
       address_line: values.address_line.trim(),
@@ -138,9 +139,10 @@ export function UpdateCompanyForm({ shop, onUpdated }: UpdateCompanyFormProps) {
                 <input
                   {...field}
                   id="company_phone"
-                  placeholder="e.g. 08012345678"
+                  placeholder="(212) 555-7890"
                   disabled={isSubmitting}
                   className={inputClass}
+                  onChange={(e) => field.onChange(formatPhoneInput(e.target.value))}
                 />
               )}
             />

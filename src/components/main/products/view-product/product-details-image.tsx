@@ -18,14 +18,14 @@ export function ProductDetailsImage({
       <p className="mb-2 block text-[16px] font-medium leading-6 text-dark">
         Product Image
       </p>
-      <div className="flex h-[300px] w-full items-center justify-center overflow-hidden rounded-xl border border-border/20 bg-white p-3 shadow-[0_14px_32px_rgba(61,44,30,0.05)] sm:h-[320px] lg:h-[calc(100%-32px)]">
+      <div className="relative h-[300px] w-full overflow-hidden rounded-xl border border-border/20 bg-white shadow-[0_14px_32px_rgba(61,44,30,0.05)] sm:h-[320px] lg:h-[calc(100%-32px)]">
         {image ? (
-          <div className="relative size-full overflow-hidden rounded-[10px] bg-bg-creamy/55">
+          <div className="relative size-full overflow-hidden rounded-xl bg-bg-creamy/55">
             <Image
               src={image}
               alt={`${title} image`}
               fill
-              className="object-contain"
+              className="object-cover"
               sizes="(min-width: 1024px) 420px, 100vw"
               unoptimized
             />

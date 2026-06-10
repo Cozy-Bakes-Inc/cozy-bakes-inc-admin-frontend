@@ -34,21 +34,21 @@ const positiveQuantity = (field: string, min = 1) =>
       message: `${field} must be at least ${min}`,
     });
 
-const positiveDecimal = (field: string) =>
+const optionalPositiveDecimal = (field: string) =>
   z
     .string()
     .trim()
-    .min(1, `${field} is required`)
-    .refine((value) => Number.isFinite(Number(value)) && Number(value) > 0, {
-      message: `${field} must be greater than 0`,
-    });
+    .refine(
+      (value) => !value || (Number.isFinite(Number(value)) && Number(value) > 0),
+      { message: `${field} must be greater than 0` },
+    );
 
 const parcelSchema = z.object({
-  length: positiveDecimal("Length"),
-  width: positiveDecimal("Width"),
-  height: positiveDecimal("Height"),
+  length: optionalPositiveDecimal("Length"),
+  width: optionalPositiveDecimal("Width"),
+  height: optionalPositiveDecimal("Height"),
   distanceUnit: z.enum(distanceUnits),
-  weight: positiveDecimal("Weight"),
+  weight: optionalPositiveDecimal("Weight"),
   massUnit: z.enum(massUnits),
 });
 

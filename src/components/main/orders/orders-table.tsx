@@ -1,5 +1,6 @@
 import { Eye } from "lucide-react";
 import type { OrdersTableProps } from "@/interfaces/main/orders";
+import { formatPhoneDisplay } from "@/lib/utils/phone";
 import { Button } from "@/components/ui/button";
 import { OrdersStatusSelect } from "./orders-status-select";
 
@@ -50,7 +51,7 @@ export function OrdersTable({
                 <td className="border-b border-border/15 px-5 py-4">
                   <div className="space-y-1.5">
                     <p className="text-[16px] font-semibold text-dark">{order.customer}</p>
-                    <p className="text-xs font-medium text-gray">{order.phone}</p>
+                    <p className="text-xs font-medium text-gray">{formatPhoneDisplay(order.phone)}</p>
                   </div>
                 </td>
                 <td className="border-b border-border/15 px-5 py-4 text-[16px] font-medium text-dark">

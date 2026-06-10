@@ -23,7 +23,7 @@ export function UpdateCompanyDialog({
       titleClassName="px-4 pt-4"
       description="Update your store details, address, and location coordinates."
       descriptionClassName="px-4"
-      contentClassName="sm:max-w-4xl p-0 gap-0"
+      contentClassName="sm:max-w-4xl p-0 pb-4 gap-0"
     >
       <UpdateCompanyForm shop={shop} onUpdated={onClose} />
     </Modal>

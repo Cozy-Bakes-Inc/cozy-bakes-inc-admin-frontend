@@ -181,13 +181,27 @@ export interface OrderItemImage {
   alt?: string | null;
 }
 
+export interface OrderItemPriceSnapshot {
+  type: string;
+  label: string;
+  pack_quantity: string | number | null;
+  unit_price: string;
+}
+
+export interface OrderItemFlavor {
+  name: string;
+  qty: number;
+}
+
 export interface SingleOrderItem {
-  product_id: number;
+  product_id: string | number;
   product_name: string;
-  quantity: number;
+  quantity: string | number;
   price: string;
-  subtotal: string | null;
-  images: OrderItemImage[];
+  price_snapshot: OrderItemPriceSnapshot | null;
+  flavors: { flavors: OrderItemFlavor[] } | null;
+  subtotal: string | number | null;
+  images: string[] | OrderItemImage[];
 }
 
 export interface SingleOrderData {

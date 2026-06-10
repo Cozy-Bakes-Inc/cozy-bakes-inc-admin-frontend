@@ -10,6 +10,7 @@ import type {
 } from "@/interfaces/main/orders";
 import { useSingleOrder } from "@/hooks/api";
 import { reverseOrderStatusMap } from "@/lib/utils/orders";
+import { formatPhoneDisplay } from "@/lib/utils/phone";
 import { updateOrderStatusAPI } from "@/services/mutations/orders";
 import Modal from "@/components/ui/modal";
 import { Button } from "@/components/ui/button";
@@ -71,7 +72,7 @@ function printInvoice(order: SingleOrderData) {
         <p><strong>Order Number:</strong> #${order.order_number}</p>
         <p><strong>Customer:</strong> ${order.customer.name}</p>
         <p><strong>Email:</strong> ${order.customer.email}</p>
-        <p><strong>Phone:</strong> ${order.customer.phone ?? "N/A"}</p>
+        <p><strong>Phone:</strong> ${formatPhoneDisplay(order.customer.phone)}</p>
 
         <div class="section">
           <p><strong>Items</strong></p>

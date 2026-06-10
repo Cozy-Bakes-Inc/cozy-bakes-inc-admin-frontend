@@ -60,8 +60,8 @@ export function CategoryTable({
                       {item.name}
                     </Link>
                   </td>
-                  <td className="border-b border-border/15 px-4 py-4 align-middle text-xs font-medium leading-4 text-muted-text md:max-w-[340px] md:px-5">
-                    {item.description}
+                  <td className="border-b truncate border-border/15 px-4 py-4 align-middle text-xs font-medium leading-4 text-muted-text md:max-w-[340px] md:px-5">
+                    <span>{item.description}</span>
                   </td>
                   <td className="border-b border-border/15 px-4 py-4 align-middle md:px-5">
                     <div className="flex items-center justify-center gap-2">

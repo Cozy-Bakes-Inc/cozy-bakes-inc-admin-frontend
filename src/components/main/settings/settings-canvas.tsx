@@ -9,6 +9,7 @@ import type {
   SettingsNotificationSection,
   SettingsSection,
 } from "@/interfaces/main/settings";
+import { formatPhoneDisplay } from "@/lib/utils/phone";
 import { useAdminSettings } from "@/hooks/api";
 import { UpdateAccountDialog } from "./update-account/update-account-dialog";
 import { UpdateCompanyDialog } from "./update-company/update-company-dialog";
@@ -65,7 +66,7 @@ function buildResolvedSections(
     {
       id: "phone-number",
       label: "Phone Number",
-      value: shop?.phone_number ?? "",
+      value: shop?.phone_number ? formatPhoneDisplay(shop.phone_number) : "",
       layout: "half",
       valueTone: "sm",
     },

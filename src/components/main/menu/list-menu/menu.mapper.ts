@@ -7,7 +7,7 @@ export function mapMenuToRecord(item: Menu): MenuRecord {
     title: item.title,
     description: item.description,
     pdfFileLink: item.pdf_file_link,
-    isActive: item.is_active as 0 | 1,
+    isActive: item.is_active,
     createdAt: item.created_at,
   };
 }
