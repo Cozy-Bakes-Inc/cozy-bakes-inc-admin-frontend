@@ -119,8 +119,10 @@ export function EditMarketLocationForm({
         payload.append("market_name", values.marketName);
         payload.append("tag_label", values.tagLabel);
         payload.append("date", values.date);
+        payload.append("end_date", values.endDate);
         payload.append("day", values.day);
-        payload.append("time", `${values.startTime} - ${values.endTime}`);
+        payload.append("time", values.startTime);
+        payload.append("end_time", values.endTime);
         payload.append("location_address", values.locationAddress);
         payload.append("map_link", values.mapLink);
         payload.append("description", values.description);
@@ -198,17 +200,41 @@ export function EditMarketLocationForm({
             name="date"
             control={control}
             rules={{
-              validate: (value) => validateField("date", value),
+              validate: (value) => {
+                const fieldValidation = validateField("date", value);
+                if (fieldValidation !== true) {
+                  return fieldValidation;
+                }
+
+                const startDate = new Date(value);
+                const endDate = new Date(getValues("endDate"));
+
+                if (
+                  Number.isNaN(startDate.getTime()) ||
+                  Number.isNaN(endDate.getTime())
+                ) {
+                  return true;
+                }
+
+                return (
+                  startDate <= endDate ||
+                  "Start date must be on or before end date"
+                );
+              },
             }}
             render={({ field }) => (
               <AddMarketLocationDatePicker
-                label="Date"
-                placeholder="Date"
+                label="Start Date"
+                placeholder="Start Date"
                 value={field.value}
                 disabled={isSubmitting}
                 error={errors.date?.message}
                 onChange={(value) => {
-                  field.onChange(value);
+                  setValue("date", value, {
+                    shouldDirty: true,
+                    shouldTouch: true,
+                    shouldValidate: true,
+                  });
                   const parsedDate = parse(value, "yyyy-MM-dd", new Date());
                   setValue(
                     "day",
@@ -218,6 +244,50 @@ export function EditMarketLocationForm({
                       shouldValidate: true,
                     },
                   );
+                }}
+              />
+            )}
+          />
+
+          <Controller
+            name="endDate"
+            control={control}
+            rules={{
+              validate: (value) => {
+                const fieldValidation = validateField("endDate", value);
+                if (fieldValidation !== true) {
+                  return fieldValidation;
+                }
+
+                const startDate = new Date(getValues("date"));
+                const endDate = new Date(value);
+
+                if (
+                  Number.isNaN(startDate.getTime()) ||
+                  Number.isNaN(endDate.getTime())
+                ) {
+                  return true;
+                }
+
+                return (
+                  endDate >= startDate ||
+                  "End date must be on or after start date"
+                );
+              },
+            }}
+            render={({ field }) => (
+              <AddMarketLocationDatePicker
+                label="End Date"
+                placeholder="End Date"
+                value={field.value}
+                disabled={isSubmitting}
+                error={errors.endDate?.message}
+                onChange={(value) => {
+                  setValue("endDate", value, {
+                    shouldDirty: true,
+                    shouldTouch: true,
+                    shouldValidate: true,
+                  });
                 }}
               />
             )}
@@ -236,7 +306,7 @@ export function EditMarketLocationForm({
                 placeholder="Day"
                 value={field.value}
                 icon={undefined}
-                disabled={isSubmitting}
+                disabled
                 error={errors.day?.message}
                 onChange={field.onChange}
               />

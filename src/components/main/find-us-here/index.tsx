@@ -18,11 +18,19 @@ import { FindUsHereDaySection } from "./find-us-here-day-section";
 import { FindUsHereHeader } from "./find-us-here-header";
 import { FindUsHereSummaryGrid } from "./find-us-here-summary-grid";
 
+function formatMarketTime(market: FindUsHereMarketApiItem) {
+  return market.end_time && !market.time.includes(" - ")
+    ? `${market.time} - ${market.end_time}`
+    : market.time;
+}
+
 function formatMarketSchedule(market: FindUsHereMarketApiItem) {
   const parsedDate = new Date(market.date);
+  const parsedEndDate = market.end_date ? new Date(market.end_date) : null;
+  const formattedTime = formatMarketTime(market);
 
   if (Number.isNaN(parsedDate.getTime())) {
-    return `${market.day} · ${market.time}`;
+    return `${market.day} · ${formattedTime}`;
   }
 
   const formattedDate = new Intl.DateTimeFormat("en-US", {
@@ -30,7 +38,19 @@ function formatMarketSchedule(market: FindUsHereMarketApiItem) {
     day: "numeric",
   }).format(parsedDate);
 
-  return `${market.day} · ${formattedDate} · ${market.time}`;
+  const formattedEndDate =
+    parsedEndDate && !Number.isNaN(parsedEndDate.getTime())
+      ? new Intl.DateTimeFormat("en-US", {
+          month: "short",
+          day: "numeric",
+        }).format(parsedEndDate)
+      : "";
+
+  if (formattedEndDate && formattedEndDate !== formattedDate) {
+    return `${market.day} - ${formattedDate} - ${formattedEndDate} - ${formattedTime}`;
+  }
+
+  return `${market.day} · ${formattedDate} · ${formattedTime}`;
 }
 
 function mapMarketDayToUiDay(
@@ -48,6 +68,7 @@ function mapMarketDayToUiDay(
       badge: market.tag_label,
       description: market.description,
       schedule: formatMarketSchedule(market),
+      endDate: market.end_date ?? undefined,
       address: market.location_address,
       mapLink: market.map_link ?? "",
       imageSrc: market.cover_images[0] ?? "",

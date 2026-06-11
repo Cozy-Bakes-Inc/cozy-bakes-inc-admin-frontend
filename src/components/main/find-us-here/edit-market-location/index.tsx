@@ -13,6 +13,7 @@ const defaultFormValues: EditMarketLocationFormValues = {
   marketName: "",
   tagLabel: "",
   date: "",
+  endDate: "",
   day: "",
   startTime: "",
   endTime: "",
@@ -36,12 +37,12 @@ function normalizeTimeValue(value?: string) {
   return `${matched[1].padStart(2, "0")}:${matched[2]} ${matched[3].toUpperCase()}`;
 }
 
-function splitMarketTime(time?: string) {
-  const [startTime = "", endTime = ""] = (time ?? "").split(/\s*-\s*/);
+function splitMarketTime(time?: string, endTimeValue?: string | null) {
+  const [startTime = "", fallbackEndTime = ""] = (time ?? "").split(/\s*-\s*/);
 
   return {
     startTime: normalizeTimeValue(startTime),
-    endTime: normalizeTimeValue(endTime),
+    endTime: normalizeTimeValue(endTimeValue ?? fallbackEndTime),
   };
 }
 
@@ -53,13 +54,14 @@ function EditMarketLocation({
 }: EditMarketLocationProps) {
   const { data, isLoading } = useSingleMarket(open ? marketSlug : undefined);
   const market = data?.data;
-  const marketTime = splitMarketTime(market?.time);
+  const marketTime = splitMarketTime(market?.time, market?.end_time);
 
   const initialValues: EditMarketLocationFormValues = market
     ? {
         marketName: market.market_name,
         tagLabel: market.tag_label,
         date: market.date,
+        endDate: market.end_date ?? market.date,
         day: market.day,
         startTime: marketTime.startTime,
         endTime: marketTime.endTime,

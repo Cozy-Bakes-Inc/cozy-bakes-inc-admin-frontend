@@ -20,6 +20,7 @@ export interface FindUsHereMarketLocation {
   badge: string;
   description: string;
   schedule: string;
+  endDate?: string;
   address: string;
   mapLink?: string;
   imageSrc: string;
@@ -67,8 +68,10 @@ export interface FindUsHereMarketApiItem {
   market_name: string;
   tag_label: string;
   date: string;
+  end_date?: string | null;
   day: string;
   time: string;
+  end_time?: string | null;
   location_address: string;
   map_link?: string;
   description: string;
