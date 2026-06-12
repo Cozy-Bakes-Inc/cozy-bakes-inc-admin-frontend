@@ -1,5 +1,7 @@
+import PickupLocations from "@/components/main/pickup-locations";
+
 function PickupLocationsPage() {
-  return <div>page</div>;
+  return <PickupLocations />;
 }
 
 export default PickupLocationsPage;

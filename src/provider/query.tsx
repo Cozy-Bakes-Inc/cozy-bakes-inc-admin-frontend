@@ -2,6 +2,7 @@
 
 import { ReactNode, useEffect } from "react";
 import { QueryClientProvider } from "@tanstack/react-query";
+import OfflineBoundary from "@/components/offline-boundary";
 import { getQueryClient, handleUnauthorizedSession } from "@/lib";
 import { registerUnauthorizedHandler } from "@/services";
 
@@ -20,7 +21,9 @@ function QueryProvider({ children }: IProps) {
   }, []);
 
   return (
-    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    <QueryClientProvider client={queryClient}>
+      <OfflineBoundary>{children}</OfflineBoundary>
+    </QueryClientProvider>
   );
 }
 

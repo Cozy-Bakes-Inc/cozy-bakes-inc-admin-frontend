@@ -24,7 +24,7 @@ export function AuthLayoutContent({ children }: AuthLayoutContentProps) {
           <div className="rounded-[18px] px-4 py-4 sm:px-8 sm:py-6">
             <div className="mb-6 flex items-center gap-2">
               <div className="relative h-17.5 w-17.5 shrink-0">
-                <Image src="/images/logo.svg" alt="Cozy Bakes Inc." fill />
+                <Image src="/images/logo.png" alt="Cozy Bakes Inc." fill />
               </div>
               <div className="leading-tight">
                 <p className="text-lg font-bold text-light-chocolate">

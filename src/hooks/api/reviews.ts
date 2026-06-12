@@ -5,7 +5,7 @@ import {
   reviewStatusStatsAPI,
   singleReviewAPI,
 } from "@/services/queries";
-import { useCustomInfiniteQuery, useCustomQuery } from "..";
+import { useCustomQuery } from "..";
 import { ReviewListApiSortOption, ReviewListApiStatus } from "@/types";
 
 export function useReviewStats() {
@@ -21,28 +21,12 @@ export function useReviewStatusStats() {
 }
 
 export function useReviewList(
+  page: number,
   sort: ReviewListApiSortOption = "newest",
   status: ReviewListApiStatus = "all",
 ) {
-  return useCustomInfiniteQuery(
-    ["reviews", sort, status],
-    async ({ pageParam = 1 }) => {
-      return reviewListAPI(sort, status, pageParam);
-    },
-    {
-      initialPageParam: 1,
-      getNextPageParam: (lastPage) => {
-        const pagination = lastPage?.data;
-        if (!pagination) return undefined;
-        if (
-          pagination.next_page_url &&
-          pagination.current_page < pagination.last_page
-        ) {
-          return pagination.current_page + 1;
-        }
-        return undefined;
-      },
-    },
+  return useCustomQuery(["reviews", page, sort, status], () =>
+    reviewListAPI(sort, status, page),
   );
 }
 

@@ -31,9 +31,9 @@ function getInitialValues(
     address_line: shop?.address_line ?? "",
     latitude: shop?.latitude ?? 0,
     longitude: shop?.longitude ?? 0,
-    apt_villa: shop?.apt_villa ?? "",
-    building_cluster: shop?.building_cluster ?? "",
-    street_landmark: shop?.street_landmark ?? "",
+    apt_villa: normalizeOptionalAddressDetail(shop?.apt_villa),
+    building_cluster: normalizeOptionalAddressDetail(shop?.building_cluster),
+    street_landmark: normalizeOptionalAddressDetail(shop?.street_landmark),
   };
 }
 
@@ -47,6 +47,11 @@ function validateField<K extends keyof UpdateCompanySettingsSchemaValues>(
 
 const inputClass =
   "min-h-[48px] w-full rounded-lg border border-primary bg-[#fbf8eb]/8 px-3 py-2 text-sm font-medium text-dark outline-none placeholder:text-[#98A2B3] focus:border-primary/70 disabled:opacity-60";
+
+function normalizeOptionalAddressDetail(value?: string | null) {
+  const trimmedValue = value?.trim() ?? "";
+  return trimmedValue === "$undefined" ? "" : trimmedValue;
+}
 
 export function UpdateCompanyForm({ shop, onUpdated }: UpdateCompanyFormProps) {
   const queryClient = useQueryClient();
@@ -81,9 +86,9 @@ export function UpdateCompanyForm({ shop, onUpdated }: UpdateCompanyFormProps) {
       address_line: values.address_line.trim(),
       latitude: values.latitude,
       longitude: values.longitude,
-      apt_villa: values.apt_villa ? values.apt_villa.trim() || undefined : undefined,
-      building_cluster: values.building_cluster ? values.building_cluster.trim() || undefined : undefined,
-      street_landmark: values.street_landmark?.trim() || undefined,
+      apt_villa: normalizeOptionalAddressDetail(values.apt_villa),
+      building_cluster: normalizeOptionalAddressDetail(values.building_cluster),
+      street_landmark: normalizeOptionalAddressDetail(values.street_landmark),
     });
 
     if (result?.ok) {
@@ -293,6 +298,8 @@ export function UpdateCompanyForm({ shop, onUpdated }: UpdateCompanyFormProps) {
         <LocationPicker
           lat={lat}
           lng={lng}
+          initialAddress={initialValues.address_line}
+          fallbackAddress={initialValues.address_line}
           onChange={(newLat, newLng) => {
             setValue("latitude", newLat, { shouldDirty: true });
             setValue("longitude", newLng, { shouldDirty: true });

@@ -12,7 +12,7 @@ export function ViewCategoryContent({ category }: ViewCategoryContentProps) {
       <div className="space-y-5">
         <div className="overflow-hidden rounded-[12px] w-fit">
           <Image
-            src={category.image ?? "/images/logo.svg"}
+            src={category.image ?? "/images/logo.png"}
             alt={`${category.title} cover`}
             width={125}
             height={125}

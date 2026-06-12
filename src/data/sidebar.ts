@@ -27,7 +27,7 @@ export type SidebarItem = {
 export const sidebarCompany = {
   name: "Cozy Bakes Inc.",
   subtitle: "By Marwa",
-  logoSrc: "/images/logo.svg",
+  logoSrc: "/images/logo.png",
 } as const;
 
 export const sidebarProfile = {
@@ -72,6 +72,12 @@ export const sidebarItems: SidebarItem[] = [
     label: "Find Us Here",
     icon: "location",
     href: "/find-us-here",
+  },
+  {
+    id: "pickup-locations",
+    label: "Pickup Locations",
+    icon: "location",
+    href: "/pickup-locations",
   },
   {
     id: "our-menu",

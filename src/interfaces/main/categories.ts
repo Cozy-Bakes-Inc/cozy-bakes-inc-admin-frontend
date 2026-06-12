@@ -59,8 +59,9 @@ export interface CategoryActionButtonProps {
 }
 
 export interface CategoriesPaginationProps {
-  pages: number[];
   currentPage: number;
+  lastPage: number;
+  onPageChange: (page: number) => void;
 }
 
 export interface SubCategoryCategoryItem {

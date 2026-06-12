@@ -20,6 +20,7 @@ import type {
 } from "@/types/main/customers";
 import { CustomersCanvas } from "./customers-canvas";
 import CustomerDetails from "./customer-details";
+import { formatCustomerDaysInactive } from "./customer-details/customer-details.utils";
 import { CustomersHeader } from "./customers-header";
 import { CustomersPagination } from "./customers-pagination";
 import { CustomersPerformanceOverview } from "./customers-performance-overview";
@@ -88,11 +89,6 @@ function formatCustomerLastOrder(value: string) {
 }
 
 function mapCustomerItemToRow(item: CustomersListItem): CustomerRecord {
-  const daysInactive =
-    typeof item.days_inactive === "number" && item.days_inactive >= 0
-      ? `${item.days_inactive} Day`
-      : "-";
-
   return {
     id: `#USER-${item.id}`,
     slug: item.slug,
@@ -101,7 +97,7 @@ function mapCustomerItemToRow(item: CustomersListItem): CustomerRecord {
     orders: item.orders,
     totalSpent: `$${item.total_spent}`,
     lastOrder: formatCustomerLastOrder(item.last_order),
-    daysInactive,
+    daysInactive: formatCustomerDaysInactive(item.days_inactive),
     status: mapApiStatusToUiStatus(item.status, item.orders),
     isHighSpender: item.status === "high_spenders" || item.status === "vip",
   };
@@ -142,26 +138,28 @@ function escapeCsvValue(value: string | number) {
 function Customers() {
   const [activeFilter, setActiveFilter] =
     useState<CustomerSegmentFilter>("all");
+  const [page, setPage] = useState(1);
   const [searchValue, setSearchValue] = useState("");
   const [sortValue, setSortValue] = useState<CustomerSortOption>("newest");
-  const [selectedCustomerSlug, setSelectedCustomerSlug] = useState<string | null>(null);
+  const [selectedCustomerSlug, setSelectedCustomerSlug] = useState<
+    string | null
+  >(null);
   const [isCustomerDetailsOpen, setIsCustomerDetailsOpen] = useState(false);
   const { data, isLoading } = useCustomersList(
+    page,
     mapFilterToApiTab(activeFilter),
     sortValue,
   );
+  const pagination = data?.data?.customers;
 
   const filters = useMemo(
-    () => buildSegmentOptions(data?.pages?.[0]?.data?.tabs),
+    () => buildSegmentOptions(data?.data?.tabs),
     [data],
   );
 
   const visibleRows = useMemo(() => {
     const normalizedSearch = searchValue.trim().toLowerCase();
-    const apiRows =
-      data?.pages?.flatMap((page) =>
-        page?.data?.customers?.data?.map(mapCustomerItemToRow) ?? [],
-      ) ?? [];
+    const apiRows = pagination?.data.map(mapCustomerItemToRow) ?? [];
 
     return apiRows.filter((row) => {
       const matchesSearch =
@@ -172,17 +170,7 @@ function Customers() {
 
       return matchesSearch;
     });
-  }, [data, searchValue]);
-
-  const paginationPages = useMemo(() => {
-    const lastPage = data?.pages?.[0]?.data?.customers?.last_page;
-    if (!lastPage || lastPage < 1) return customerDirectoryState.paginationPages;
-    return Array.from({ length: lastPage }, (_, index) => index + 1);
-  }, [data]);
-
-  const currentPage = data?.pages?.[0]?.data?.customers?.current_page ?? 1;
-  const shouldShowPagination =
-    (data?.pages?.[0]?.data?.customers?.last_page ?? 0) > 1;
+  }, [pagination?.data, searchValue]);
 
   function handleExportCustomers() {
     const headers = [
@@ -231,6 +219,26 @@ function Customers() {
     setIsCustomerDetailsOpen(true);
   }
 
+  function handleFilterChange(value: CustomerSegmentFilter) {
+    setActiveFilter(value);
+    setPage(1);
+  }
+
+  function handleSearchChange(value: string) {
+    setSearchValue(value);
+    setPage(1);
+  }
+
+  function handleSortChange(value: CustomerSortOption) {
+    setSortValue(value);
+    setPage(1);
+  }
+
+  function handlePageChange(nextPage: number) {
+    const lastPage = pagination?.last_page ?? 1;
+    setPage(Math.min(Math.max(nextPage, 1), lastPage));
+  }
+
   function closeCustomerDetails() {
     setIsCustomerDetailsOpen(false);
     setSelectedCustomerSlug(null);
@@ -252,14 +260,14 @@ function Customers() {
         <CustomersSegmentTabs
           filters={filters}
           activeFilter={activeFilter}
-          onFilterChange={setActiveFilter}
+          onFilterChange={handleFilterChange}
         />
 
         <CustomersToolbar
           searchValue={searchValue}
-          onSearchChange={setSearchValue}
+          onSearchChange={handleSearchChange}
           sortValue={sortValue}
-          onSortChange={setSortValue}
+          onSortChange={handleSortChange}
           exportLabel={customerDirectoryState.exportLabel}
           onExport={handleExportCustomers}
         />
@@ -270,12 +278,17 @@ function Customers() {
           onViewDetails={handleViewCustomerDetails}
         />
 
-        {shouldShowPagination ? (
-          <div className="flex justify-center overflow-x-auto pt-2">
+        {!isLoading && visibleRows.length > 0 ? (
+          <div className="flex flex-col items-center justify-center gap-3 overflow-x-auto pt-2 text-center">
             <CustomersPagination
-              currentPage={currentPage}
-              pages={paginationPages}
+              currentPage={pagination?.current_page ?? page}
+              lastPage={pagination?.last_page ?? 1}
+              onPageChange={handlePageChange}
             />
+            <p className="text-sm font-medium text-muted-text">
+              Showing {pagination?.from ?? 0}-{pagination?.to ?? 0} of{" "}
+              {pagination?.total ?? 0} customers
+            </p>
           </div>
         ) : null}
       </CustomersCanvas>

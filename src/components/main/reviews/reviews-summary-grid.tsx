@@ -28,14 +28,17 @@ function buildSummaryMetrics(
           ...metric,
           value: String(stats.total_reviews.count),
           subtitle:
-            stats.total_reviews.count > 0 ? "last update today" : "No reviews yet",
+            stats.total_reviews.count > 0
+              ? "last update today"
+              : "No reviews yet",
           trendLabel: `${stats.total_reviews.change_percentage}%`,
         };
       case "rating":
         return {
           ...metric,
           value: stats.average_rating.toFixed(1),
-          subtitle: stats.average_rating > 0 ? "last update today" : "No ratings yet",
+          subtitle:
+            stats.average_rating > 0 ? "last update today" : "No ratings yet",
           ratingValue: stats.average_rating,
         };
       case "pending":
@@ -43,13 +46,16 @@ function buildSummaryMetrics(
           ...metric,
           value: String(stats.pending_reviews),
           subtitle:
-            stats.pending_reviews > 0 ? "awaiting moderation" : "Nothing pending",
+            stats.pending_reviews > 0
+              ? "awaiting moderation"
+              : "Nothing pending",
         };
       case "hidden":
         return {
           ...metric,
           value: String(stats.hidden_reviews),
-          subtitle: stats.hidden_reviews > 0 ? "currently hidden" : "Nothing hidden",
+          subtitle:
+            stats.hidden_reviews > 0 ? "currently hidden" : "Nothing hidden",
         };
       default:
         return metric;

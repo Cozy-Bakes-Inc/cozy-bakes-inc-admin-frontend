@@ -148,6 +148,19 @@ export function OrdersCardGrid({
               <p className="mt-1 text-sm font-medium text-muted-text">
                 {order.items} items • {order.date} {order.time}
               </p>
+              {order.priceSnapshots && order.priceSnapshots.length > 0 ? (
+                <div className="mt-3 space-y-1.5">
+                  {order.priceSnapshots.map((snapshot, index) => (
+                    <p
+                      key={`${snapshot.productId}-${snapshot.label}-${index}`}
+                      className="text-xs font-medium leading-5 text-primary"
+                    >
+                      {snapshot.productName}: {snapshot.label} -{" "}
+                      {snapshot.unitPrice} * {snapshot.quantity}
+                    </p>
+                  ))}
+                </div>
+              ) : null}
             </div>
 
             <div className="flex items-center justify-between border-y border-border/10 py-3">

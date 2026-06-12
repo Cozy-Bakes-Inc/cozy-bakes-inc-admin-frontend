@@ -136,7 +136,7 @@ export function ReviewsModerationPanel({
     return (
       <section className="rounded-3xl border border-border/15 bg-background/80 p-5 shadow-[0_2px_8px_rgba(0,0,0,0.04)] md:p-6">
         <div className="mb-5 flex items-start gap-3">
-          <div className="flex size-10 shrink-0 items-center justify-center rounded-2xl bg-primary text-white">
+          <div className="flex size-10 shrink-0 items-center justify-center rounded-2xl bg-bg-creamy">
             <Shimmer className="size-5 rounded-xl" />
           </div>
 

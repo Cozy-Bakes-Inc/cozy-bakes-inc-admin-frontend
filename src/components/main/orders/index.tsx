@@ -21,7 +21,7 @@ import { OrdersEmptyState } from "./orders-empty-state";
 import { OrdersFilterTabs } from "./orders-filter-tabs";
 import { OrdersHeader } from "./orders-header";
 import { OrdersStatusChangeModal } from "./orders-status-change-modal";
-import { OrdersShowMoreButton } from "./orders-show-more-button";
+import { OrdersPagination } from "./orders-pagination";
 import { OrdersTable } from "./orders-table";
 import { OrdersTableShimmer } from "./orders-table-shimmer";
 import { OrdersToolbar } from "./orders-toolbar";
@@ -29,6 +29,7 @@ import { OrdersToolbar } from "./orders-toolbar";
 function Orders() {
   const queryClient = useQueryClient();
   const [activeFilter, setActiveFilter] = useState<OrderFilterValue>("all");
+  const [page, setPage] = useState(1);
   const [searchValue, setSearchValue] = useState("");
   const [viewMode, setViewMode] = useState<OrderViewMode>("card");
   const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
@@ -40,14 +41,11 @@ function Orders() {
   const [pendingStatusUpdate, setPendingStatusUpdate] =
     useState<PendingOrderStatusUpdate | null>(null);
   const sort = filterSortMap[activeFilter];
-  const { data, isLoading, hasNextPage, fetchNextPage, isFetchingNextPage } =
-    useOrders(sort);
+  const { data, isLoading, isFetching } = useOrders(page, sort);
+  const pagination = data?.data;
   const orders = useMemo(
-    () =>
-      data?.pages
-        ?.flatMap((page) => page?.data?.data ?? [])
-        .map(mapOrderToRecord) ?? [],
-    [data],
+    () => pagination?.data.map(mapOrderToRecord) ?? [],
+    [pagination?.data],
   );
   const hydratedOrders = useMemo(
     () =>
@@ -57,7 +55,6 @@ function Orders() {
       })),
     [orders, statusOverrides],
   );
-  console.log(data);
   const normalizedSearch = searchValue.trim().toLowerCase();
   const visibleOrders = useMemo(() => {
     if (!normalizedSearch) {
@@ -74,6 +71,21 @@ function Orders() {
   }, [hydratedOrders, normalizedSearch]);
 
   const hasEmptyState = !isLoading && visibleOrders.length === 0;
+
+  function handleFilterChange(value: OrderFilterValue) {
+    setActiveFilter(value);
+    setPage(1);
+  }
+
+  function handleSearchChange(value: string) {
+    setSearchValue(value);
+    setPage(1);
+  }
+
+  function handlePageChange(nextPage: number) {
+    const lastPage = pagination?.last_page ?? 1;
+    setPage(Math.min(Math.max(nextPage, 1), lastPage));
+  }
 
   function handleStatusChangeRequest(
     order: OrderRecord,
@@ -142,12 +154,12 @@ function Orders() {
         <OrdersFilterTabs
           filters={orderFilters}
           activeFilter={activeFilter}
-          onFilterChange={setActiveFilter}
+          onFilterChange={handleFilterChange}
         />
 
         <OrdersToolbar
           searchValue={searchValue}
-          onSearchChange={setSearchValue}
+          onSearchChange={handleSearchChange}
           viewMode={viewMode}
           onViewModeChange={setViewMode}
         />
@@ -163,32 +175,55 @@ function Orders() {
             hasSearch={normalizedSearch.length > 0}
             hasFilteredStatus={activeFilter !== "all"}
             viewMode={viewMode}
-            onClearSearch={() => setSearchValue("")}
+            onClearSearch={() => handleSearchChange("")}
             onResetFilters={() => {
-              setActiveFilter("all");
-              setSearchValue("");
+              handleFilterChange("all");
+              handleSearchChange("");
             }}
           />
         ) : viewMode === "table" ? (
-          <OrdersTable
-            orders={visibleOrders}
-            onStatusChangeRequest={handleStatusChangeRequest}
-            onViewDetails={handleViewDetails}
-          />
-        ) : (
-          <OrdersCardGrid
-            orders={visibleOrders}
-            onStatusChangeRequest={handleStatusChangeRequest}
-            onViewDetails={handleViewDetails}
-          />
-        )}
+          <div className="space-y-4">
+            <OrdersTable
+              orders={visibleOrders}
+              onStatusChangeRequest={handleStatusChangeRequest}
+              onViewDetails={handleViewDetails}
+            />
 
-        {!isLoading && !hasEmptyState && hasNextPage ? (
-          <OrdersShowMoreButton
-            isFetchingNextPage={isFetchingNextPage}
-            onClick={() => fetchNextPage()}
-          />
-        ) : null}
+            <div className="flex flex-col items-center justify-center gap-3 text-center">
+              <OrdersPagination
+                currentPage={pagination?.current_page ?? page}
+                lastPage={pagination?.last_page ?? 1}
+                onPageChange={handlePageChange}
+              />
+              <p className="text-sm font-medium text-muted-text">
+                Showing {pagination?.from ?? 0}-{pagination?.to ?? 0} of{" "}
+                {pagination?.total ?? 0} orders
+                {isFetching ? " ..." : ""}
+              </p>
+            </div>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            <OrdersCardGrid
+              orders={visibleOrders}
+              onStatusChangeRequest={handleStatusChangeRequest}
+              onViewDetails={handleViewDetails}
+            />
+
+            <div className="flex flex-col items-center justify-center gap-3 text-center">
+              <OrdersPagination
+                currentPage={pagination?.current_page ?? page}
+                lastPage={pagination?.last_page ?? 1}
+                onPageChange={handlePageChange}
+              />
+              <p className="text-sm font-medium text-muted-text">
+                Showing {pagination?.from ?? 0}-{pagination?.to ?? 0} of{" "}
+                {pagination?.total ?? 0} orders
+                {isFetching ? " ..." : ""}
+              </p>
+            </div>
+          </div>
+        )}
       </section>
 
       <OrdersStatusChangeModal

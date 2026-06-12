@@ -6,7 +6,13 @@ import {
 import { useCustomInfiniteQuery, useCustomQuery } from "../useCustomQuery";
 import { OrderSort } from "@/types/main/orders";
 
-export function useOrders(sort?: OrderSort) {
+export function useOrders(page: number, sort?: OrderSort) {
+  return useCustomQuery(["orders", page, sort], () =>
+    listOrdersAPI(page, sort),
+  );
+}
+
+export function useInfiniteOrders(sort?: OrderSort) {
   return useCustomInfiniteQuery(
     ["orders", sort],
     async ({ pageParam = 1 }) => {

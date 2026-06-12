@@ -14,7 +14,7 @@ import { ProductEmptyState } from "./product-empty-state";
 import { ProductTableShimmer } from "./product-table-shimmer";
 import { ProductCardGridShimmer } from "./product-card-grid-shimmer";
 import type { ProductRecord } from "@/interfaces";
-import { ProductShowMoreButton } from "./product-show-more-button";
+import { ProductPagination } from "./product-pagination";
 import { ProductDetailsModal } from "./view-product";
 import { UpdateProductModal } from "./update-product";
 import { DeleteProductModal } from "./delete-product";
@@ -30,21 +30,26 @@ function Products() {
   );
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
   const [editProductSlug, setEditProductSlug] = useState<string | null>(null);
-  const [deleteProduct, setDeleteProduct] = useState<{ slug: string; name: string } | null>(null);
+  const [deleteProduct, setDeleteProduct] = useState<{
+    slug: string;
+    name: string;
+  } | null>(null);
+  const [page, setPage] = useState(1);
   const [searchValue, setSearchValue] = useState("");
+  const [debouncedSearchValue, setDebouncedSearchValue] = useState("");
   const [viewMode, setViewMode] = useState<ViewMode>("table");
 
-  const { data, isLoading, isFetching, hasNextPage, fetchNextPage, isFetchingNextPage } =
-    useProductList(searchValue);
+  const { data, isLoading, isFetching } = useProductList(
+    page,
+    debouncedSearchValue,
+  );
 
-  const showShimmer = isLoading || (isFetching && !isFetchingNextPage);
+  const pagination = data?.data;
+  const showShimmer = isLoading;
 
   const visibleItems = useMemo(
-    () =>
-      data?.pages
-        ?.flatMap((page) => page?.data?.data ?? [])
-        .map(mapProductToRecord) ?? [],
-    [data],
+    () => pagination?.data.map(mapProductToRecord) ?? [],
+    [pagination?.data],
   );
   const hasEmptyState = !showShimmer && visibleItems.length === 0;
   const changeSearchValue = (value: string) => {
@@ -66,6 +71,20 @@ function Products() {
   function handleDeleteProduct(item: ProductRecord) {
     setDeleteProduct({ slug: item.slug, name: item.name });
   }
+
+  function handlePageChange(nextPage: number) {
+    const lastPage = pagination?.last_page ?? 1;
+    setPage(Math.min(Math.max(nextPage, 1), lastPage));
+  }
+
+  useEffect(() => {
+    const timeoutId = window.setTimeout(() => {
+      setDebouncedSearchValue(searchValue.trim());
+      setPage(1);
+    }, 500);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [searchValue]);
 
   useEffect(() => {
     if (!shouldOpenAddProduct) {
@@ -97,26 +116,50 @@ function Products() {
       ) : hasEmptyState ? (
         <ProductEmptyState searchValue={searchValue} />
       ) : viewMode === "table" ? (
-        <ProductTable
-          items={visibleItems}
-          onViewDetails={handleViewProduct}
-          onEditDetails={handleEditProduct}
-          onDeleteDetails={handleDeleteProduct}
-        />
+        <div className="space-y-4">
+          <ProductTable
+            items={visibleItems}
+            onViewDetails={handleViewProduct}
+            onEditDetails={handleEditProduct}
+            onDeleteDetails={handleDeleteProduct}
+          />
+
+          <div className="flex flex-col items-center justify-center gap-3 text-center">
+            <ProductPagination
+              currentPage={pagination?.current_page ?? page}
+              lastPage={pagination?.last_page ?? 1}
+              onPageChange={handlePageChange}
+            />
+            <p className="text-sm font-medium text-muted-text">
+              Showing {pagination?.from ?? 0}-{pagination?.to ?? 0} of{" "}
+              {pagination?.total ?? 0} products
+              {isFetching ? " ..." : ""}
+            </p>
+          </div>
+        </div>
       ) : (
-        <ProductCardGrid
-          items={visibleItems}
-          onViewDetails={handleViewProduct}
-          onEditDetails={handleEditProduct}
-          onDeleteDetails={handleDeleteProduct}
-        />
+        <div className="space-y-4">
+          <ProductCardGrid
+            items={visibleItems}
+            onViewDetails={handleViewProduct}
+            onEditDetails={handleEditProduct}
+            onDeleteDetails={handleDeleteProduct}
+          />
+
+          <div className="flex flex-col items-center justify-center gap-3 text-center">
+            <ProductPagination
+              currentPage={pagination?.current_page ?? page}
+              lastPage={pagination?.last_page ?? 1}
+              onPageChange={handlePageChange}
+            />
+            <p className="text-sm font-medium text-muted-text">
+              Showing {pagination?.from ?? 0}-{pagination?.to ?? 0} of{" "}
+              {pagination?.total ?? 0} products
+              {isFetching ? " ..." : ""}
+            </p>
+          </div>
+        </div>
       )}
-      {!showShimmer && !hasEmptyState && hasNextPage ? (
-        <ProductShowMoreButton
-          isFetchingNextPage={isFetchingNextPage}
-          onClick={() => fetchNextPage()}
-        />
-      ) : null}
       <AddProductModal
         open={isAddProductOpen}
         onClose={() => setIsAddProductOpen(false)}

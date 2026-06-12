@@ -27,7 +27,10 @@ interface ChangePasswordDialogProps {
   onClose: () => void;
 }
 
-export function ChangePasswordDialog({ open, onClose }: ChangePasswordDialogProps) {
+export function ChangePasswordDialog({
+  open,
+  onClose,
+}: ChangePasswordDialogProps) {
   const [step, setStep] = useState<Step>("email");
   const [email, setEmail] = useState("");
   const [otp, setOtp] = useState("");
@@ -93,6 +96,7 @@ export function ChangePasswordDialog({ open, onClose }: ChangePasswordDialogProp
       open={open}
       onClose={handleClose}
       title={STEP_TITLES[step]}
+      titleClassName="font-bold text-lg"
       description={STEP_DESCRIPTIONS[step]}
       contentClassName="sm:max-w-md"
     >

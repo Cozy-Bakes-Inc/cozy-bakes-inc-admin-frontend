@@ -16,16 +16,40 @@ export function registerUnauthorizedHandler(
   unauthorizedHandler = handler;
 }
 
+function shouldHandleUnauthorizedSession(
+  error: AxiosError,
+  hasAuthorizationHeader: boolean,
+) {
+  const status = error.response?.status;
+
+  if (status === 401) return hasAuthorizationHeader;
+
+  if (status !== 403) return false;
+
+  const data = error.response?.data as
+    | { message?: unknown; status?: unknown }
+    | undefined;
+  const message = typeof data?.message === "string" ? data.message : "";
+  const payloadStatus = typeof data?.status === "string" ? data.status : "";
+
+  return (
+    payloadStatus.toLowerCase() === "error" &&
+    /unauthorized|admin access only/i.test(message)
+  );
+}
+
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
-    const status = error.response?.status;
     const hasAuthorizationHeader = Boolean(
       error.config?.headers?.Authorization ||
       error.config?.headers?.authorization,
     );
 
-    if (status === 401 && hasAuthorizationHeader && unauthorizedHandler) {
+    if (
+      shouldHandleUnauthorizedSession(error, hasAuthorizationHeader) &&
+      unauthorizedHandler
+    ) {
       await unauthorizedHandler();
     }
 

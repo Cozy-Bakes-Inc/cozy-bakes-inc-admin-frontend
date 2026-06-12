@@ -1,7 +1,13 @@
 import { subCategoriesListAPI, subCategoryAPI } from "@/services/queries";
 import { useCustomInfiniteQuery, useCustomQuery } from "..";
 
-export function useSubCategoriesList(search?: string) {
+export function useSubCategoriesList(page: number, search?: string) {
+  return useCustomQuery(["sub-categories", page, search], () =>
+    subCategoriesListAPI(page, search),
+  );
+}
+
+export function useInfiniteSubCategoriesList(search?: string) {
   return useCustomInfiniteQuery(
     ["sub-categories", search],
     async ({ pageParam = 1 }) => {

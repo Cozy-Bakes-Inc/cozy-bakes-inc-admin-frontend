@@ -29,13 +29,13 @@ export function SidebarNavItem({
   const parentHighlighted = active;
 
   const sharedClassName = cn(
-    "group flex w-full shrink-0 items-center text-left transition-colors",
+    "group flex w-full shrink-0 items-center text-left transition-[background-color,color,border-radius]",
     compact
       ? "h-[50px] justify-center rounded-[16px] px-3"
       : "h-[50.5px] px-4 pr-5",
     active
       ? "rounded-full bg-primary text-white shadow-[0_12px_24px_rgba(209,150,40,0.22)]"
-      : "rounded-[14px] text-muted-text hover:bg-white/80 hover:text-light-chocolate"
+      : "rounded-[14px] text-muted-text hover:rounded-full hover:bg-white/80 hover:text-light-chocolate"
   );
 
   if (hasChildren && !compact) {
@@ -52,10 +52,10 @@ export function SidebarNavItem({
           type="button"
           variant="ghost"
           className={cn(
-            "flex h-[50.5px] w-full shrink-0 items-center rounded-[14px] px-4 pr-5 text-left transition-colors",
+            "flex h-[50.5px] w-full shrink-0 items-center rounded-[14px] px-4 pr-5 text-left transition-[background-color,color,border-radius]",
             parentHighlighted
               ? "rounded-full bg-primary text-white shadow-[0_12px_24px_rgba(209,150,40,0.22)]"
-              : "text-muted-text hover:bg-white/80 hover:text-light-chocolate",
+              : "text-muted-text hover:rounded-full hover:bg-white/80 hover:text-light-chocolate",
           )}
           onClick={() => setExpanded((current) => !current)}
           aria-expanded={expanded}
@@ -90,10 +90,10 @@ export function SidebarNavItem({
                 key={child.label}
                 href={child.href}
                 className={cn(
-                  "flex h-10 w-full items-center rounded-[14px] px-4 text-left text-xs transition-colors",
+                  "flex h-10 w-full items-center rounded-[14px] px-4 text-left text-xs transition-[background-color,color,border-radius]",
                   index === 0
                     ? "bg-bg-creamy/60 font-semibold text-primary"
-                    : "font-medium text-muted-text hover:bg-bg-creamy/40",
+                    : "font-medium text-muted-text hover:rounded-full hover:bg-bg-creamy/40",
                 )}
                 onClick={onSelect}
               >

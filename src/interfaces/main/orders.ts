@@ -13,11 +13,20 @@ export interface OrderRecord {
   customer: string;
   phone: string;
   items: number;
+  priceSnapshots?: OrderRecordPriceSnapshot[];
   details: string;
   total: string;
   status: OrderStatus;
   date: string;
   time: string;
+}
+
+export interface OrderRecordPriceSnapshot {
+  productId: string;
+  productName: string;
+  label: string;
+  unitPrice: string;
+  quantity: string | number;
 }
 
 export interface OrderFilterOption {
@@ -69,8 +78,9 @@ export interface OrdersCardGridProps {
 }
 
 export interface OrdersPaginationProps {
-  pages: number[];
   currentPage: number;
+  lastPage: number;
+  onPageChange: (page: number) => void;
 }
 
 export interface OrdersViewToggleOption {
@@ -108,6 +118,15 @@ export interface OrderListItem {
   payment_status: OrderPaymentStatus;
   payment_method: OrderPaymentMethod;
   created_at: string;
+  items?: OrderListProductItem[];
+}
+
+export interface OrderListProductItem {
+  product_id: string | number;
+  title?: string;
+  product_name?: string;
+  quantity: string | number;
+  price_snapshot: OrderItemPriceSnapshot | null;
 }
 
 export interface OrdersPaginationData {

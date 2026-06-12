@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { Check, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import InputErrorMessage from "@/components/ui/input-error-message";
-import { useSubCategoriesList } from "@/hooks/api";
+import { useInfiniteSubCategoriesList } from "@/hooks/api";
 import { cn } from "@/lib";
 
 interface AddProductCategorySelectProps {
@@ -23,7 +23,7 @@ export function AddProductCategorySelect({
   const [isOpen, setIsOpen] = useState(false);
   const wrapperRef = useRef<HTMLDivElement | null>(null);
   const { data, isLoading, hasNextPage, fetchNextPage, isFetchingNextPage } =
-    useSubCategoriesList();
+    useInfiniteSubCategoriesList();
   const categoryOptions =
     data?.pages
       ?.flatMap((page) => page?.data?.data ?? [])
@@ -84,7 +84,7 @@ export function AddProductCategorySelect({
         <div
           role="listbox"
           aria-label="Product category"
-          className="absolute left-0 right-0 top-[calc(100%+8px)] z-50 overflow-hidden rounded-[10px] border border-primary/20 bg-background p-1 shadow-[0_16px_40px_rgba(61,44,30,0.16)]"
+          className="absolute left-0 right-0 top-[calc(100%+8px)] z-50 max-h-[280px] overflow-y-auto overscroll-contain rounded-[10px] border border-primary/20 bg-background p-1 shadow-[0_16px_40px_rgba(61,44,30,0.16)]"
         >
           {isLoading ? (
             <div className="px-3 py-3 text-sm font-medium text-muted-text">

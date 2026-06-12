@@ -55,12 +55,23 @@ export function mapOrderToRecord(order: OrderListItem): OrderRecord {
   const customer =
     order.customer_name || order.customer_email || "Guest Customer";
   const { date, time } = formatOrderDate(order.created_at);
+  const priceSnapshots =
+    order.items
+      ?.filter((item) => item.price_snapshot)
+      .map((item) => ({
+        productId: String(item.product_id),
+        productName: item.product_name || item.title || "Order item",
+        label: item.price_snapshot?.label ?? "",
+        unitPrice: formatCurrency(Number(item.price_snapshot?.unit_price ?? 0)),
+        quantity: item.quantity,
+      })) ?? [];
 
   return {
     id: `#${order.order_number}`,
     customer,
     phone: order.customer_phone || order.customer_email,
     items: Number(order.total_quantity) || 0,
+    priceSnapshots,
     details: `${order.payment_method.toUpperCase()} payment - ${order.payment_status.replaceAll("_", " ")}`,
     total: formatCurrency(Number(order.total_amount)),
     status: orderStatusMap[order.status],

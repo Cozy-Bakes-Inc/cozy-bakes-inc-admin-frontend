@@ -28,12 +28,24 @@ interface NominatimResult {
 interface LocationPickerProps {
   lat: number;
   lng: number;
+  initialAddress?: string;
+  fallbackAddress?: string;
   onChange: (lat: number, lng: number) => void;
   onAddressChange?: (address: string) => void;
+  onSearchValueChange?: (value: string) => void;
 }
 
-export function LocationPicker({ lat, lng, onChange, onAddressChange }: LocationPickerProps) {
-  const [query, setQuery] = useState("");
+export function LocationPicker({
+  lat,
+  lng,
+  initialAddress,
+  fallbackAddress,
+  onChange,
+  onAddressChange,
+  onSearchValueChange,
+}: LocationPickerProps) {
+  const resolvedFallbackAddress = fallbackAddress ?? initialAddress ?? "";
+  const [query, setQuery] = useState(resolvedFallbackAddress);
   const [suggestions, setSuggestions] = useState<NominatimResult[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [isReverseGeocoding, setIsReverseGeocoding] = useState(false);
@@ -43,29 +55,70 @@ export function LocationPicker({ lat, lng, onChange, onAddressChange }: Location
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const skipNextSearchRef = useRef(false);
+  const onAddressChangeRef = useRef(onAddressChange);
+  const onSearchValueChangeRef = useRef(onSearchValueChange);
 
   const latNum = Number(lat);
   const lngNum = Number(lng);
+  const hasCoordinates =
+    Number.isFinite(latNum) &&
+    Number.isFinite(lngNum) &&
+    (latNum !== 0 || lngNum !== 0);
 
   useEffect(() => {
-    if (!latNum && !lngNum) return;
+    onAddressChangeRef.current = onAddressChange;
+  }, [onAddressChange]);
+
+  useEffect(() => {
+    onSearchValueChangeRef.current = onSearchValueChange;
+  }, [onSearchValueChange]);
+
+  function notifyAddressValueChange(value: string) {
+    onSearchValueChangeRef.current?.(value);
+    onAddressChangeRef.current?.(value);
+  }
+
+  useEffect(() => {
+    if (!hasCoordinates) return;
+
+    const controller = new AbortController();
+
+    skipNextSearchRef.current = true;
+    setQuery(resolvedFallbackAddress);
     setIsReverseGeocoding(true);
     fetch(
       `https://nominatim.openstreetmap.org/reverse?lat=${latNum}&lon=${lngNum}&format=json`,
-      { headers: { "Accept-Language": "en" } },
+      {
+        headers: { "Accept-Language": "en" },
+        signal: controller.signal,
+      },
     )
       .then((res) => res.json())
       .then((data) => {
         if (data.display_name) {
           skipNextSearchRef.current = true;
           setQuery(data.display_name);
-          onAddressChange?.(data.display_name);
         }
       })
-      .catch(() => {})
-      .finally(() => setIsReverseGeocoding(false));
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+      .catch(() => {
+        if (!controller.signal.aborted) {
+          skipNextSearchRef.current = true;
+          setQuery(resolvedFallbackAddress);
+        }
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) {
+          setIsReverseGeocoding(false);
+        }
+      });
+
+    return () => controller.abort();
+  }, [hasCoordinates, latNum, lngNum, resolvedFallbackAddress]);
+
+  useEffect(() => {
+    skipNextSearchRef.current = true;
+    setQuery(resolvedFallbackAddress);
+  }, [resolvedFallbackAddress]);
 
   useEffect(() => {
     const trimmed = query.trim();
@@ -122,7 +175,7 @@ export function LocationPicker({ lat, lng, onChange, onAddressChange }: Location
     setFlyToCenter([newLat, newLng]);
     skipNextSearchRef.current = true;
     setQuery(result.display_name);
-    onAddressChange?.(result.display_name);
+    notifyAddressValueChange(result.display_name);
     setShowDropdown(false);
   }
 
@@ -146,7 +199,7 @@ export function LocationPicker({ lat, lng, onChange, onAddressChange }: Location
           if (data.display_name) {
             skipNextSearchRef.current = true;
             setQuery(data.display_name);
-            onAddressChange?.(data.display_name);
+            notifyAddressValueChange(data.display_name);
             setSuggestions([]);
             setShowDropdown(false);
           }
@@ -172,7 +225,7 @@ export function LocationPicker({ lat, lng, onChange, onAddressChange }: Location
       if (data.display_name) {
         skipNextSearchRef.current = true;
         setQuery(data.display_name);
-        onAddressChange?.(data.display_name);
+        notifyAddressValueChange(data.display_name);
         setSuggestions([]);
         setShowDropdown(false);
       }
@@ -195,7 +248,11 @@ export function LocationPicker({ lat, lng, onChange, onAddressChange }: Location
           <input
             type="text"
             value={query}
-            onChange={(e) => setQuery(e.target.value)}
+            onChange={(e) => {
+              const nextValue = e.target.value;
+              setQuery(nextValue);
+              notifyAddressValueChange(nextValue);
+            }}
             onFocus={() => suggestions.length > 0 && setShowDropdown(true)}
             onKeyDown={(e) => {
               if (e.key === "Escape") setShowDropdown(false);

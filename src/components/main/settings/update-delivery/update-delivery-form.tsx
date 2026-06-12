@@ -22,8 +22,8 @@ function getInitialValues(
   delivery: AdminDeliverySettingsData | null,
 ): UpdateDeliverySettingsSchemaValues {
   return {
-    fee: delivery?.fee ?? 0,
-    miles: delivery?.miles ?? 0,
+    fee: Number(delivery?.fee ?? 0),
+    miles: Number(delivery?.miles ?? 0),
   };
 }
 

@@ -78,9 +78,8 @@ export default function AddProductModal({
       open={open}
       onClose={onClose}
       title="Add New Product"
-      contentClassName="w-[calc(100vw-1rem)] max-w-[calc(100vw-1rem)] gap-0 overflow-hidden rounded-[16px] border border-border/10 bg-background p-0 shadow-[0_24px_80px_rgba(61,44,30,0.18)] sm:w-full sm:max-w-[640px] md:max-w-[1080px] [&_[data-slot=dialog-header]]:border-b [&_[data-slot=dialog-header]]:border-black/6 [&_[data-slot=dialog-header]]:px-4 [&_[data-slot=dialog-header]]:pb-4 [&_[data-slot=dialog-header]]:pt-5 sm:[&_[data-slot=dialog-header]]:px-6 md:[&_[data-slot=dialog-header]]:px-8"
+      contentClassName="max-h-[calc(100svh-1rem)] w-[calc(100vw-1rem)] max-w-[calc(100vw-1rem)] gap-0 overflow-hidden rounded-[16px] border border-border/10 bg-background p-0 shadow-[0_24px_80px_rgba(61,44,30,0.18)] sm:w-full sm:max-h-[calc(100svh-2rem)] sm:max-w-[640px] md:max-w-[1080px] [&_[data-slot=dialog-header]]:border-b [&_[data-slot=dialog-header]]:border-black/6 [&_[data-slot=dialog-header]]:px-4 [&_[data-slot=dialog-header]]:pb-4 [&_[data-slot=dialog-header]]:pt-5 [&_[data-slot=scroll-area]]:max-h-[calc(100svh-6rem)] sm:[&_[data-slot=dialog-header]]:px-6 sm:[&_[data-slot=scroll-area]]:max-h-[calc(100svh-8rem)] md:[&_[data-slot=dialog-header]]:px-8"
       titleClassName="pr-12 text-[26px] font-bold tracking-[-0.04em] text-dark md:text-[32px]"
-      closeButtonClassname="right-4 top-5 size-9 md:right-6 md:top-6 md:size-10"
     >
       <AddProductForm
         key={formResetKey}

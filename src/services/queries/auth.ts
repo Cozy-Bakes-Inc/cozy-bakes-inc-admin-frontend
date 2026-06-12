@@ -1,6 +1,5 @@
-
-import { AuthenticatedUserResponse } from "@/interfaces";
+import { AdminSettingsResponse } from "@/interfaces";
 import { baseAPI } from "..";
 
 export const authenticatedUserAPI = async () =>
-  await baseAPI<AuthenticatedUserResponse>("GET", "/auth/me");
+  await baseAPI<AdminSettingsResponse>("GET", "/auth/me");

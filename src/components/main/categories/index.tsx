@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useSubCategoriesList } from "@/hooks/api";
 import type {
   SubCategoryRecord,
@@ -8,7 +8,7 @@ import type {
 } from "@/interfaces/main/categories";
 import { CategoriesEmptyState } from "./categories-empty-state";
 import { CategoriesCardGridShimmer } from "./categories-card-grid-shimmer";
-import { CategoriesShowMoreButton } from "./categories-show-more-button";
+import { CategoriesPagination } from "./categories-pagination";
 import { CategoriesTableShimmer } from "./categories-table-shimmer";
 import { CategoryHeader } from "./category-header";
 import { CategorySearchToolbar } from "./category-search-toolbar";
@@ -26,12 +26,14 @@ function mapSubCategoryToRecord(item: SubCategoryListItem): SubCategoryRecord {
     slug: item.slug,
     name: item.title,
     description: item.description,
-    coverImage: item.image ?? "/images/logo.svg",
+    coverImage: item.image ?? "/images/logo.png",
   };
 }
 
 function Categories() {
+  const [page, setPage] = useState(1);
   const [searchValue, setSearchValue] = useState("");
+  const [debouncedSearchValue, setDebouncedSearchValue] = useState("");
   const [viewMode, setViewMode] = useState<ViewMode>("table");
   const [isAddCategoryOpen, setIsAddCategoryOpen] = useState(false);
   const [selectedCategorySlug, setSelectedCategorySlug] = useState<
@@ -42,15 +44,15 @@ function Categories() {
   >(null);
   const [selectedDeleteCategory, setSelectedDeleteCategory] =
     useState<SubCategoryRecord | null>(null);
-  const { data, isLoading, hasNextPage, fetchNextPage, isFetchingNextPage } =
-    useSubCategoriesList(searchValue);
+  const { data, isLoading, isFetching } = useSubCategoriesList(
+    page,
+    debouncedSearchValue,
+  );
 
+  const pagination = data?.data;
   const visibleItems = useMemo(
-    () =>
-      data?.pages
-        ?.flatMap((page) => page?.data?.data ?? [])
-        .map(mapSubCategoryToRecord) ?? [],
-    [data],
+    () => pagination?.data.map(mapSubCategoryToRecord) ?? [],
+    [pagination?.data],
   );
   const hasEmptyState = !isLoading && visibleItems.length === 0;
   const isViewCategoryOpen = Boolean(selectedCategorySlug);
@@ -75,6 +77,21 @@ function Categories() {
   const changeViewMode = (mode: ViewMode) => {
     setViewMode(mode);
   };
+
+  function handlePageChange(nextPage: number) {
+    const lastPage = pagination?.last_page ?? 1;
+    setPage(Math.min(Math.max(nextPage, 1), lastPage));
+  }
+
+  useEffect(() => {
+    const timeoutId = window.setTimeout(() => {
+      setDebouncedSearchValue(searchValue.trim());
+      setPage(1);
+    }, 500);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [searchValue]);
+
   return (
     <section className="space-y-4 md:space-y-6">
       <CategoryHeader
@@ -99,27 +116,50 @@ function Categories() {
       ) : hasEmptyState ? (
         <CategoriesEmptyState searchValue={searchValue} />
       ) : viewMode === "table" ? (
-        <CategoryTable
-          items={visibleItems}
-          onViewDetails={handleViewCategory}
-          onEditDetails={handleEditCategory}
-          onDeleteDetails={handleDeleteCategory}
-        />
-      ) : (
-        <SubCategoryCardGrid
-          items={visibleItems}
-          onViewDetails={handleViewCategory}
-          onEditDetails={handleEditCategory}
-          onDeleteDetails={handleDeleteCategory}
-        />
-      )}
+        <div className="space-y-4">
+          <CategoryTable
+            items={visibleItems}
+            onViewDetails={handleViewCategory}
+            onEditDetails={handleEditCategory}
+            onDeleteDetails={handleDeleteCategory}
+          />
 
-      {!isLoading && !hasEmptyState && hasNextPage ? (
-        <CategoriesShowMoreButton
-          isFetchingNextPage={isFetchingNextPage}
-          onClick={() => fetchNextPage()}
-        />
-      ) : null}
+          <div className="flex flex-col items-center justify-center gap-3 text-center">
+            <CategoriesPagination
+              currentPage={pagination?.current_page ?? page}
+              lastPage={pagination?.last_page ?? 1}
+              onPageChange={handlePageChange}
+            />
+            <p className="text-sm font-medium text-muted-text">
+              Showing {pagination?.from ?? 0}-{pagination?.to ?? 0} of{" "}
+              {pagination?.total ?? 0} categories
+              {isFetching ? " ..." : ""}
+            </p>
+          </div>
+        </div>
+      ) : (
+        <div className="space-y-4">
+          <SubCategoryCardGrid
+            items={visibleItems}
+            onViewDetails={handleViewCategory}
+            onEditDetails={handleEditCategory}
+            onDeleteDetails={handleDeleteCategory}
+          />
+
+          <div className="flex flex-col items-center justify-center gap-3 text-center">
+            <CategoriesPagination
+              currentPage={pagination?.current_page ?? page}
+              lastPage={pagination?.last_page ?? 1}
+              onPageChange={handlePageChange}
+            />
+            <p className="text-sm font-medium text-muted-text">
+              Showing {pagination?.from ?? 0}-{pagination?.to ?? 0} of{" "}
+              {pagination?.total ?? 0} categories
+              {isFetching ? " ..." : ""}
+            </p>
+          </div>
+        </div>
+      )}
 
       <AddCategory
         open={isAddCategoryOpen}

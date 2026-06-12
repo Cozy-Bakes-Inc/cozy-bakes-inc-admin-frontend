@@ -20,6 +20,7 @@ export function UpdateDeliveryDialog({
       open={open}
       onClose={onClose}
       title="Delivery Settings"
+      titleClassName="font-bold text-lg"
       description="Set the delivery fee and maximum delivery radius."
       contentClassName="sm:max-w-md"
     >

@@ -95,8 +95,9 @@ export interface CustomersTableProps {
 }
 
 export interface CustomersPaginationProps {
-  pages: number[];
   currentPage: number;
+  lastPage: number;
+  onPageChange: (page: number) => void;
 }
 
 export interface CustomersStatusBadgeProps {
@@ -181,7 +182,7 @@ export interface CustomersListItem {
   orders: number;
   total_spent: string;
   last_order: string;
-  days_inactive: number;
+  days_inactive: number | null;
   status: string;
 }
 
@@ -227,7 +228,7 @@ export interface CustomerDetailsData {
   orders_number: number;
   total_spent: string;
   last_order: string;
-  days_inactive: number;
+  days_inactive: number | null;
   status: string;
 }
 

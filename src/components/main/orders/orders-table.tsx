@@ -55,7 +55,22 @@ export function OrdersTable({
                   </div>
                 </td>
                 <td className="border-b border-border/15 px-5 py-4 text-[16px] font-medium text-dark">
-                  {order.items} items
+                  <div className="space-y-2">
+                    <p>{order.items} items</p>
+                    {order.priceSnapshots && order.priceSnapshots.length > 0 ? (
+                      <div className="space-y-1">
+                        {order.priceSnapshots.map((snapshot, index) => (
+                          <p
+                            key={`${snapshot.productId}-${snapshot.label}-${index}`}
+                            className="text-xs font-medium leading-5 text-primary"
+                          >
+                            {snapshot.productName}: {snapshot.label} -{" "}
+                            {snapshot.unitPrice} * {snapshot.quantity}
+                          </p>
+                        ))}
+                      </div>
+                    ) : null}
+                  </div>
                 </td>
                 <td className="border-b border-border/15 px-5 py-4 text-[16px] font-medium text-dark">
                   {order.total}

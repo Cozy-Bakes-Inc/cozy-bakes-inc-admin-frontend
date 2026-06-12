@@ -10,7 +10,7 @@ import type {
   SettingsSection,
 } from "@/interfaces/main/settings";
 import { formatPhoneDisplay } from "@/lib/utils/phone";
-import { useAdminSettings } from "@/hooks/api";
+import { useAuthenticatedUser } from "@/hooks/api";
 import { UpdateAccountDialog } from "./update-account/update-account-dialog";
 import { UpdateCompanyDialog } from "./update-company/update-company-dialog";
 import { UpdateDeliveryDialog } from "./update-delivery/update-delivery-dialog";
@@ -38,7 +38,8 @@ function buildResolvedSections(
   );
   const user = settingsData?.user;
   const shop = settingsData?.shop;
-  const delivery = settingsData?.delivery_settings;
+  const delivery =
+    settingsData?.delivery_fee ?? settingsData?.delivery_settings;
 
   const storeFields: SettingsFieldSection["fields"] = [
     {
@@ -95,7 +96,9 @@ function buildResolvedSections(
     title: "Store Information",
     description: "management your store information",
     action: {
-      label: hasStoreValues ? "Edit Store Information" : "Add Store Information",
+      label: hasStoreValues
+        ? "Edit Store Information"
+        : "Add Store Information",
       onClick: onEditCompany,
     },
     fields: storeFields,
@@ -166,7 +169,9 @@ function buildResolvedSections(
     title: "Delivery Settings",
     description: "Manage your delivery fee and radius",
     action: {
-      label: hasDeliveryValues ? "Edit Delivery Settings" : "Add Delivery Settings",
+      label: hasDeliveryValues
+        ? "Edit Delivery Settings"
+        : "Add Delivery Settings",
       onClick: onEditDelivery,
     },
     fields: deliveryFields,
@@ -202,7 +207,10 @@ function buildResolvedSections(
   };
 
   const resolvedPasswordSection: SettingsSection | undefined = passwordSection
-    ? ({ ...passwordSection, action: { ...passwordSection.action, onClick: onChangePassword } } as SettingsSection)
+    ? ({
+        ...passwordSection,
+        action: { ...passwordSection.action, onClick: onChangePassword },
+      } as SettingsSection)
     : undefined;
 
   return [
@@ -252,8 +260,9 @@ export function SettingsCanvas({ ariaLabel, sections }: SettingsCanvasProps) {
   const [companyDialogOpen, setCompanyDialogOpen] = useState(false);
   const [accountDialogOpen, setAccountDialogOpen] = useState(false);
   const [deliveryDialogOpen, setDeliveryDialogOpen] = useState(false);
-  const [changePasswordDialogOpen, setChangePasswordDialogOpen] = useState(false);
-  const { data, isLoading } = useAdminSettings();
+  const [changePasswordDialogOpen, setChangePasswordDialogOpen] =
+    useState(false);
+  const { data, isLoading } = useAuthenticatedUser();
   const settingsData = data?.data;
   const resolvedSections = buildResolvedSections(
     sections,
@@ -296,7 +305,7 @@ export function SettingsCanvas({ ariaLabel, sections }: SettingsCanvasProps) {
 
       <UpdateDeliveryDialog
         open={deliveryDialogOpen}
-        delivery={settingsData?.delivery_settings}
+        delivery={settingsData?.delivery_fee ?? settingsData?.delivery_settings}
         onClose={() => setDeliveryDialogOpen(false)}
       />
 

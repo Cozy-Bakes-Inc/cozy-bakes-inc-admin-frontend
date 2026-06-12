@@ -20,7 +20,7 @@ export function SidebarSignOut({ compact = false }: SidebarSignOutProps) {
         type="button"
         variant="ghost"
         className={cn(
-          "flex w-full items-center justify-center bg-[#ff1010] font-medium text-white transition-transform hover:scale-[0.99] hover:bg-[#ff1010]/90",
+          "flex w-full items-center justify-center bg-red-500 font-medium text-white transition-transform hover:scale-[0.99] hover:bg-[#ff1010]/90",
           compact ? "h-12 rounded-[14px] px-0" : "h-12 rounded-lg px-5",
         )}
         title={compact ? sidebarSignOutLabel : undefined}

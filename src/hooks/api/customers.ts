@@ -5,7 +5,7 @@ import {
   singleCustomerAPI,
 } from "@/services/queries";
 import type { CustomerSortOption } from "@/types/main/customers";
-import { useCustomInfiniteQuery, useCustomQuery } from "..";
+import { useCustomQuery } from "..";
 
 export function useCustomersOverviewStats() {
   return useCustomQuery(["customersOverviewStats"], customersOverviewStatsAPI);
@@ -19,28 +19,12 @@ export function useCustomersPerformanceOverviewStats() {
 }
 
 export function useCustomersList(
+  page: number,
   tab: string = "all",
   sort: CustomerSortOption = "newest",
 ) {
-  return useCustomInfiniteQuery(
-    ["customers-list", tab, sort],
-    async ({ pageParam = 1 }) => {
-      return customersListAPI(tab, pageParam, sort);
-    },
-    {
-      initialPageParam: 1,
-      getNextPageParam: (lastPage) => {
-        const pagination = lastPage?.data?.customers;
-        if (!pagination) return undefined;
-        if (
-          pagination.next_page_url &&
-          pagination.current_page < pagination.last_page
-        ) {
-          return pagination.current_page + 1;
-        }
-        return undefined;
-      },
-    },
+  return useCustomQuery(["customers-list", page, tab, sort], () =>
+    customersListAPI(tab, page, sort),
   );
 }
 

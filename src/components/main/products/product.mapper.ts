@@ -12,7 +12,7 @@ export function mapProductToRecord(item: ProductListItem): ProductRecord {
     status: item.status,
     subCategoryName: item.sub_category?.title ?? "—",
     categoryName: item.sub_category?.category?.title ?? "—",
-    coverImage: item.images?.[0] ?? "/images/logo.svg",
+    coverImage: item.images?.[0] ?? "/images/logo.png",
     flavors: item.flavors ?? [],
     prices: item.prices ?? {},
     createdAt: item.created_at,

@@ -1,5 +1,18 @@
 import { z } from "zod";
 
+const optionalAddressDetailSchema = z.preprocess((value) => {
+  if (value == null) {
+    return "";
+  }
+
+  if (typeof value !== "string") {
+    return value;
+  }
+
+  const trimmedValue = value.trim();
+  return trimmedValue === "$undefined" ? "" : trimmedValue;
+}, z.string());
+
 export const updateProfileSchema = z.object({
   first_name: z.string().trim().min(1, "First name is required"),
   last_name: z.string().trim().min(1, "Last name is required"),
@@ -35,9 +48,9 @@ export const updateCompanySettingsSchema = z.object({
     .number({ error: "Longitude is required" })
     .min(-180, "Invalid longitude")
     .max(180, "Invalid longitude"),
-  apt_villa: z.string().trim().optional(),
-  building_cluster: z.string().trim().optional(),
-  street_landmark: z.string().trim().optional(),
+  apt_villa: optionalAddressDetailSchema,
+  building_cluster: optionalAddressDetailSchema,
+  street_landmark: optionalAddressDetailSchema,
 });
 
 export type UpdateCompanySettingsSchemaValues = z.infer<

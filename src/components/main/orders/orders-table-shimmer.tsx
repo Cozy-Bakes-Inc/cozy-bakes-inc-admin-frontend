@@ -6,7 +6,7 @@ export function OrdersTableShimmer() {
       <div className="overflow-x-auto">
         <div className="min-w-[1084px]">
           <div className="grid grid-cols-7 gap-4 bg-[#FBF8EB] px-5 py-5">
-            {Array.from({ length: 7 }).map((_, index) => (
+            {Array.from({ length: 3 }).map((_, index) => (
               <Shimmer key={index} className="h-5 w-20 rounded-xl" />
             ))}
           </div>

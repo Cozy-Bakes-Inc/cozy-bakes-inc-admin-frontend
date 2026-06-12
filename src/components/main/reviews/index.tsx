@@ -27,12 +27,14 @@ import { ReviewsShell } from "./reviews-shell";
 import { ReviewsSummaryGrid } from "./reviews-summary-grid";
 import { ReviewsTable } from "./reviews-table";
 import { ReviewsToolbar } from "./reviews-toolbar";
+import { ReviewsPagination } from "./reviews-pagination";
 import { useReviewList } from "@/hooks/api";
 import { deleteReviewAPI } from "@/services/mutations";
 
 function Reviews() {
   const queryClient = useQueryClient();
   const [activeFilter, setActiveFilter] = useState<ReviewFilter>("all");
+  const [page, setPage] = useState(1);
   const [searchValue, setSearchValue] = useState("");
   const [sortValue, setSortValue] = useState<ReviewListApiSortOption>("newest");
   const [reviewToDelete, setReviewToDelete] = useState<ReviewRow | null>(null);
@@ -48,11 +50,16 @@ function Reviews() {
       : activeFilter === "hidden"
         ? "rejected"
         : activeFilter;
-  const { data, isLoading } = useReviewList(sortValue, statusFilter);
+  const { data, isLoading, isFetching } = useReviewList(
+    page,
+    sortValue,
+    statusFilter,
+  );
+  const pagination = data?.data;
 
   const apiRows = useMemo(
-    () => data?.pages?.flatMap((page) => page?.data?.data ?? []) ?? [],
-    [data],
+    () => pagination?.data ?? [],
+    [pagination?.data],
   );
 
   const mappedRows = useMemo(
@@ -97,11 +104,26 @@ function Reviews() {
 
   const handleSearchChange = useCallback((value: string) => {
     setSearchValue(value);
+    setPage(1);
   }, []);
 
   const handleSortChange = useCallback((value: ReviewListApiSortOption) => {
     setSortValue(value);
+    setPage(1);
   }, []);
+
+  const handleFilterChange = useCallback((value: ReviewFilter) => {
+    setActiveFilter(value);
+    setPage(1);
+  }, []);
+
+  const handlePageChange = useCallback(
+    (nextPage: number) => {
+      const lastPage = pagination?.last_page ?? 1;
+      setPage(Math.min(Math.max(nextPage, 1), lastPage));
+    },
+    [pagination?.last_page],
+  );
 
   const handleDeleteRequest = useCallback((row: ReviewRow) => {
     setReviewToDelete(row);
@@ -177,7 +199,7 @@ function Reviews() {
           <ReviewsFilterTabs
             filters={reviewFilterOptions}
             activeFilter={activeFilter}
-            onFilterChange={setActiveFilter}
+            onFilterChange={handleFilterChange}
           />
 
           <ReviewsToolbar
@@ -194,6 +216,21 @@ function Reviews() {
             onDeleteRequest={handleDeleteRequest}
             onViewDetails={handleViewDetails}
           />
+
+          {!isLoading && visibleRows.length > 0 ? (
+            <div className="flex flex-col items-center justify-center gap-3 text-center">
+              <ReviewsPagination
+                currentPage={pagination?.current_page ?? page}
+                lastPage={pagination?.last_page ?? 1}
+                onPageChange={handlePageChange}
+              />
+              <p className="text-sm font-medium text-muted-text">
+                Showing {pagination?.from ?? 0}-{pagination?.to ?? 0} of{" "}
+                {pagination?.total ?? 0} reviews
+                {isFetching ? " ..." : ""}
+              </p>
+            </div>
+          ) : null}
         </div>
       </ReviewsShell>
 

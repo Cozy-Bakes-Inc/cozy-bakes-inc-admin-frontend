@@ -3,7 +3,7 @@ import { Shimmer } from "@/components/ui/shimmer";
 export function OrdersCardGridShimmer() {
   return (
     <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-      {Array.from({ length: 6 }).map((_, index) => (
+      {Array.from({ length: 3 }).map((_, index) => (
         <div
           key={index}
           className="overflow-hidden rounded-[16px] border border-border/15 bg-white p-5 shadow-[0_16px_36px_rgba(209,150,40,0.08)]"

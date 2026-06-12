@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { MapContainer, TileLayer, Marker, useMap, useMapEvents } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
@@ -42,20 +42,15 @@ export interface LocationPickerMapProps {
 }
 
 export function LocationPickerMap({ lat, lng, flyToCenter, onChange }: LocationPickerMapProps) {
-  const [mounted, setMounted] = useState(false);
   const hasPosition = lat !== 0 || lng !== 0;
   const center: [number, number] = hasPosition ? [lat, lng] : [6.5244, 3.3792];
   const markerRef = useRef<L.Marker>(null);
-
-  useEffect(() => { setMounted(true); }, []);
 
   useEffect(() => {
     if (markerRef.current && hasPosition) {
       markerRef.current.setLatLng([lat, lng]);
     }
   }, [lat, lng, hasPosition]);
-
-  if (!mounted) return null;
 
   return (
     <MapContainer

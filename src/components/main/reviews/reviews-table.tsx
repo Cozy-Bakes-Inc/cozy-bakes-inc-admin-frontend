@@ -35,7 +35,7 @@ export function ReviewsTable({
   const renderEmptyState = () => (
     <tr className="bg-[color-mix(in_srgb,var(--color-bg-creamy)_22%,white)]">
       <td
-        colSpan={6}
+        colSpan={5}
         className="border-b border-primary/10 px-4 py-16 text-center"
       >
         <div className="mx-auto max-w-md">
@@ -62,9 +62,6 @@ export function ReviewsTable({
         </td>
         <td className="border-b border-primary/10 px-4 py-4 align-top">
           <Shimmer className="h-5 w-full rounded-md" />
-        </td>
-        <td className="border-b border-primary/10 px-4 py-4 align-top">
-          <Shimmer className="h-5 w-24 rounded-md" />
         </td>
         <td className="border-b border-primary/10 px-4 py-4 align-top">
           <Shimmer className="h-5 w-32 rounded-full" />
@@ -104,9 +101,6 @@ export function ReviewsTable({
                 Review Text
               </th>
               <th className="px-4 py-4 text-left text-base font-semibold text-dark">
-                Date
-              </th>
-              <th className="px-4 py-4 text-left text-base font-semibold text-dark">
                 Status
               </th>
               <th className="px-4 py-4 text-left text-base font-semibold text-dark">
@@ -140,9 +134,6 @@ export function ReviewsTable({
                       </td>
                       <td className="max-w-[320px] border-b border-primary/10 px-4 py-4 align-top text-xs leading-[1.35rem] font-medium text-muted-text">
                         <p className="line-clamp-2">{row.reviewText}</p>
-                      </td>
-                      <td className="border-b border-primary/10 px-4 py-4 align-top text-[15px] font-medium text-dark">
-                        {row.date}
                       </td>
                       <td className="border-b border-primary/10 px-4 py-4 align-top">
                         <ReviewsStatusBadge status={row.status} />

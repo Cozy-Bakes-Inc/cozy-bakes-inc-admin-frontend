@@ -2,7 +2,7 @@
 
 import { useMemo } from "react";
 import { OrderListItem } from "@/interfaces";
-import { useOrders } from "@/hooks/api";
+import { useInfiniteOrders } from "@/hooks/api";
 import { formatCurrency } from "@/lib/utils/dashboard";
 import { Button } from "@/components/ui/button";
 import { Shimmer } from "@/components/ui/shimmer";
@@ -54,7 +54,7 @@ function RecentOrdersShimmerList({ count }: { count: number }) {
 
 export function DashboardRecentOrders() {
   const { data, isLoading, hasNextPage, fetchNextPage, isFetchingNextPage } =
-    useOrders("latest");
+    useInfiniteOrders("latest");
   const recentOrders: OrderListItem[] = useMemo(
     () => data?.pages?.flatMap((page) => page?.data?.data ?? []) ?? [],
     [data],

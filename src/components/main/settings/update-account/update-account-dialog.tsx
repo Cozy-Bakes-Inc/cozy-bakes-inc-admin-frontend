@@ -22,6 +22,7 @@ export function UpdateAccountDialog({
       open={open}
       onClose={onClose}
       title="Account Information"
+      titleClassName="font-bold text-lg"
       description="Update your personal account details below."
       contentClassName="sm:max-w-lg"
     >

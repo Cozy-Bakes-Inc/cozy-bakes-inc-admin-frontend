@@ -9,8 +9,12 @@ export function formatCustomerSpent(totalSpent: string) {
   return `$${totalSpent}`;
 }
 
-export function formatCustomerDaysInactive(daysInactive: number) {
-  return `${daysInactive} Day`;
+export function formatCustomerDaysInactive(daysInactive?: number | null) {
+  if (typeof daysInactive !== "number" || daysInactive < 0) {
+    return "No data";
+  }
+
+  return `${daysInactive} ${daysInactive === 1 ? "Day" : "Days"}`;
 }
 
 export function formatCustomerLastOrder(value: string) {

@@ -152,14 +152,16 @@ export interface AdminNotificationPreferencesData {
 }
 
 export interface AdminDeliverySettingsData {
-  fee: number;
-  miles: number;
+  fee: number | string;
+  miles: number | string;
+  is_active?: number | string;
 }
 
 export interface AdminSettingsData {
   user: AdminSettingsUserData | null;
   shop: AdminSettingsShopData | null;
   notification_preferences: AdminNotificationPreferencesData | null;
+  delivery_fee?: AdminDeliverySettingsData | null;
   delivery_settings?: AdminDeliverySettingsData | null;
 }
 
