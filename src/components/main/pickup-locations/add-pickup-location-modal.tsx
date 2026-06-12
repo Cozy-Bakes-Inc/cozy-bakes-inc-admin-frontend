@@ -37,7 +37,21 @@ export function AddPickupLocationModal({
   const queryClient = useQueryClient();
 
   async function handleCreate(payload: Partial<PickupLocationMutationPayload>) {
-    const result = await createShop(payload as PickupLocationMutationPayload);
+    const createPayload = { ...payload };
+
+    for (const key of [
+      "apt_villa",
+      "building_cluster",
+      "street_landmark",
+    ] satisfies Array<keyof PickupLocationMutationPayload>) {
+      if (!createPayload[key]?.trim()) {
+        delete createPayload[key];
+      }
+    }
+
+    const result = await createShop(
+      createPayload as PickupLocationMutationPayload,
+    );
 
     if (result?.ok) {
       toast.success(result.message || "Pickup location created successfully");

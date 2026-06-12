@@ -24,14 +24,19 @@ interface EditPickupLocationModalProps {
 function mapShopToFormValues(
   shop: PickupLocationShopDetails,
 ): PickupLocationFormValues {
+  const normalizeAddressDetail = (value?: string | null) => {
+    const trimmed = value?.trim();
+    return !trimmed || trimmed === "$undefined" ? "" : trimmed;
+  };
+
   return {
     name: shop.name,
     phoneNumber: formatPhoneInput(shop.phone_number),
     email: shop.email,
     addressLine: shop.address_line,
-    aptVilla: shop.apt_villa ?? "",
-    buildingCluster: shop.building_cluster ?? "",
-    streetLandmark: shop.street_landmark ?? "",
+    aptVilla: normalizeAddressDetail(shop.apt_villa),
+    buildingCluster: normalizeAddressDetail(shop.building_cluster),
+    streetLandmark: normalizeAddressDetail(shop.street_landmark),
     storeDescription: shop.store_description,
     mapLink: shop.map_link ?? "",
     latitude: shop.latitude ?? "",

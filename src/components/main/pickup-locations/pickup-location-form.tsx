@@ -25,9 +25,9 @@ interface PickupLocationFormProps {
   ) => void | Promise<void>;
 }
 
-function optionalTrim(value?: string) {
+function normalizeOptionalAddressDetail(value?: string) {
   const trimmed = value?.trim();
-  return trimmed ? trimmed : undefined;
+  return !trimmed || trimmed === "$undefined" ? "" : trimmed;
 }
 
 function buildPickupLocationPayload(
@@ -43,9 +43,9 @@ function buildPickupLocationPayload(
     store_description: values.storeDescription.trim(),
     latitude: (values.latitude ?? "").trim(),
     longitude: (values.longitude ?? "").trim(),
-    apt_villa: optionalTrim(values.aptVilla),
-    building_cluster: optionalTrim(values.buildingCluster),
-    street_landmark: optionalTrim(values.streetLandmark),
+    apt_villa: normalizeOptionalAddressDetail(values.aptVilla),
+    building_cluster: normalizeOptionalAddressDetail(values.buildingCluster),
+    street_landmark: normalizeOptionalAddressDetail(values.streetLandmark),
   };
 
   if (!dirtyFields) {
@@ -81,11 +81,7 @@ function buildPickupLocationPayload(
     return payload;
   }, {});
 
-  return {
-    ...payload,
-    latitude: payloadByField.latitude,
-    longitude: payloadByField.longitude,
-  };
+  return payload;
 }
 
 export function PickupLocationForm({
