@@ -24,13 +24,13 @@ function formatMarketTime(market: FindUsHereMarketApiItem) {
     : market.time;
 }
 
-function formatMarketSchedule(market: FindUsHereMarketApiItem) {
+function formatMarketSchedule(market: FindUsHereMarketApiItem, dayLabel: string) {
   const parsedDate = new Date(market.date);
   const parsedEndDate = market.end_date ? new Date(market.end_date) : null;
   const formattedTime = formatMarketTime(market);
 
   if (Number.isNaN(parsedDate.getTime())) {
-    return `${market.day} · ${formattedTime}`;
+    return `${dayLabel} · ${formattedTime}`;
   }
 
   const formattedDate = new Intl.DateTimeFormat("en-US", {
@@ -47,10 +47,10 @@ function formatMarketSchedule(market: FindUsHereMarketApiItem) {
       : "";
 
   if (formattedEndDate && formattedEndDate !== formattedDate) {
-    return `${market.day} - ${formattedDate} - ${formattedEndDate} - ${formattedTime}`;
+    return `${dayLabel} - ${formattedDate} - ${formattedEndDate} - ${formattedTime}`;
   }
 
-  return `${market.day} · ${formattedDate} · ${formattedTime}`;
+  return `${dayLabel} · ${formattedDate} · ${formattedTime}`;
 }
 
 function mapMarketDayToUiDay(
@@ -67,7 +67,7 @@ function mapMarketDayToUiDay(
       title: market.market_name,
       badge: market.tag_label,
       description: market.description,
-      schedule: formatMarketSchedule(market),
+      schedule: formatMarketSchedule(market, day.day),
       endDate: market.end_date ?? undefined,
       address: market.location_address,
       mapLink: market.map_link ?? "",

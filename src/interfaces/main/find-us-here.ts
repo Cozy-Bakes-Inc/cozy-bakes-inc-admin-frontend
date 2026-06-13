@@ -69,7 +69,7 @@ export interface FindUsHereMarketApiItem {
   tag_label: string;
   date: string;
   end_date?: string | null;
-  day: string;
+  day: string | string[];
   time: string;
   end_time?: string | null;
   location_address: string;
@@ -84,6 +84,7 @@ export interface FindUsHereSingleMarketApiItem
   extends FindUsHereMarketApiItem {
   is_day_correct: boolean;
   correct_day: string;
+  day_match_status: string;
   is_upcoming: boolean;
   is_past: boolean;
 }

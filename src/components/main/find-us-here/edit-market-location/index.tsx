@@ -14,7 +14,7 @@ const defaultFormValues: EditMarketLocationFormValues = {
   tagLabel: "",
   date: "",
   endDate: "",
-  day: "",
+  day: [],
   startTime: "",
   endTime: "",
   locationAddress: "",
@@ -46,6 +46,22 @@ function splitMarketTime(time?: string, endTimeValue?: string | null) {
   };
 }
 
+function normalizeMarketDays(day?: string | string[], correctDay?: string) {
+  if (Array.isArray(day)) {
+    return day;
+  }
+
+  if (day) {
+    return [day];
+  }
+
+  if (correctDay) {
+    return [correctDay];
+  }
+
+  return [];
+}
+
 function EditMarketLocation({
   open,
   onClose,
@@ -62,7 +78,7 @@ function EditMarketLocation({
         tagLabel: market.tag_label,
         date: market.date,
         endDate: market.end_date ?? market.date,
-        day: market.day,
+        day: normalizeMarketDays(market.day, market.correct_day),
         startTime: marketTime.startTime,
         endTime: marketTime.endTime,
         locationAddress: market.location_address,

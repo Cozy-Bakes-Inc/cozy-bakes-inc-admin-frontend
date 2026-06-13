@@ -35,7 +35,7 @@ export interface EditMarketLocationProps {
 }
 
 export interface AddMarketLocationFieldProps {
-  id: keyof Omit<AddMarketLocationFormValues, "coverImage">;
+  id: keyof Omit<AddMarketLocationFormValues, "coverImage" | "day">;
   label: string;
   placeholder: string;
   value: string;

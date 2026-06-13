@@ -3,7 +3,6 @@ import { z } from "zod";
 const acceptedImageTypes = ["image/png", "image/jpeg", "image/jpg"];
 const maxImageSizeInBytes = 2 * 1024 * 1024;
 const timePattern = /^(\d{2}):(\d{2})\s(AM|PM)$/i;
-
 function isFile(value: unknown): value is File {
   return typeof File !== "undefined" && value instanceof File;
 }
@@ -32,7 +31,9 @@ const marketDetailsSchema = z.object({
     .string()
     .trim()
     .regex(/^\d{4}-\d{2}-\d{2}$/, "End date must be in YYYY-MM-DD format"),
-  day: z.string().trim().min(1, "Day is required"),
+  day: z
+    .array(z.string().trim().min(1, "Day is required"))
+    .min(1, "Select at least one market day"),
   startTime: z
     .string()
     .trim()

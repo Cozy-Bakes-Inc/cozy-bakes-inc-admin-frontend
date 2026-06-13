@@ -14,6 +14,7 @@ import { updateMarketAPI } from "@/services/mutations";
 import type { EditMarketLocationFormValues } from "@/types/main";
 import { AddMarketLocationDatePicker } from "../add-market-location/add-market-location-date-picker";
 import { AddMarketLocationField } from "../add-market-location/add-market-location-field";
+import { MarketDaySelector } from "../market-day-selector";
 import { EditMarketLocationCoverImages } from "./edit-market-location-cover-images";
 
 interface EditMarketLocationFormProps {
@@ -120,7 +121,9 @@ export function EditMarketLocationForm({
         payload.append("tag_label", values.tagLabel);
         payload.append("date", values.date);
         payload.append("end_date", values.endDate);
-        payload.append("day", values.day);
+        values.day.forEach((day) => {
+          payload.append("day[]", day);
+        });
         payload.append("time", values.startTime);
         payload.append("end_time", values.endTime);
         payload.append("location_address", values.locationAddress);
@@ -236,14 +239,18 @@ export function EditMarketLocationForm({
                     shouldValidate: true,
                   });
                   const parsedDate = parse(value, "yyyy-MM-dd", new Date());
-                  setValue(
-                    "day",
-                    isValid(parsedDate) ? format(parsedDate, "EEEE") : "",
-                    {
-                      shouldDirty: true,
-                      shouldValidate: true,
-                    },
-                  );
+                  const currentDays = getValues("day");
+
+                  if (currentDays.length === 0) {
+                    setValue(
+                      "day",
+                      isValid(parsedDate) ? [format(parsedDate, "EEEE")] : [],
+                      {
+                        shouldDirty: true,
+                        shouldValidate: true,
+                      },
+                    );
+                  }
                 }}
               />
             )}
@@ -300,16 +307,22 @@ export function EditMarketLocationForm({
               validate: (value) => validateField("day", value),
             }}
             render={({ field }) => (
-              <AddMarketLocationField
-                id="day"
-                label="Day"
-                placeholder="Day"
-                value={field.value}
-                icon={undefined}
-                disabled
-                error={errors.day?.message}
-                onChange={field.onChange}
-              />
+              <div className="md:col-span-2">
+                <MarketDaySelector
+                  id="day"
+                  label="Days"
+                  value={field.value ?? []}
+                  disabled={isSubmitting}
+                  error={errors.day?.message}
+                  onChange={(value) => {
+                    setValue("day", value, {
+                      shouldDirty: true,
+                      shouldTouch: true,
+                      shouldValidate: true,
+                    });
+                  }}
+                />
+              </div>
             )}
           />
         </div>

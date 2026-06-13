@@ -88,7 +88,11 @@ function ViewMarketLocation({
                 label="End Date"
                 value={formatMarketDate(market?.end_date ?? undefined)}
               />
-              <ViewMarketLocationField label="Day" value={market?.day} />
+              <ViewMarketLocationField
+                label="Day"
+                value={market?.day}
+                className="md:col-span-2"
+              />
             </div>
 
             <div className="mt-5">
