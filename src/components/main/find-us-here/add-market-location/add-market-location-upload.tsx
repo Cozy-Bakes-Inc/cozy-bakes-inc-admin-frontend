@@ -2,119 +2,149 @@
 
 import Image from "next/image";
 import { useEffect, useMemo, useRef } from "react";
-import { ImageUp, X } from "lucide-react";
+import type { DragEvent } from "react";
+import { Plus, Upload, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import InputErrorMessage from "@/components/ui/input-error-message";
 import { cn } from "@/lib";
 
 interface AddMarketLocationUploadProps {
-  file: File | null;
-  onChange: (file: File | null) => void;
+  files: File[];
+  onChange: (files: File[]) => void;
   error?: string;
   disabled?: boolean;
 }
 
 export function AddMarketLocationUpload({
-  file,
+  files,
   onChange,
   error,
   disabled = false,
 }: AddMarketLocationUploadProps) {
   const inputRef = useRef<HTMLInputElement | null>(null);
-  const previewUrl = useMemo(
-    () => (file ? URL.createObjectURL(file) : null),
-    [file],
+  const previewUrls = useMemo(
+    () => files.map((file) => URL.createObjectURL(file)),
+    [files],
   );
 
   useEffect(() => {
     return () => {
-      if (previewUrl) {
-        URL.revokeObjectURL(previewUrl);
-      }
+      previewUrls.forEach((previewUrl) => URL.revokeObjectURL(previewUrl));
     };
-  }, [previewUrl]);
+  }, [previewUrls]);
 
-  function handleFileSelection(nextFile: File | null) {
-    onChange(nextFile);
+  function handleFilesSelection(nextFiles: File[]) {
+    onChange([...files, ...nextFiles]);
   }
+
+  function handleDrop(event: DragEvent<HTMLDivElement>) {
+    event.preventDefault();
+
+    if (disabled) {
+      return;
+    }
+
+    handleFilesSelection(Array.from(event.dataTransfer.files ?? []));
+  }
+
+  function removeFile(indexToRemove: number) {
+    onChange(files.filter((_, index) => index !== indexToRemove));
+  }
+
+  const isEmpty = files.length === 0;
 
   return (
     <div>
       <label className="mb-2 block text-[16px] font-medium leading-6 text-dark">
-        Cover Image
+        Cover Images
       </label>
 
-      <div className="space-y-3">
-        <Button
-          type="button"
-          variant="ghost"
-          disabled={disabled}
+      {isEmpty ? (
+        <div
+          role="button"
+          tabIndex={disabled ? -1 : 0}
+          aria-disabled={disabled}
           onClick={() => inputRef.current?.click()}
-          onDragOver={(event) => {
-            event.preventDefault();
-          }}
-          onDrop={(event) => {
-            if (disabled) {
-              return;
+          onKeyDown={(event) => {
+            if (disabled) return;
+            if (event.key === "Enter" || event.key === " ") {
+              event.preventDefault();
+              inputRef.current?.click();
             }
-            event.preventDefault();
-            const nextFile = event.dataTransfer.files?.[0] ?? null;
-            handleFileSelection(nextFile);
           }}
+          onDragOver={(event) => event.preventDefault()}
+          onDrop={handleDrop}
           className={cn(
-            "flex min-h-[150px] w-full flex-col items-center justify-center rounded-[24px] border border-dashed border-primary bg-[rgba(250,248,243,0.7)] px-6 py-8 text-center transition-colors hover:bg-[rgba(250,248,243,0.9)]",
-            file ? "border-primary/70" : "border-primary/85",
-            disabled ? "cursor-not-allowed opacity-60" : "",
+            "flex min-h-35 w-full cursor-pointer flex-col items-center justify-center rounded-[10px] border border-dashed border-primary bg-[rgba(250,248,243,0.35)] px-4 py-5 text-center outline-none transition-colors hover:bg-[rgba(250,248,243,0.75)] focus:border-primary/70 focus:ring-2 focus:ring-primary/10 sm:px-6",
             error ? "border-destructive bg-destructive/5" : "",
+            disabled ? "cursor-not-allowed opacity-60" : "",
           )}
         >
-          <span className="inline-flex items-center justify-center text-primary">
-            <ImageUp className="size-8" strokeWidth={2.2} />
-          </span>
-
-          <p className="mt-3 text-sm leading-5 tracking-[-0.01em] text-muted-text">
-            <span className="font-semibold text-muted-text">
-              Click to upload
-            </span>
-            {" or drag and drop"}
+          <Upload className="size-8 text-primary" strokeWidth={2.1} />
+          <p className="mt-2 text-sm leading-5 text-dark">
+            <span className="font-semibold">Click to upload</span>
+            <span className="font-normal text-muted-text"> or drag & drop</span>
           </p>
-
-          <p className="mt-1 text-xs leading-4 text-[#98A2B3]">
-            PNG, JPG (MAX. 5MB)
+          <p className="mt-1 text-sm leading-5 text-[#98A2B3]">
+            PNG, JPG (max. 5MB) - multiple allowed
           </p>
-        </Button>
-
-        {previewUrl ? (
-          <div className="relative size-[150px] overflow-visible rounded-[24px] border border-dashed border-primary bg-[#fbf8eb14]">
-            <Image
-              src={previewUrl}
-              alt={file?.name ?? "Uploaded cover preview"}
-              width={150}
-              height={150}
-              className="size-full rounded-[24px] object-cover"
-            />
-            <Button
-              type="button"
-              variant="ghost"
-              disabled={disabled}
-              onClick={() => handleFileSelection(null)}
-              className="absolute -right-2 -top-2 flex size-6 items-center justify-center rounded-full border border-danger bg-danger-soft text-danger shadow-[0_1px_2px_rgba(16,24,40,0.05)] disabled:cursor-not-allowed disabled:opacity-60"
-              aria-label="Remove selected cover image"
+        </div>
+      ) : (
+        <div
+          onDragOver={(event) => event.preventDefault()}
+          onDrop={handleDrop}
+          className="flex flex-wrap gap-3"
+        >
+          {previewUrls.map((previewUrl, index) => (
+            <div
+              key={previewUrl}
+              className="relative size-37.5 shrink-0 overflow-hidden rounded-[10px] border border-border/15"
             >
-              <X className="size-[14px]" strokeWidth={2.2} />
-            </Button>
-          </div>
-        ) : null}
-      </div>
+              <Image
+                src={previewUrl}
+                alt={files[index]?.name ?? `Cover image ${index + 1}`}
+                fill
+                className="object-cover"
+              />
+              <span className="absolute inset-0 bg-black/20" />
+              <Button
+                type="button"
+                variant="ghost"
+                disabled={disabled}
+                onClick={() => removeFile(index)}
+                className="absolute right-1 top-1 size-6 rounded-full border border-danger bg-danger-soft p-0 text-danger hover:bg-danger-soft disabled:cursor-not-allowed disabled:opacity-60"
+                aria-label={`Remove cover image ${index + 1}`}
+              >
+                <X className="size-3" />
+              </Button>
+            </div>
+          ))}
+
+          <button
+            type="button"
+            disabled={disabled}
+            onClick={() => inputRef.current?.click()}
+            className={cn(
+              "flex size-37.5 shrink-0 flex-col items-center justify-center gap-1 rounded-[10px] border border-dashed border-primary bg-[rgba(250,248,243,0.35)] text-primary transition-colors hover:bg-[rgba(250,248,243,0.75)]",
+              disabled ? "cursor-not-allowed opacity-60" : "cursor-pointer",
+            )}
+          >
+            <Plus className="size-5" strokeWidth={2.1} />
+            <span className="text-xs font-medium">Add more</span>
+          </button>
+        </div>
+      )}
 
       <input
         ref={inputRef}
         type="file"
+        multiple
         accept="image/png,image/jpeg,image/jpg"
         className="hidden"
         disabled={disabled}
         onChange={(event) => {
-          handleFileSelection(event.target.files?.[0] ?? null);
+          handleFilesSelection(Array.from(event.target.files ?? []));
+          event.target.value = "";
         }}
       />
 

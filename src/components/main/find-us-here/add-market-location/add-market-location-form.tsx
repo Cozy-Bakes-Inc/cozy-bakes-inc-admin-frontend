@@ -78,12 +78,14 @@ export function AddMarketLocationForm({
         if (values.mapLink) payload.append("map_link", values.mapLink);
         payload.append("description", values.description);
 
-        if (!values.coverImage) {
-          toast.error("Cover image is required");
+        if (values.coverImages.length === 0) {
+          toast.error("At least one cover image is required");
           return;
         }
 
-        payload.append("images[]", values.coverImage);
+        values.coverImages.forEach((image) => {
+          payload.append("images[]", image);
+        });
 
         const result = await createMarketAPI(payload);
 
@@ -405,16 +407,16 @@ export function AddMarketLocationForm({
 
         <div className="mt-5">
           <Controller
-            name="coverImage"
+            name="coverImages"
             control={control}
             rules={{
-              validate: (value) => validateField("coverImage", value),
+              validate: (value) => validateField("coverImages", value),
             }}
             render={({ field }) => (
               <AddMarketLocationUpload
-                file={field.value}
+                files={field.value}
                 disabled={isSubmitting}
-                error={errors.coverImage?.message}
+                error={errors.coverImages?.message}
                 onChange={field.onChange}
               />
             )}

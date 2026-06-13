@@ -108,10 +108,13 @@ export function EditMarketLocationForm({
           return;
         }
 
-        if (values.existingImages.length === 0 && !values.coverImage) {
-          setError("coverImage", {
+        if (
+          values.existingImages.length === 0 &&
+          values.coverImages.length === 0
+        ) {
+          setError("coverImages", {
             type: "manual",
-            message: "Cover image is required",
+            message: "At least one cover image is required",
           });
           return;
         }
@@ -134,9 +137,9 @@ export function EditMarketLocationForm({
           payload.append("existing_images[]", image);
         });
 
-        if (values.coverImage) {
-          payload.append("images[]", values.coverImage);
-        }
+        values.coverImages.forEach((image) => {
+          payload.append("images[]", image);
+        });
 
         const result = await updateMarketAPI(marketSlug, payload);
 
@@ -461,19 +464,19 @@ export function EditMarketLocationForm({
 
         <div className="mt-5">
           <Controller
-            name="coverImage"
+            name="coverImages"
             control={control}
             rules={{
-              validate: (value) => validateField("coverImage", value),
+              validate: (value) => validateField("coverImages", value),
             }}
             render={({ field }) => (
               <EditMarketLocationCoverImages
-                file={field.value}
+                files={field.value}
                 existingImages={existingImages ?? []}
                 disabled={isSubmitting}
-                error={errors.coverImage?.message}
+                error={errors.coverImages?.message}
                 marketName={marketName ?? "Market"}
-                onFileChange={field.onChange}
+                onFilesChange={field.onChange}
                 onExistingImagesChange={(images) => {
                   setValue("existingImages", images, {
                     shouldDirty: true,

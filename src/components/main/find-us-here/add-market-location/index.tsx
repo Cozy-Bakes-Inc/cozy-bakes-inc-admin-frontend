@@ -18,7 +18,7 @@ const defaultFormValues: AddMarketLocationFormValues = {
   locationAddress: "",
   mapLink: "",
   description: "",
-  coverImage: null,
+  coverImages: [],
 };
 
 function resolveInitialValues(
@@ -49,7 +49,7 @@ export default function AddMarketLocation({
     resolvedInitialValues.locationAddress,
     resolvedInitialValues.mapLink ?? "",
     resolvedInitialValues.description,
-    resolvedInitialValues.coverImage?.name ?? "",
+    resolvedInitialValues.coverImages.map((image) => image.name).join(","),
   ].join("|");
 
   return (

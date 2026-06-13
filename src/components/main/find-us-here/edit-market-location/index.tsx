@@ -20,7 +20,7 @@ const defaultFormValues: EditMarketLocationFormValues = {
   locationAddress: "",
   mapLink: "",
   description: "",
-  coverImage: null,
+  coverImages: [],
   existingImages: [],
 };
 
@@ -84,7 +84,7 @@ function EditMarketLocation({
         locationAddress: market.location_address,
         mapLink: market.map_link ?? "",
         description: market.description,
-        coverImage: null,
+        coverImages: [],
         existingImages: market.cover_images,
       }
     : defaultFormValues;

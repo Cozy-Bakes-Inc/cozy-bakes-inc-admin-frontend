@@ -71,7 +71,7 @@ function mapMarketDayToUiDay(
       endDate: market.end_date ?? undefined,
       address: market.location_address,
       mapLink: market.map_link ?? "",
-      imageSrc: market.cover_images[0] ?? "",
+      imageSrcs: market.cover_images,
       imageAlt: market.market_name,
     })),
   };

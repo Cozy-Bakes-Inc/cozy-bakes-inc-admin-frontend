@@ -23,7 +23,8 @@ export interface FindUsHereMarketLocation {
   endDate?: string;
   address: string;
   mapLink?: string;
-  imageSrc: string;
+  imageSrc?: string;
+  imageSrcs?: string[];
   imageAlt: string;
 }
 

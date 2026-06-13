@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 const acceptedImageTypes = ["image/png", "image/jpeg", "image/jpg"];
-const maxImageSizeInBytes = 2 * 1024 * 1024;
+const maxImageSizeInBytes = 5 * 1024 * 1024;
 const timePattern = /^(\d{2}):(\d{2})\s(AM|PM)$/i;
 function isFile(value: unknown): value is File {
   return typeof File !== "undefined" && value instanceof File;
@@ -94,37 +94,29 @@ function validateMarketTimeRange(
   }
 }
 
-const optionalMarketCoverImageSchema = z
-  .custom<File | null>((value) => value === null || isFile(value), {
+const marketCoverImageSchema = z
+  .custom<File>((value) => isFile(value), {
     message: "Cover image must be a valid file",
   })
   .refine(
-    (file) => file === null || acceptedImageTypes.includes(file.type),
+    (file) => acceptedImageTypes.includes(file.type),
     "Cover image must be PNG or JPG",
   )
   .refine(
-    (file) => file === null || file.size <= maxImageSizeInBytes,
-    "Cover image must be 2MB or less",
+    (file) => file.size <= maxImageSizeInBytes,
+    "Each cover image must be 5MB or less",
   );
 
+const optionalMarketCoverImagesSchema = z.array(marketCoverImageSchema);
+
 export const createMarketSchema = marketDetailsSchema.extend({
-  coverImage: z
-    .custom<File | null>((value) => value === null || isFile(value), {
-      message: "Cover image is required",
-    })
-    .refine((file) => file !== null, "Cover image is required")
-    .refine(
-      (file) => file === null || acceptedImageTypes.includes(file.type),
-      "Cover image must be PNG or JPG",
-    )
-    .refine(
-      (file) => file === null || file.size <= maxImageSizeInBytes,
-      "Cover image must be 2MB or less",
-    ),
+  coverImages: z
+    .array(marketCoverImageSchema)
+    .min(1, "At least one cover image is required"),
 }).superRefine(validateMarketTimeRange);
 
 export const editMarketSchema = marketDetailsSchema.extend({
-  coverImage: optionalMarketCoverImageSchema,
+  coverImages: optionalMarketCoverImagesSchema,
   existingImages: z.array(z.string()),
 }).superRefine(validateMarketTimeRange);
 
