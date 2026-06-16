@@ -4,5 +4,5 @@ import { ContactUsDetailsSectionData } from "@/interfaces";
 import { safeApi } from "..";
 
 export const createUpdateContactInfo = async (
-  payload: ContactUsDetailsSectionData,
+  payload: Partial<ContactUsDetailsSectionData>,
 ) => await safeApi("POST", "/contact/info", payload);

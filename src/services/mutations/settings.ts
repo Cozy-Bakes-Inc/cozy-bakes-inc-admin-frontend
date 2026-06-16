@@ -8,15 +8,15 @@ import {
 import type { UpdateNotificationPreferencesPayload } from "@/types/main/settings";
 import { safeApi } from "..";
 
-export const updateProfileAPI = async (payload: UpdateProfileSchemaValues) =>
+export const updateProfileAPI = async (payload: Partial<UpdateProfileSchemaValues>) =>
   await safeApi("POST", "/profile/update", payload);
 
 export const updateDeliverySettingsAPI = async (
-  payload: UpdateDeliverySettingsSchemaValues,
+  payload: Partial<UpdateDeliverySettingsSchemaValues>,
 ) => await safeApi("POST", "/setting/delivery/update", payload);
 
 export const updateCompanySettingsAPI = async (
-  payload: UpdateCompanySettingsSchemaValues,
+  payload: Partial<UpdateCompanySettingsSchemaValues>,
 ) => await safeApi("POST", "/setting/company-update", payload);
 
 export const updateNotificationPreferencesAPI = async (

@@ -58,7 +58,7 @@ export function EditReviewForm({
     handleSubmit,
     reset,
     setError,
-    formState: { errors, isDirty, isSubmitting },
+    formState: { dirtyFields, errors, isDirty, isSubmitting },
   } = useForm<EditReviewSchemaValues>({
     defaultValues: initialValues,
     reValidateMode: "onChange",
@@ -107,13 +107,16 @@ export function EditReviewForm({
           return;
         }
 
-        const payload: ReviewPayload = {
-          customer_name: values.customer_name.trim(),
-          customer_email: values.customer_email?.trim() || undefined,
-          rating: values.rating,
-          review_text: values.review_text?.trim() || undefined,
-          status: values.status,
-        };
+        const payload: Partial<ReviewPayload> = {};
+        if (dirtyFields.customer_name)
+          payload.customer_name = values.customer_name.trim();
+        if (dirtyFields.customer_email)
+          payload.customer_email = values.customer_email?.trim() ?? "";
+        if (dirtyFields.rating) payload.rating = values.rating;
+        if (dirtyFields.review_text)
+          payload.review_text = values.review_text?.trim() ?? "";
+        if (dirtyFields.status) payload.status = values.status;
+
         const result = await updateReview(reviewSlug, payload);
 
         if (result?.ok) {

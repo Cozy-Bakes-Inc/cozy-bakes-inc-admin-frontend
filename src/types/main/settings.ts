@@ -16,8 +16,8 @@ export type SettingsNotificationPreferenceId =
   | "customer-messages"
   | "weekly-reports";
 
-export type UpdateNotificationPreferencesPayload = {
+export type UpdateNotificationPreferencesPayload = Partial<{
   new_orders: 0 | 1;
   customer_messages: 0 | 1;
   weekly_reports: 0 | 1;
-};
+}>;

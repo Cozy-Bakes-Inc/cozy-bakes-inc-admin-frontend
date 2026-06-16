@@ -38,7 +38,7 @@ export function UpdateCategoryForm({
     control,
     handleSubmit,
     reset,
-    formState: { errors, isDirty, isSubmitting },
+    formState: { dirtyFields, errors, isDirty, isSubmitting },
   } = useForm<UpdateCategoryFormValues>({
     defaultValues: defaultFormValues,
     reValidateMode: "onChange",
@@ -67,10 +67,11 @@ export function UpdateCategoryForm({
     }
 
     const payload = new FormData();
-    payload.append("title", values.title.trim());
-    payload.append("description", values.description.trim());
+    if (dirtyFields.title) payload.append("title", values.title.trim());
+    if (dirtyFields.description)
+      payload.append("description", values.description.trim());
 
-    if (values.image) {
+    if (dirtyFields.image && values.image) {
       payload.append("image", values.image);
     }
 

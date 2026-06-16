@@ -42,7 +42,7 @@ export function UpdateAccountForm({ user, onUpdated }: UpdateAccountFormProps) {
     control,
     handleSubmit,
     reset,
-    formState: { errors, isDirty, isSubmitting },
+    formState: { dirtyFields, errors, isDirty, isSubmitting },
   } = useForm<UpdateProfileSchemaValues>({ defaultValues: initialValues });
 
   useEffect(() => {
@@ -52,16 +52,20 @@ export function UpdateAccountForm({ user, onUpdated }: UpdateAccountFormProps) {
   async function onSubmit(values: UpdateProfileSchemaValues) {
     if (!isDirty) return;
 
-    const result = await updateProfileAPI({
-      first_name: values.first_name.trim(),
-      last_name: values.last_name.trim(),
-      email: values.email.trim(),
-    });
+    const payload: Partial<UpdateProfileSchemaValues> = {};
+    if (dirtyFields.first_name) payload.first_name = values.first_name.trim();
+    if (dirtyFields.last_name) payload.last_name = values.last_name.trim();
+    if (dirtyFields.email) payload.email = values.email.trim();
+
+    const result = await updateProfileAPI(payload);
 
     if (result?.ok) {
       toast.success(result.message || "Account updated successfully");
       reset(values);
-      await queryClient.invalidateQueries({ queryKey: ["adminSettings"] });
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ["adminSettings"] }),
+        queryClient.invalidateQueries({ queryKey: ["authenticatedUser"] }),
+      ]);
       onUpdated?.();
       return;
     }

@@ -58,7 +58,7 @@ export function EditMarketLocationForm({
     setError,
     setValue,
     trigger,
-    formState: { errors, isDirty, isSubmitting },
+    formState: { dirtyFields, errors, isDirty, isSubmitting },
   } = useForm<EditMarketLocationFormValues>({
     defaultValues: initialValues,
     reValidateMode: "onChange",
@@ -199,26 +199,35 @@ export function EditMarketLocationForm({
         }
 
         const payload = new FormData();
-        payload.append("market_name", values.marketName);
-        payload.append("tag_label", values.tagLabel);
-        payload.append("date", values.date);
-        payload.append("end_date", values.endDate);
-        values.day.forEach((day) => {
-          payload.append("day[]", day);
-        });
-        payload.append("time", values.startTime);
-        payload.append("end_time", values.endTime);
-        payload.append("location_address", values.locationAddress);
-        payload.append("map_link", values.mapLink);
-        payload.append("description", values.description);
+        if (dirtyFields.marketName)
+          payload.append("market_name", values.marketName);
+        if (dirtyFields.tagLabel) payload.append("tag_label", values.tagLabel);
+        if (dirtyFields.date) payload.append("date", values.date);
+        if (dirtyFields.endDate) payload.append("end_date", values.endDate);
+        if (dirtyFields.day) {
+          values.day.forEach((day) => {
+            payload.append("day[]", day);
+          });
+        }
+        if (dirtyFields.startTime) payload.append("time", values.startTime);
+        if (dirtyFields.endTime) payload.append("end_time", values.endTime);
+        if (dirtyFields.locationAddress)
+          payload.append("location_address", values.locationAddress);
+        if (dirtyFields.mapLink) payload.append("map_link", values.mapLink);
+        if (dirtyFields.description)
+          payload.append("description", values.description);
 
-        values.existingImages.forEach((image) => {
-          payload.append("existing_images[]", image);
-        });
+        if (dirtyFields.existingImages) {
+          values.existingImages.forEach((image) => {
+            payload.append("existing_images[]", image);
+          });
+        }
 
-        values.coverImages.forEach((image) => {
-          payload.append("images[]", image);
-        });
+        if (dirtyFields.coverImages) {
+          values.coverImages.forEach((image) => {
+            payload.append("images[]", image);
+          });
+        }
 
         const result = await updateMarketAPI(marketSlug, payload);
 

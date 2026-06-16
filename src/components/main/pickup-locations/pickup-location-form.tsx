@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import InputErrorMessage from "@/components/ui/input-error-message";
 import Loader from "@/components/ui/loader";
 import { LocationPicker } from "@/components/main/settings/update-company/location-picker";
-import { formatPhoneInput, stripPhoneDigits } from "@/lib/utils/phone";
+import { formatPhoneInput, normalizePhoneForBackend } from "@/lib/utils/phone";
 import { pickupLocationSchema } from "@/schemas";
 import type {
   PickupLocationFormValues,
@@ -36,7 +36,7 @@ function buildPickupLocationPayload(
 ): Partial<PickupLocationMutationPayload> {
   const payloadByField = {
     name: values.name.trim(),
-    phone_number: stripPhoneDigits(values.phoneNumber),
+    phone_number: normalizePhoneForBackend(values.phoneNumber),
     email: values.email.trim(),
     address_line: values.addressLine.trim(),
     is_active: values.isActive ? 1 : 0,

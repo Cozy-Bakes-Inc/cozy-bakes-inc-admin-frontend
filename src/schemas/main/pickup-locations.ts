@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { isValidUSPhoneNumber } from "@/lib/utils/phone";
 
 const optionalUrlSchema = z
   .string()
@@ -25,10 +26,7 @@ export const pickupLocationSchema = z.object({
     .string()
     .trim()
     .min(1, "Phone number is required")
-    .refine(
-      (value) => value.replace(/\D/g, "").length === 10,
-      "Phone number must be 10 digits",
-    ),
+    .refine(isValidUSPhoneNumber, "Phone number must be a valid US number"),
   email: z
     .string()
     .trim()

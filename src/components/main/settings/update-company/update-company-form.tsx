@@ -6,12 +6,15 @@ import { useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { Button } from "@/components/ui/button";
 import InputErrorMessage from "@/components/ui/input-error-message";
-import type { AdminSettingsShopData } from "@/interfaces/main/settings";
+import type {
+  AdminSettingsResponse,
+  AdminSettingsShopData,
+} from "@/interfaces/main/settings";
 import {
   updateCompanySettingsSchema,
   type UpdateCompanySettingsSchemaValues,
 } from "@/schemas/main/settings";
-import { formatPhoneInput, stripPhoneDigits } from "@/lib/utils/phone";
+import { formatPhoneInput, normalizePhoneForBackend } from "@/lib/utils/phone";
 import { updateCompanySettingsAPI } from "@/services/mutations/settings";
 import { LocationPicker } from "./location-picker";
 
@@ -53,6 +56,57 @@ function normalizeOptionalAddressDetail(value?: string | null) {
   return trimmedValue === "$undefined" ? "" : trimmedValue;
 }
 
+function updateAdminSettingsShopCache(
+  current: AdminSettingsResponse | undefined,
+  shopPayload: Partial<UpdateCompanySettingsSchemaValues>,
+): AdminSettingsResponse {
+  const currentShop = current?.data?.shop ?? null;
+
+  return {
+    status: current?.status ?? "success",
+    message: current?.message,
+    data: {
+      user: current?.data?.user ?? null,
+      notification_preferences: current?.data?.notification_preferences ?? null,
+      delivery_fee: current?.data?.delivery_fee,
+      delivery_settings: current?.data?.delivery_settings,
+      shop: {
+        id: currentShop?.id ?? 0,
+        slug: currentShop?.slug ?? "",
+        store_description:
+          shopPayload.store_description ?? currentShop?.store_description ?? "",
+        name: shopPayload.name ?? currentShop?.name ?? "",
+        phone_number: shopPayload.phone_number ?? currentShop?.phone_number ?? "",
+        email: shopPayload.email ?? currentShop?.email ?? "",
+        address_line: shopPayload.address_line ?? currentShop?.address_line ?? "",
+        is_active: currentShop?.is_active ?? 1,
+        latitude: shopPayload.latitude ?? currentShop?.latitude,
+        longitude: shopPayload.longitude ?? currentShop?.longitude,
+        apt_villa: shopPayload.apt_villa ?? currentShop?.apt_villa,
+        building_cluster:
+          shopPayload.building_cluster ?? currentShop?.building_cluster,
+        street_landmark:
+          shopPayload.street_landmark ?? currentShop?.street_landmark,
+        map_link: currentShop?.map_link ?? null,
+      },
+    },
+  };
+}
+
+function syncShopSettingsCache(
+  queryClient: ReturnType<typeof useQueryClient>,
+  payload: Partial<UpdateCompanySettingsSchemaValues>,
+) {
+  queryClient.setQueryData<AdminSettingsResponse>(
+    ["adminSettings"],
+    (current) => updateAdminSettingsShopCache(current, payload),
+  );
+  queryClient.setQueryData<AdminSettingsResponse>(
+    ["authenticatedUser"],
+    (current) => updateAdminSettingsShopCache(current, payload),
+  );
+}
+
 export function UpdateCompanyForm({ shop, onUpdated }: UpdateCompanyFormProps) {
   const queryClient = useQueryClient();
   const initialValues = useMemo(() => getInitialValues(shop), [shop]);
@@ -63,7 +117,7 @@ export function UpdateCompanyForm({ shop, onUpdated }: UpdateCompanyFormProps) {
     reset,
     setValue,
     watch,
-    formState: { errors, isDirty, isSubmitting },
+    formState: { dirtyFields, errors, isDirty, isSubmitting },
   } = useForm<UpdateCompanySettingsSchemaValues>({
     defaultValues: initialValues,
   });
@@ -78,23 +132,39 @@ export function UpdateCompanyForm({ shop, onUpdated }: UpdateCompanyFormProps) {
   async function onSubmit(values: UpdateCompanySettingsSchemaValues) {
     if (!isDirty) return;
 
-    const result = await updateCompanySettingsAPI({
-      name: values.name.trim(),
-      phone_number: stripPhoneDigits(values.phone_number),
-      email: values.email.trim(),
-      store_description: values.store_description.trim(),
-      address_line: values.address_line.trim(),
-      latitude: values.latitude,
-      longitude: values.longitude,
-      apt_villa: normalizeOptionalAddressDetail(values.apt_villa),
-      building_cluster: normalizeOptionalAddressDetail(values.building_cluster),
-      street_landmark: normalizeOptionalAddressDetail(values.street_landmark),
-    });
+    const payload: Partial<UpdateCompanySettingsSchemaValues> = {};
+    if (dirtyFields.name) payload.name = values.name.trim();
+    if (dirtyFields.phone_number)
+      payload.phone_number = normalizePhoneForBackend(values.phone_number);
+    if (dirtyFields.email) payload.email = values.email.trim();
+    if (dirtyFields.store_description)
+      payload.store_description = values.store_description.trim();
+    if (dirtyFields.address_line)
+      payload.address_line = values.address_line.trim();
+    if (dirtyFields.latitude) payload.latitude = values.latitude;
+    if (dirtyFields.longitude) payload.longitude = values.longitude;
+    if (dirtyFields.apt_villa)
+      payload.apt_villa = normalizeOptionalAddressDetail(values.apt_villa);
+    if (dirtyFields.building_cluster)
+      payload.building_cluster = normalizeOptionalAddressDetail(
+        values.building_cluster,
+      );
+    if (dirtyFields.street_landmark)
+      payload.street_landmark = normalizeOptionalAddressDetail(
+        values.street_landmark,
+      );
+
+    const result = await updateCompanySettingsAPI(payload);
 
     if (result?.ok) {
       toast.success(result.message || "Store information updated successfully");
+      syncShopSettingsCache(queryClient, payload);
       reset(values);
-      await queryClient.invalidateQueries({ queryKey: ["adminSettings"] });
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ["adminSettings"] }),
+        queryClient.invalidateQueries({ queryKey: ["authenticatedUser"] }),
+      ]);
+      syncShopSettingsCache(queryClient, payload);
       onUpdated?.();
       return;
     }

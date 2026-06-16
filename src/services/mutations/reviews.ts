@@ -11,7 +11,7 @@ import { safeApi } from "..";
 export const createReview = async (payload: ReviewPayload) =>
   await safeApi<SingleReviewResponse>("POST", `/review/create`, payload);
 
-export const updateReview = async (slug: string, payload: ReviewPayload) =>
+export const updateReview = async (slug: string, payload: Partial<ReviewPayload>) =>
   await safeApi<SingleReviewResponse>("POST", `/review/${slug}/update`, payload);
 
 export const deleteReviewAPI = async (slug: string) =>

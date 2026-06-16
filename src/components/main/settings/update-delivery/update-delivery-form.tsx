@@ -46,7 +46,7 @@ export function UpdateDeliveryForm({
     control,
     handleSubmit,
     reset,
-    formState: { errors, isDirty, isSubmitting },
+    formState: { dirtyFields, errors, isDirty, isSubmitting },
   } = useForm<UpdateDeliverySettingsSchemaValues>({
     defaultValues: initialValues,
   });
@@ -58,15 +58,19 @@ export function UpdateDeliveryForm({
   async function onSubmit(values: UpdateDeliverySettingsSchemaValues) {
     if (!isDirty) return;
 
-    const result = await updateDeliverySettingsAPI({
-      fee: values.fee,
-      miles: values.miles,
-    });
+    const payload: Partial<UpdateDeliverySettingsSchemaValues> = {};
+    if (dirtyFields.fee) payload.fee = values.fee;
+    if (dirtyFields.miles) payload.miles = values.miles;
+
+    const result = await updateDeliverySettingsAPI(payload);
 
     if (result?.ok) {
       toast.success(result.message || "Delivery settings updated successfully");
       reset(values);
-      await queryClient.invalidateQueries({ queryKey: ["adminSettings"] });
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ["adminSettings"] }),
+        queryClient.invalidateQueries({ queryKey: ["authenticatedUser"] }),
+      ]);
       onUpdated?.();
       return;
     }

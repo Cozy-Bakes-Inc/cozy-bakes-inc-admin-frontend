@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { isValidUSPhoneNumber } from "@/lib/utils/phone";
 
 const optionalAddressDetailSchema = z.preprocess((value) => {
   if (value == null) {
@@ -36,7 +37,11 @@ export type UpdateDeliverySettingsSchemaValues = z.infer<
 
 export const updateCompanySettingsSchema = z.object({
   name: z.string().trim().min(1, "Store name is required"),
-  phone_number: z.string().trim().min(1, "Phone number is required"),
+  phone_number: z
+    .string()
+    .trim()
+    .min(1, "Phone number is required")
+    .refine(isValidUSPhoneNumber, "Phone number must be a valid US number"),
   email: z.email("Enter a valid email address"),
   store_description: z.string().trim().min(1, "Store description is required"),
   address_line: z.string().trim().min(1, "Address is required"),

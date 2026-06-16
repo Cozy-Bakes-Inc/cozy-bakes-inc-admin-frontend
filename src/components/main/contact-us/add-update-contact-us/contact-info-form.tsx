@@ -6,12 +6,16 @@ import { Controller, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { Button } from "@/components/ui/button";
 import Loader from "@/components/ui/loader";
-import type { ContactUsDetailsSectionData } from "@/interfaces";
+import type {
+  ContactUsDetailsResponse,
+  ContactUsDetailsSectionData,
+} from "@/interfaces";
 import {
   contactInfoSchema,
   type ContactInfoSchemaValues,
 } from "@/schemas/main/contact-us";
 import { createUpdateContactInfo } from "@/services/mutations/contact-us";
+import { formatPhoneInput, normalizePhoneForBackend } from "@/lib/utils/phone";
 import { ContactInfoField } from "./contact-info-field";
 
 interface ContactInfoFormProps {
@@ -24,8 +28,29 @@ function getInitialValues(
 ): ContactInfoSchemaValues {
   return {
     contact_email: contactInfo?.contact_email ?? "",
-    phone_number: contactInfo?.phone_number ?? "",
+    phone_number: formatPhoneInput(contactInfo?.phone_number ?? ""),
     location: contactInfo?.location ?? "",
+  };
+}
+
+function updateContactDetailsCache(
+  current: ContactUsDetailsResponse | undefined,
+  contactSection: Partial<ContactUsDetailsSectionData>,
+): ContactUsDetailsResponse {
+  const currentContactSection = current?.data?.contact_section ?? null;
+
+  return {
+    status: current?.status ?? "success",
+    message: current?.message ?? "",
+    data: {
+      hero_section: current?.data?.hero_section ?? null,
+      contact_section: {
+        contact_email: currentContactSection?.contact_email ?? "",
+        phone_number: currentContactSection?.phone_number ?? "",
+        location: currentContactSection?.location ?? "",
+        ...contactSection,
+      },
+    },
   };
 }
 
@@ -44,7 +69,7 @@ export function ContactInfoForm({
     handleSubmit,
     reset,
     setError,
-    formState: { errors, isDirty, isSubmitting },
+    formState: { dirtyFields, errors, isDirty, isSubmitting },
   } = useForm<ContactInfoSchemaValues>({
     defaultValues,
     reValidateMode: "onChange",
@@ -94,17 +119,31 @@ export function ContactInfoForm({
           return;
         }
 
-        const payload: ContactUsDetailsSectionData = {
-          contact_email: validatedValues.contact_email.trim(),
-          phone_number: validatedValues.phone_number.trim(),
-          location: validatedValues.location?.trim() ?? "",
-        };
+        const isCreatingContactInfo = !initialValues;
+        const payload: Partial<ContactUsDetailsSectionData> = {};
+        if (isCreatingContactInfo || dirtyFields.contact_email)
+          payload.contact_email = validatedValues.contact_email.trim();
+        if (isCreatingContactInfo || dirtyFields.phone_number)
+          payload.phone_number = normalizePhoneForBackend(
+            validatedValues.phone_number,
+          );
+        if (isCreatingContactInfo || dirtyFields.location)
+          payload.location = validatedValues.location?.trim() ?? "";
+
         const result = await createUpdateContactInfo(payload);
 
         if (result?.ok) {
           toast.success(result.message || "Contact data saved successfully");
-          reset(payload);
+          queryClient.setQueryData<ContactUsDetailsResponse>(
+            ["contactDetails"],
+            (current) => updateContactDetailsCache(current, payload),
+          );
+          reset(validatedValues);
           await queryClient.invalidateQueries({ queryKey: ["contactDetails"] });
+          queryClient.setQueryData<ContactUsDetailsResponse>(
+            ["contactDetails"],
+            (current) => updateContactDetailsCache(current, payload),
+          );
           await onSaved?.();
           return;
         }
@@ -147,7 +186,7 @@ export function ContactInfoForm({
                 value={field.value}
                 disabled={isSubmitting}
                 error={errors.phone_number?.message}
-                onChange={field.onChange}
+                onChange={(value) => field.onChange(formatPhoneInput(value))}
               />
             )}
           />

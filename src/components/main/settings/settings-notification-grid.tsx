@@ -32,11 +32,21 @@ function buildInitialState(
   );
 }
 
-function buildPayload(state: NotificationState): UpdateNotificationPreferencesPayload {
+const preferencePayloadKeyById = {
+  "new-orders": "new_orders",
+  "customer-messages": "customer_messages",
+  "weekly-reports": "weekly_reports",
+} as const satisfies Record<
+  SettingsNotificationPreferenceId,
+  keyof UpdateNotificationPreferencesPayload
+>;
+
+function buildPayload(
+  id: SettingsNotificationPreferenceId,
+  enabled: boolean,
+): UpdateNotificationPreferencesPayload {
   return {
-    new_orders: state["new-orders"] ? 1 : 0,
-    customer_messages: state["customer-messages"] ? 1 : 0,
-    weekly_reports: state["weekly-reports"] ? 1 : 0,
+    [preferencePayloadKeyById[id]]: enabled ? 1 : 0,
   };
 }
 
@@ -55,12 +65,17 @@ export function SettingsNotificationGrid({
     setState(newState);
     setSaving(true);
 
-    const result = await updateNotificationPreferencesAPI(buildPayload(newState));
+    const result = await updateNotificationPreferencesAPI(
+      buildPayload(id, newState[id]),
+    );
     setSaving(false);
 
     if (result?.ok) {
       toast.success(result.message || "Notification preferences updated");
-      await queryClient.invalidateQueries({ queryKey: ["adminSettings"] });
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ["adminSettings"] }),
+        queryClient.invalidateQueries({ queryKey: ["authenticatedUser"] }),
+      ]);
       return;
     }
 
