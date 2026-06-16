@@ -10,3 +10,6 @@ export const updateProduct = async (slug: string, payload: FormData) =>
 
 export const deleteProduct = async (slug: string) =>
   await safeApi("DELETE", `/product/${slug}/destroy`);
+
+export const deleteProductImage = async (slug: string, id: number) =>
+  await safeApi("DELETE", `/product/${slug}/images/${id}`);

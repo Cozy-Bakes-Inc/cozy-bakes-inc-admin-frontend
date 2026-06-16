@@ -10,3 +10,6 @@ export const updateMarketAPI = async (slug: string, payload: FormData) =>
 
 export const deleteMarketAPI = async (slug: string) =>
   await safeApi("DELETE", `/market/${slug}/destroy`);
+
+export const deleteMarketImage = async (slug: string, payload: FormData) =>
+  await safeApi("POST", `/market/${slug}/image`, payload, { isForm: true });

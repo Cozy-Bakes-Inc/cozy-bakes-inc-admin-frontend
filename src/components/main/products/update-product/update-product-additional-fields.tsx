@@ -12,8 +12,10 @@ interface UpdateProductAdditionalFieldsProps {
   values: UpdateProductFormValues;
   errors: UpdateProductFormErrors;
   disabled: boolean;
+  deletingExistingImageIndex?: number | null;
   validateField: AddProductFieldValidator;
   updateValue: UpdateProductValueUpdater;
+  onExistingImageRemove: (index: number) => void | Promise<void>;
 }
 
 export function UpdateProductAdditionalFields({
@@ -21,8 +23,10 @@ export function UpdateProductAdditionalFields({
   values,
   errors,
   disabled,
+  deletingExistingImageIndex,
   validateField,
   updateValue,
+  onExistingImageRemove,
 }: UpdateProductAdditionalFieldsProps) {
   return (
     <>
@@ -83,11 +87,12 @@ export function UpdateProductAdditionalFields({
         render={({ field }) => (
           <UpdateProductUpload
             files={field.value}
-            existingImageUrls={values.existingImageUrls}
+            existingImages={values.existingImages}
             disabled={disabled}
+            deletingExistingImageIndex={deletingExistingImageIndex}
             error={errors.productImages?.message}
-            onChange={field.onChange}
-            onExistingUrlsChange={(urls) => updateValue("existingImageUrls", urls)}
+            onChange={(files) => updateValue("productImages", files)}
+            onExistingUrlRemove={onExistingImageRemove}
           />
         )}
       />

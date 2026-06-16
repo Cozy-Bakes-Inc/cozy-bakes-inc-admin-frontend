@@ -6,7 +6,10 @@ import type {
   ProductPricingType,
 } from "@/types/main";
 import type { ProductPriceItem, ProductPrices, SingleProduct } from "@/interfaces";
-import type { UpdateProductFormValues } from "./update-product-form-types";
+import type {
+  ExistingProductImage,
+  UpdateProductFormValues,
+} from "./update-product-form-types";
 
 const acceptedImageTypes = ["image/png", "image/jpeg", "image/jpg"];
 const maxImageSizeInBytes = 5 * 1024 * 1024;
@@ -100,13 +103,18 @@ const baseUpdateProductSchema = z.object({
         "Each image must be 5MB or less",
       ),
   ),
-  existingImageUrls: z.array(z.string()),
+  existingImages: z.array(
+    z.object({
+      id: z.number(),
+      url: z.string(),
+    }),
+  ),
   parcel: parcelSchema,
 });
 
 export const updateProductSchema = baseUpdateProductSchema.superRefine(
   (values, ctx) => {
-    if (values.productImages.length === 0 && values.existingImageUrls.length === 0) {
+    if (values.productImages.length === 0 && values.existingImages.length === 0) {
       ctx.addIssue({
         code: "custom",
         path: ["productImages"],
@@ -215,7 +223,7 @@ export function validateUpdateProductField<K extends keyof UpdateProductFormValu
   field: K,
   value: UpdateProductFormValues[K],
 ): string | boolean {
-  if (field === "existingImageUrls") return true;
+  if (field === "existingImages") return true;
   if (field === "productImages") return true;
 
   const shape = baseUpdateProductSchema.shape;
@@ -311,6 +319,28 @@ const defaultComboDeals = () => [
   { id: "deal-2", quantity: "", price: "" },
 ];
 
+function normalizeExistingImages(images: unknown): ExistingProductImage[] {
+  if (Array.isArray(images)) {
+    return images.flatMap((image, index) =>
+      typeof image === "string" ? [{ id: index, url: image }] : [],
+    );
+  }
+
+  if (typeof images === "string") return [{ id: 0, url: images }];
+
+  if (images && typeof images === "object") {
+    return Object.entries(images).flatMap(([id, url]) => {
+      const imageId = Number(id);
+
+      return Number.isFinite(imageId) && typeof url === "string"
+        ? [{ id: imageId, url }]
+        : [];
+    });
+  }
+
+  return [];
+}
+
 export function mapProductToFormValues(
   product: SingleProduct,
 ): UpdateProductFormValues {
@@ -345,7 +375,7 @@ export function mapProductToFormValues(
     ingredients: product.description_ingredient ?? "",
     allergens: product.description_allergens ?? "",
     productImages: [],
-    existingImageUrls: product.images ?? [],
+    existingImages: normalizeExistingImages(product.images),
     parcel: mapParcel(prices, pricingType),
   };
 }

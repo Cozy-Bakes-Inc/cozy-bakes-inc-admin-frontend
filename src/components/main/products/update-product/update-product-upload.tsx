@@ -6,25 +6,29 @@ import { Plus, Upload, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import InputErrorMessage from "@/components/ui/input-error-message";
 import { cn } from "@/lib";
+import type { ExistingProductImage } from "./update-product-form-types";
 
 export interface UpdateProductUploadProps {
   files: File[];
-  existingImageUrls: string[];
+  existingImages: ExistingProductImage[];
   onChange: (files: File[]) => void;
-  onExistingUrlsChange: (urls: string[]) => void;
+  onExistingUrlRemove: (index: number) => void | Promise<void>;
+  deletingExistingImageIndex?: number | null;
   error?: string;
   disabled?: boolean;
 }
 
 export function UpdateProductUpload({
   files,
-  existingImageUrls,
+  existingImages,
   onChange,
-  onExistingUrlsChange,
+  onExistingUrlRemove,
+  deletingExistingImageIndex = null,
   error,
   disabled = false,
 }: UpdateProductUploadProps) {
   const inputRef = useRef<HTMLInputElement | null>(null);
+  const images = Array.isArray(existingImages) ? existingImages : [];
 
   const blobUrls = useMemo(
     () => files.map((f) => URL.createObjectURL(f)),
@@ -54,11 +58,7 @@ export function UpdateProductUpload({
     onChange(files.filter((_, i) => i !== index));
   }
 
-  function removeExistingUrl(index: number) {
-    onExistingUrlsChange(existingImageUrls.filter((_, i) => i !== index));
-  }
-
-  const totalImages = existingImageUrls.length + files.length;
+  const totalImages = images.length + files.length;
   const isEmpty = totalImages === 0;
 
   return (
@@ -103,13 +103,13 @@ export function UpdateProductUpload({
           onDrop={handleDrop}
           className="flex flex-wrap gap-3"
         >
-          {existingImageUrls.map((url, i) => (
+          {images.map((image, i) => (
             <div
-              key={`existing-${i}`}
+              key={`existing-${image.id}`}
               className="relative size-37.5 shrink-0 overflow-hidden rounded-[10px] border border-border/15"
             >
               <Image
-                src={url}
+                src={image.url}
                 alt={`Existing image ${i + 1}`}
                 fill
                 className="object-cover"
@@ -119,9 +119,9 @@ export function UpdateProductUpload({
               <Button
                 type="button"
                 variant="ghost"
-                disabled={disabled}
+                disabled={disabled || deletingExistingImageIndex === i}
                 aria-label={`Remove existing image ${i + 1}`}
-                onClick={() => removeExistingUrl(i)}
+                onClick={() => onExistingUrlRemove(i)}
                 className="absolute right-1 top-1 size-6 rounded-full border border-danger bg-danger-soft p-0 text-danger hover:bg-danger-soft"
               >
                 <X className="size-3" />

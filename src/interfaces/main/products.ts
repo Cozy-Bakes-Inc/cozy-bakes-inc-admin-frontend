@@ -101,7 +101,7 @@ export interface SingleProduct {
   flavors: string[];
   status: number | string;
   sub_category: ProductSubCategory | null;
-  images: string[];
+  images: string[] | Record<string, string>;
   prices: ProductPrices;
 }
 

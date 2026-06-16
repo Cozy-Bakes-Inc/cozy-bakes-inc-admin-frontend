@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { format, isValid, parse } from "date-fns";
 import { Link, MapPin } from "lucide-react";
@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import Loader from "@/components/ui/loader";
 import { TimePicker } from "@/components/ui/time-picker";
 import { editMarketSchema } from "@/schemas";
-import { updateMarketAPI } from "@/services/mutations";
+import { deleteMarketImage, updateMarketAPI } from "@/services/mutations";
 import type { EditMarketLocationFormValues } from "@/types/main";
 import { AddMarketLocationDatePicker } from "../add-market-location/add-market-location-date-picker";
 import { AddMarketLocationField } from "../add-market-location/add-market-location-field";
@@ -44,8 +44,14 @@ export function EditMarketLocationForm({
   onSubmit,
 }: EditMarketLocationFormProps) {
   const queryClient = useQueryClient();
+  const [deletingExistingImageIndex, setDeletingExistingImageIndex] = useState<
+    number | null
+  >(null);
+  const [isCoverImageRequiredAfterDelete, setIsCoverImageRequiredAfterDelete] =
+    useState(false);
   const {
     control,
+    clearErrors,
     getValues,
     handleSubmit,
     reset,
@@ -61,6 +67,10 @@ export function EditMarketLocationForm({
     control,
     name: "existingImages",
   });
+  const coverImages = useWatch({
+    control,
+    name: "coverImages",
+  });
   const marketName = useWatch({
     control,
     name: "marketName",
@@ -69,6 +79,23 @@ export function EditMarketLocationForm({
   useEffect(() => {
     reset(initialValues);
   }, [initialValues, reset]);
+
+  useEffect(() => {
+    if (!isCoverImageRequiredAfterDelete) return;
+
+    if ((existingImages?.length ?? 0) === 0 && (coverImages?.length ?? 0) === 0) {
+      setError("coverImages", {
+        type: "manual",
+        message: "At least one cover image is required",
+      });
+    }
+  }, [
+    clearErrors,
+    coverImages,
+    existingImages,
+    isCoverImageRequiredAfterDelete,
+    setError,
+  ]);
 
   function validateField<K extends keyof EditMarketLocationFormValues>(
     field: K,
@@ -95,6 +122,58 @@ export function EditMarketLocationForm({
     });
 
     return false;
+  }
+
+  function syncCoverImageRequiredError(existingImageCount: number) {
+    if (existingImageCount === 0 && getValues("coverImages").length === 0) {
+      setIsCoverImageRequiredAfterDelete(true);
+      setError("coverImages", {
+        type: "manual",
+        message: "At least one cover image is required",
+      });
+      return;
+    }
+
+    setIsCoverImageRequiredAfterDelete(false);
+    clearErrors("coverImages");
+  }
+
+  async function handleRemoveExistingImage(index: number) {
+    if (deletingExistingImageIndex !== null || isSubmitting) return;
+
+    const imageUrl = getValues("existingImages")[index];
+    if (!imageUrl) return;
+
+    const payload = new FormData();
+    payload.append("image_url", imageUrl);
+
+    setDeletingExistingImageIndex(index);
+    const result = await deleteMarketImage(marketSlug, payload);
+    setDeletingExistingImageIndex(null);
+
+    if (result?.ok) {
+      const nextImages = getValues("existingImages").filter(
+        (_, imageIndex) => imageIndex !== index,
+      );
+
+      setValue("existingImages", nextImages, {
+        shouldDirty: false,
+        shouldTouch: true,
+        shouldValidate: true,
+      });
+      toast.success(result.message || "Market image deleted successfully");
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ["market-list-by-day"] }),
+        queryClient.invalidateQueries({ queryKey: ["market-dashboard-stats"] }),
+        queryClient.invalidateQueries({
+          queryKey: ["single-market", marketSlug],
+        }),
+      ]);
+      syncCoverImageRequiredError(nextImages.length);
+      return;
+    }
+
+    toast.error(result?.message || "Failed to delete market image");
   }
 
   return (
@@ -473,17 +552,16 @@ export function EditMarketLocationForm({
               <EditMarketLocationCoverImages
                 files={field.value}
                 existingImages={existingImages ?? []}
-                disabled={isSubmitting}
+                disabled={isSubmitting || deletingExistingImageIndex !== null}
+                deletingExistingImageIndex={deletingExistingImageIndex}
                 error={errors.coverImages?.message}
                 marketName={marketName ?? "Market"}
-                onFilesChange={field.onChange}
-                onExistingImagesChange={(images) => {
-                  setValue("existingImages", images, {
-                    shouldDirty: true,
-                    shouldTouch: true,
-                    shouldValidate: true,
-                  });
+                onFilesChange={(files) => {
+                  setIsCoverImageRequiredAfterDelete(false);
+                  clearErrors("coverImages");
+                  field.onChange(files);
                 }}
+                onExistingImageRemove={handleRemoveExistingImage}
               />
             )}
           />
@@ -492,7 +570,9 @@ export function EditMarketLocationForm({
         <div className="mt-6 flex justify-end">
           <Button
             type="submit"
-            disabled={isSubmitting || !isDirty}
+            disabled={
+              isSubmitting || deletingExistingImageIndex !== null || !isDirty
+            }
             className="h-[54px] min-w-[202px] rounded-[8px] bg-primary px-6 text-base font-medium text-white shadow-[0_1px_2px_rgba(16,24,40,0.05)] hover:bg-primary/90"
           >
             {isSubmitting ? <Loader /> : "Edit Market"}

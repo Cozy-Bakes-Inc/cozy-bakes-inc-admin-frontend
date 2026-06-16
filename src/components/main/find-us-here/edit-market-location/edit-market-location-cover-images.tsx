@@ -11,8 +11,9 @@ import { cn } from "@/lib";
 interface EditMarketLocationCoverImagesProps {
   existingImages: string[];
   files: File[];
-  onExistingImagesChange: (images: string[]) => void;
+  onExistingImageRemove: (index: number) => void | Promise<void>;
   onFilesChange: (files: File[]) => void;
+  deletingExistingImageIndex?: number | null;
   error?: string;
   disabled?: boolean;
   marketName?: string;
@@ -21,8 +22,9 @@ interface EditMarketLocationCoverImagesProps {
 export function EditMarketLocationCoverImages({
   existingImages,
   files,
-  onExistingImagesChange,
+  onExistingImageRemove,
   onFilesChange,
+  deletingExistingImageIndex = null,
   error,
   disabled = false,
   marketName = "Market",
@@ -113,14 +115,8 @@ export function EditMarketLocationCoverImages({
               <Button
                 type="button"
                 variant="ghost"
-                disabled={disabled}
-                onClick={() =>
-                  onExistingImagesChange(
-                    existingImages.filter(
-                      (_, imageIndex) => imageIndex !== index,
-                    ),
-                  )
-                }
+                disabled={disabled || deletingExistingImageIndex === index}
+                onClick={() => onExistingImageRemove(index)}
                 className="absolute right-1 top-1 size-6 rounded-full border border-danger bg-danger-soft p-0 text-danger hover:bg-danger-soft disabled:cursor-not-allowed disabled:opacity-60"
                 aria-label={`Remove existing cover image ${index + 1}`}
               >

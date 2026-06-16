@@ -1,8 +1,13 @@
 import type { FieldErrors } from "react-hook-form";
 import type { AddProductFormValues } from "@/types/main";
 
+export interface ExistingProductImage {
+  id: number;
+  url: string;
+}
+
 export interface UpdateProductFormValues extends AddProductFormValues {
-  existingImageUrls: string[];
+  existingImages: ExistingProductImage[];
 }
 
 export type UpdateProductFieldValidator = <

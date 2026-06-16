@@ -16,6 +16,10 @@ export interface ProductDetailsModalProps {
   onClose: () => void;
 }
 
+function getFirstProductImage(images: string[] | Record<string, string>) {
+  return Array.isArray(images) ? images[0] : Object.values(images)[0];
+}
+
 export function ProductDetailsModal({
   slug,
   isOpen,
@@ -43,7 +47,7 @@ export function ProductDetailsModal({
         <div className="min-w-0 max-w-full space-y-5 overflow-hidden px-4 py-5 sm:px-6 md:space-y-6 md:px-8 md:py-6">
           <div className="grid min-w-0 max-w-full grid-cols-1 items-start gap-6 lg:h-[400px] lg:grid-cols-[420px_minmax(0,1fr)] lg:items-stretch">
             <ProductDetailsImage
-              image={product.images[0]}
+              image={getFirstProductImage(product.images)}
               title={product.title}
               className="lg:h-full"
             />

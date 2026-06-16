@@ -1,12 +1,12 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { PathValue, useForm, useWatch } from "react-hook-form";
 import { useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import type { AddProductFormValues } from "@/types/main";
 import type { Control } from "react-hook-form";
-import { updateProduct } from "@/services/mutations";
+import { deleteProductImage, updateProduct } from "@/services/mutations";
 import { AddProductBasicFields } from "../add-product/add-product-basic-fields";
 import { AddProductFormActions } from "../add-product/add-product-form-actions";
 import { AddProductPricingSection } from "../add-product/add-product-pricing-section";
@@ -32,6 +32,11 @@ export function UpdateProductForm({
   onCancel,
 }: UpdateProductFormProps) {
   const queryClient = useQueryClient();
+  const [deletingExistingImageIndex, setDeletingExistingImageIndex] = useState<
+    number | null
+  >(null);
+  const [isProductImageRequiredAfterDelete, setIsProductImageRequiredAfterDelete] =
+    useState(false);
   const {
     control,
     clearErrors,
@@ -54,16 +59,80 @@ export function UpdateProductForm({
 
   const values = useWatch({ control }) as UpdateProductFormValues;
 
+  useEffect(() => {
+    if (!isProductImageRequiredAfterDelete) return;
+
+    if (values.existingImages.length === 0 && values.productImages.length === 0) {
+      setError("productImages", {
+        type: "manual",
+        message: "At least one image is required",
+      });
+    }
+  }, [
+    clearErrors,
+    isProductImageRequiredAfterDelete,
+    setError,
+    values.existingImages.length,
+    values.productImages.length,
+  ]);
+
   function updateValue<K extends keyof UpdateProductFormValues>(
     key: K,
     value: UpdateProductFormValues[K],
   ) {
+    if (key === "productImages" && (value as File[]).length > 0) {
+      setIsProductImageRequiredAfterDelete(false);
+    }
     clearErrors(key);
     setValue(key, value as PathValue<UpdateProductFormValues, K>, {
       shouldDirty: true,
       shouldTouch: true,
       shouldValidate: true,
     });
+  }
+
+  function syncProductImageRequiredError(existingImageCount: number) {
+    if (existingImageCount === 0 && getValues("productImages").length === 0) {
+      setIsProductImageRequiredAfterDelete(true);
+      setError("productImages", {
+        type: "manual",
+        message: "At least one image is required",
+      });
+      return;
+    }
+
+    setIsProductImageRequiredAfterDelete(false);
+    clearErrors("productImages");
+  }
+
+  async function handleRemoveExistingImage(index: number) {
+    if (deletingExistingImageIndex !== null || isSubmitting) return;
+
+    const image = getValues("existingImages")[index];
+    if (!image) return;
+
+    setDeletingExistingImageIndex(index);
+    const result = await deleteProductImage(slug, image.id);
+    setDeletingExistingImageIndex(null);
+
+    if (result?.ok) {
+      const nextImages = getValues("existingImages").filter(
+        (item) => item.id !== image.id,
+      );
+
+      setValue("existingImages", nextImages, {
+        shouldDirty: false,
+        shouldTouch: true,
+        shouldValidate: true,
+      });
+      toast.success(result.message || "Product image deleted successfully");
+      await queryClient.invalidateQueries({ queryKey: ["products"] });
+      await queryClient.invalidateQueries({ queryKey: ["product", slug] });
+      syncProductImageRequiredError(nextImages.length);
+      return;
+    }
+
+    toast.error(result?.message || "Failed to delete product image");
   }
 
   async function handleUpdateProduct(valuesToSubmit: UpdateProductFormValues) {
@@ -121,9 +190,11 @@ export function UpdateProductForm({
           control={control}
           values={values}
           errors={errors}
-          disabled={isSubmitting}
+          disabled={isSubmitting || deletingExistingImageIndex !== null}
+          deletingExistingImageIndex={deletingExistingImageIndex}
           validateField={validateUpdateProductField as Parameters<typeof AddProductBasicFields>[0]["validateField"]}
           updateValue={updateValue}
+          onExistingImageRemove={handleRemoveExistingImage}
         />
       </div>
 
