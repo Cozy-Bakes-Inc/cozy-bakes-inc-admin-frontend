@@ -15,13 +15,8 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: "https",
-        hostname: "cozybakesinc.purplextech.com",
+        hostname: "cozybakesinc.apianca.online",
         pathname: "/**",
-      },
-      {
-        protocol: "http",
-        hostname: "127.0.0.1",
-        pathname: "/markets/**",
       },
     ],
   },

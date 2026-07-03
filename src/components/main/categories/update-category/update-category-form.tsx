@@ -76,7 +76,7 @@ export function UpdateCategoryForm({
     }
 
     const result = await updateSubCategoryAPI(slug, payload);
-
+    console.log("updateSubCategoryAPI result:", result);
     if (result?.ok) {
       toast.success(result.message || "Category updated successfully");
       await queryClient.invalidateQueries({ queryKey: ["sub-categories"] });
