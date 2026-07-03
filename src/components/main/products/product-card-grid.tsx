@@ -41,14 +41,18 @@ export function ProductCardGrid({
             className="rounded-[20px] border border-border/10 bg-white p-4 shadow-[0_18px_35px_rgba(61,44,30,0.05)]"
           >
             <div className="mb-4 flex items-start gap-4">
-              <Image
-                src={item.coverImage}
-                alt={`${item.name} cover`}
-                width={78}
-                height={78}
-                className="size-19.5 shrink-0 rounded-2xl object-cover"
-                unoptimized
-              />
+              <div className="size-19.5 shrink-0 overflow-hidden rounded-2xl bg-bg-creamy/55">
+                {item.coverImage ? (
+                  <Image
+                    src={item.coverImage}
+                    alt={`${item.name} cover`}
+                    width={78}
+                    height={78}
+                    className="size-19.5 object-cover"
+                    unoptimized
+                  />
+                ) : null}
+              </div>
 
               <div className="min-w-0 space-y-1">
                 <h2 className="text-lg font-semibold text-dark">{item.name}</h2>

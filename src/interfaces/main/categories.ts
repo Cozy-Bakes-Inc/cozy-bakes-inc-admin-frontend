@@ -14,7 +14,7 @@ export interface SubCategoryRecord {
   slug: string;
   name: string;
   description: string;
-  coverImage: string;
+  coverImage: string | null;
 }
 
 export interface CategoryHeaderProps {

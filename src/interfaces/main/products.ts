@@ -152,7 +152,7 @@ export interface ProductRecord {
   status: number;
   subCategoryName: string;
   categoryName: string;
-  coverImage: string;
+  coverImage: string | null;
   flavors: string[];
   prices: Record<string, ProductListPrice[]>;
   createdAt: string;

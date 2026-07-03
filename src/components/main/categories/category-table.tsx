@@ -45,14 +45,18 @@ export function CategoryTable({
                   </td>
                   <td className="border-b border-border/15 px-4 py-4 align-middle md:px-5">
                     <Link href="/categories" className="block w-fit">
-                      <Image
-                        src={item.coverImage}
-                        alt={`${item.name} cover`}
-                        width={50}
-                        height={50}
-                        className="size-[50px] rounded-lg object-cover"
-                        unoptimized
-                      />
+                      <div className="size-[50px] overflow-hidden rounded-lg bg-bg-creamy/55">
+                        {item.coverImage ? (
+                          <Image
+                            src={item.coverImage}
+                            alt={`${item.name} cover`}
+                            width={50}
+                            height={50}
+                            className="size-[50px] object-cover"
+                            unoptimized
+                          />
+                        ) : null}
+                      </div>
                     </Link>
                   </td>
                   <td className="border-b border-border/15 px-4 py-4 align-middle text-base font-semibold text-dark md:px-5">

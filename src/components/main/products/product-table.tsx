@@ -61,14 +61,18 @@ export function ProductTable({
               return (
                 <tr key={item.slug} className="bg-[rgba(250,248,243,0.08)]">
                   <td className="border-b border-border/15 px-4 py-4 align-middle md:px-5">
-                    <Image
-                      src={item.coverImage}
-                      alt={`${item.name} cover`}
-                      width={50}
-                      height={50}
-                      className="size-12.5 rounded-lg object-cover"
-                      unoptimized
-                    />
+                    <div className="size-12.5 overflow-hidden rounded-lg bg-bg-creamy/55">
+                      {item.coverImage ? (
+                        <Image
+                          src={item.coverImage}
+                          alt={`${item.name} cover`}
+                          width={50}
+                          height={50}
+                          className="size-12.5 object-cover"
+                          unoptimized
+                        />
+                      ) : null}
+                    </div>
                   </td>
 
                   <td className="border-b border-border/15 px-4 py-4 align-middle text-base font-semibold text-dark md:px-5">

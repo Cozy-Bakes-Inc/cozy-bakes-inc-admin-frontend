@@ -20,14 +20,18 @@ export function SubCategoryCardGrid({
           >
             <Link href="/categories" className="block">
               <div className="mb-4 flex items-start gap-4">
-                <Image
-                  src={item.coverImage}
-                  alt={`${item.name} cover`}
-                  width={78}
-                  height={78}
-                  className="size-[78px] rounded-2xl object-cover"
-                  unoptimized
-                />
+                <div className="size-[78px] shrink-0 overflow-hidden rounded-2xl bg-bg-creamy/55">
+                  {item.coverImage ? (
+                    <Image
+                      src={item.coverImage}
+                      alt={`${item.name} cover`}
+                      width={78}
+                      height={78}
+                      className="size-[78px] object-cover"
+                      unoptimized
+                    />
+                  ) : null}
+                </div>
 
                 <div className="min-w-0 space-y-2">
                   <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">

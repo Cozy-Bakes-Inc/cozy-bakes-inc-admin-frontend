@@ -26,7 +26,7 @@ function mapSubCategoryToRecord(item: SubCategoryListItem): SubCategoryRecord {
     slug: item.slug,
     name: item.title,
     description: item.description,
-    coverImage: item.image ?? "/images/logo.png",
+    coverImage: item.image,
   };
 }
 
