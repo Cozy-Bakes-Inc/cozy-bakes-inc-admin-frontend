@@ -38,7 +38,9 @@ export function AddProductCategorySelect({
         value: String(item.id),
         label: item.title,
       })) ?? [];
-  const selectedOption = categoryOptions.find((option) => option.value === value);
+  const selectedOption = categoryOptions.find(
+    (option) => option.value === value,
+  );
 
   useEffect(() => {
     function handlePointerDown(event: PointerEvent) {
@@ -72,7 +74,7 @@ export function AddProductCategorySelect({
         aria-expanded={isOpen}
         onClick={() => setIsOpen((currentValue) => !currentValue)}
         className={cn(
-          "h-[56px] w-full justify-between rounded-[8px] border border-[#D0D5DD] bg-background px-4 text-left text-base font-medium text-dark hover:bg-background focus:border-primary/70 focus:ring-2 focus:ring-primary/10",
+          "h-14 w-full justify-between rounded-[8px] border border-[#D0D5DD] bg-background px-4 text-left text-base font-medium text-dark hover:bg-background focus:border-primary/70 focus:ring-2 focus:ring-primary/10",
           !selectedOption ? "text-[#98A2B3]" : "",
           isOpen ? "border-primary/70 ring-2 ring-primary/10" : "",
           error ? "border-destructive focus:border-destructive/70" : "",
@@ -91,7 +93,7 @@ export function AddProductCategorySelect({
         <div
           role="listbox"
           aria-label="Product category"
-          className="absolute left-0 right-0 top-[calc(100%+8px)] z-50 max-h-[280px] overflow-y-auto overscroll-contain rounded-[10px] border border-primary/20 bg-background p-1 shadow-[0_16px_40px_rgba(61,44,30,0.16)]"
+          className="absolute left-0 right-0 top-[calc(100%+8px)] z-50 max-h-70 overflow-y-auto overscroll-contain rounded-[10px] border border-primary/20 bg-background p-1 shadow-[0_16px_40px_rgba(61,44,30,0.16)]"
         >
           {isLoading ? (
             <div className="px-3 py-3 text-sm font-medium text-muted-text">

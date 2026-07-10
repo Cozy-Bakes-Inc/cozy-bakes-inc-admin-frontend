@@ -79,9 +79,11 @@ export function DashboardRecentOrders() {
         description="Latest customer transactions"
         actionLabel="View All"
       >
-        <div className="flex min-h-[220px] items-center justify-center rounded-[18px] border border-dashed border-border/30 bg-white/70 px-6 text-center">
+        <div className="flex min-h-55 items-center justify-center rounded-[18px] border border-dashed border-border/30 bg-white/70 px-6 text-center">
           <div className="space-y-2">
-            <p className="text-base font-semibold text-dark">No recent orders yet</p>
+            <p className="text-base font-semibold text-dark">
+              No recent orders yet
+            </p>
             <p className="text-sm text-muted-text">
               New customer orders will appear here once they are created.
             </p>
@@ -97,7 +99,7 @@ export function DashboardRecentOrders() {
       description="Latest customer transactions"
       actionLabel="View All"
     >
-      <div className="max-h-[420px] space-y-3 overflow-y-auto pr-2">
+      <div className="max-h-105 space-y-3 overflow-y-auto pr-2">
         {recentOrders.map((order) => (
           <article
             key={order.id}

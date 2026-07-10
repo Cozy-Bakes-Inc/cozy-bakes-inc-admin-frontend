@@ -10,13 +10,8 @@ import { Shimmer } from "@/components/ui/shimmer";
 import { formatCurrency, formatPercentage } from "@/lib/utils/dashboard";
 
 export function DashboardTopProducts() {
-  const {
-    data,
-    isLoading,
-    hasNextPage,
-    fetchNextPage,
-    isFetchingNextPage,
-  } = useTopProducts();
+  const { data, isLoading, hasNextPage, fetchNextPage, isFetchingNextPage } =
+    useTopProducts();
   const topProducts: DashboardTopProductItem[] = useMemo(
     () => data?.pages?.flatMap((page) => page?.data?.data ?? []) ?? [],
     [data],
@@ -58,9 +53,11 @@ export function DashboardTopProducts() {
         description="Best performers this week"
         actionLabel="View All"
       >
-        <div className="flex min-h-[220px] items-center justify-center rounded-[18px] border border-dashed border-border/30 bg-white/70 px-6 text-center">
+        <div className="flex min-h-55 items-center justify-center rounded-[18px] border border-dashed border-border/30 bg-white/70 px-6 text-center">
           <div className="space-y-2">
-            <p className="text-base font-semibold text-dark">No top products yet</p>
+            <p className="text-base font-semibold text-dark">
+              No top products yet
+            </p>
             <p className="text-sm text-muted-text">
               Product performance data will appear here once sales are recorded.
             </p>
@@ -91,7 +88,9 @@ export function DashboardTopProducts() {
                 {product.title}
               </p>
               <div className="mt-1 flex flex-wrap items-center gap-2 text-[11px] font-medium text-gray md:text-xs">
-                <span>{formatCurrency(Number(product.current_revenue))} this period</span>
+                <span>
+                  {formatCurrency(Number(product.current_revenue))} this period
+                </span>
                 <span className="text-border">&bull;</span>
                 <span className="inline-flex items-center gap-1 font-bold text-primary">
                   <ArrowUpRight className="size-3" />
