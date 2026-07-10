@@ -24,6 +24,13 @@ export function AddProductCategorySelect({
   const wrapperRef = useRef<HTMLDivElement | null>(null);
   const { data, isLoading, hasNextPage, fetchNextPage, isFetchingNextPage } =
     useInfiniteSubCategoriesList();
+
+  useEffect(() => {
+    if (hasNextPage && !isFetchingNextPage) {
+      fetchNextPage();
+    }
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+
   const categoryOptions =
     data?.pages
       ?.flatMap((page) => page?.data?.data ?? [])
@@ -119,17 +126,6 @@ export function AddProductCategorySelect({
               </button>
             );
           })}
-
-          {hasNextPage ? (
-            <button
-              type="button"
-              disabled={isFetchingNextPage}
-              onClick={() => fetchNextPage()}
-              className="mt-1 h-10 w-full rounded-[8px] px-3 text-left text-sm font-medium text-primary transition-colors hover:bg-primary/10 disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              {isFetchingNextPage ? "Loading..." : "Load more"}
-            </button>
-          ) : null}
         </div>
       ) : null}
 
